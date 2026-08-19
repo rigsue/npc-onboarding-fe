@@ -1,0 +1,253 @@
+:root{
+  --panel-bg: #143847;
+  --card-bg: #0f2e3a;
+  --teal-accent: #2c8a7c;
+}
+
+body{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main{
+  flex: 1;
+}
+
+/* Profile panel */
+.profile-panel{
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 32px 32px 50px;
+}
+
+.profile-head{
+  background: var(--panel-bg);
+  border-radius: 8px;
+  padding: 30px 34px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.profile-photo{
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: #4c5f68;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.7);
+  flex-shrink: 0;
+  border: 3px solid rgba(255,255,255,0.15);
+}
+
+.profile-details{
+  flex: 1;
+}
+
+.profile-name{
+  font-size: 40px;
+  margin: 0 0 4px;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+  font-weight: 400;
+}
+
+.profile-role{
+  font-size: 20px;
+  margin: 0 0 10px;
+  font-weight: 400;
+}
+
+.profile-contact{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.manage-btn{
+  flex-shrink: 0;
+  background: var(--teal-accent);
+  color: var(--text-white);
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: 6px;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.manage-btn:hover{
+  background: #24756a;
+}
+
+/* About */
+.about-block{
+  margin-top: 24px;
+  padding-top: 20px;
+}
+
+.about-block h2{
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.about-block p{
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 900px;
+}
+
+/* Progress + equipment */
+.progress-grid{
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+
+.progress-card,
+.equipment-card{
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 22px 26px 26px;
+  min-width: 0;
+}
+
+.progress-card h3,
+.equipment-card h3{
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.progress-label{
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.progress-item + .progress-item{
+  margin-top: 18px;
+}
+
+.progress-row{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.progress-bar{
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  max-width: 220px;
+}
+
+.seg{
+  height: 14px;
+  flex: 1;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+}
+
+.seg.filled{
+  background: var(--text-white);
+}
+
+.progress-pct{
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.equip-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.equip-row input{
+  display: none;
+}
+
+.equip-box{
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--text-white);
+  border-radius: 4px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.equip-row input:checked + .equip-box{
+  background: var(--text-white);
+}
+
+.equip-row input:checked + .equip-box::after{
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--navbar-bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Certifications */
+.cert-panel{
+  margin-top: 26px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 22px 26px 26px;
+}
+
+.cert-panel h3{
+  margin: 0 0 16px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.cert-row{
+  display: block;
+  border: 1px solid var(--teal-accent);
+  border-radius: 6px;
+  padding: 14px 20px;
+  text-decoration: none;
+  color: var(--text-white);
+  margin-bottom: 14px;
+}
+
+.cert-row:last-child{
+  margin-bottom: 0;
+}
+
+.cert-row h4{
+  margin: 0 0 6px;
+  font-size: 17px;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.cert-row p{
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .progress-grid{ grid-template-columns: 1fr; }
+  .profile-head{ flex-direction: column; text-align: center; }
+}
