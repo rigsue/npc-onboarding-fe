@@ -1,0 +1,77 @@
+/* Page-specific: lock to viewport height (no page scroll) and
+   center the sign-in card — shared.css only sets the background/reset. */
+.landing-page{
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-page main{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.card{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Logo */
+.logo{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo-img{
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  display: block;
+}
+
+/* Sign in button */
+.btn-signin{
+  display: inline-block;
+  background: rgba(10, 35, 43, 0.55);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--text-white);
+  font-size: 18px;
+  font-weight: 500;
+  padding: 12px 38px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  transition: background 0.2s ease;
+}
+
+.btn-signin:hover{
+  background: rgba(10, 35, 43, 0.75);
+}
+
+.signup-row{
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.signup-row a{
+  color: var(--text-white);
+  text-decoration: underline;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+@media (max-width: 640px){
+  .logo-img{ max-width: 220px; }
+  .btn-signin{ font-size: 15px; padding: 10px 30px; }
+}
