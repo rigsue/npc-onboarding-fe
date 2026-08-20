@@ -18,15 +18,15 @@ export default function Navbar({ active }) {
             </svg>
           </button>
           <div className="nav-dropdown-menu" id="onboarding-menu">
-            <a href="hr.html" className="active">HR Modules</a>
-            <a href="it.html">IT Modules</a>
-            <a href="finance.html">Finance Modules</a>
-            <a href="marketing.html">Marketing Modules</a>
-            <a href="presales.html">Pre-sales Modules</a>
-            <a href="customersuccess.html">Customer Success Modules</a>
-            <a href="sales.html">Sales Modules</a>
-            <a href="ppm.html">PPM Modules</a>
-            <a href="ooc.html">OOC Modules</a>
+            <Link to="/hr" className="active">HR Modules</Link>
+            <Link to="/it">IT Modules</Link>
+            <Link to="/finance">Finance Modules</Link>
+            <Link to="/marketing">Marketing Modules</Link>
+            <Link to="/presales">Pre-sales Modules</Link>
+            <Link to="/customersuccess">Customer Success Modules</Link>
+            <Link to="/sales">Sales Modules</Link>
+            <Link to="/ppm">PPM Modules</Link>
+            <Link to="/ooc">OOC Modules</Link>
           </div>
         </div>
         <Link className={`nav-link${active === 'certifications' ? ' active' : ''}`} to="/certifications">Certifications</Link>

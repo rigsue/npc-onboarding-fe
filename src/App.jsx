@@ -7,6 +7,9 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Certifications from './pages/Certifications';
 import ManageAccount from './pages/ManageAccount';
+// import Hr from './pages/onboarding/hr';
+import Hr from './pages/hr';
+
 
 export default function App() {
   return (
@@ -20,6 +23,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/certifications" element={<Certifications />} />
         <Route path="/manageaccount" element={<ManageAccount />} />
+        <Route path="/hr" element={<Hr />} />
       </Routes>
     </BrowserRouter>
   );
