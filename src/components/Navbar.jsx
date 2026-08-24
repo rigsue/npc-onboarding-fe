@@ -34,15 +34,51 @@ const Navbar({ active }) => {
             </svg>
           </button>
           <div className="nav-dropdown-menu" id="onboarding-menu">
-            <ComingSoonLink className="active">HR Modules</ComingSoonLink>
-            <ComingSoonLink>IT Modules</ComingSoonLink>
-            <ComingSoonLink>Finance Modules</ComingSoonLink>
-            <ComingSoonLink>Marketing Modules</ComingSoonLink>
-            <ComingSoonLink>Pre-sales Modules</ComingSoonLink>
-            <ComingSoonLink>Customer Success Modules</ComingSoonLink>
-            <ComingSoonLink>Sales Modules</ComingSoonLink>
-            <ComingSoonLink>PPM Modules</ComingSoonLink>
-            <ComingSoonLink>OOC Modules</ComingSoonLink>
+            <Link 
+              className={`nav-link${active === 'HR' ? ' active' : ''}`} 
+              to="/hr">
+                HR Modules
+            </Link>
+            <Link 
+              className={`nav-link${active === 'IT' ? ' active' : ''}`} 
+              to="/it">
+                IT Modules
+            </Link>
+            <Link 
+              className={`nav-link${active === 'Finance' ? ' active' : ''}`} 
+              to="/finance">
+                Finance Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'Marketing' ? ' active' : ''}`} 
+              to="/marketing">
+                Marketing Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'PreSales' ? ' active' : ''}`} 
+              to="/presales">
+                PreSales Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'CustomerSuccess' ? ' active' : ''}`} 
+              to="/cust_success">
+                Customer Success Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'Sales' ? ' active' : ''}`} 
+              to="/sales">
+                Sales Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'PPM' ? ' active' : ''}`} 
+              to="/ppm">
+                PPM Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'OOC' ? ' active' : ''}`} 
+              to="/ooc">
+                OOC Modules
+            </Link>
           </div>
         </div>
         <Link className={`nav-link${active === 'certifications' ? ' active' : ''}`} to="/certifications">Certifications</Link>
