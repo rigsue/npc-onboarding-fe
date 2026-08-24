@@ -73,7 +73,7 @@ function CertThumb({ cert, onOpen }) {
   );
 }
 
-export default function Certifications() {
+const Certifications = () => {
   const [openCertId, setOpenCertId] = useState(null);
   const [printingCertId, setPrintingCertId] = useState(null);
 
@@ -161,3 +161,5 @@ export default function Certifications() {
     </>
   );
 }
+
+export default Certifications;

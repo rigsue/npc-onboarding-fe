@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import '../layout.css';
 import './Login.css';
 
-export default function Login() {
+const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -72,3 +72,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login;
