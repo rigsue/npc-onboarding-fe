@@ -16,7 +16,7 @@ function ComingSoonLink({ className, children }) {
   );
 }
 
-const Navbar({ active }) => {
+const Navbar = ({ active }) => {
   const { profile } = useProfile();
   return (
     <header className="navbar">
