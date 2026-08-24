@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import '../layout.css';
 import './Login.css';
 
-const Signup = () => {
+export default function Signup() {
   const navigate = useNavigate();
+  const [role, setRole] = useState('user');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,8 +26,26 @@ const Signup = () => {
           <h1 className="form-title">Sign Up</h1>
 
           <div className="tabs" role="tablist">
-            <button type="button" className="tab active" id="tab-user">User</button>
-            <button type="button" className="tab" id="tab-admin">Admin</button>
+            <button
+              type="button"
+              className={`tab${role === 'user' ? ' active' : ''}`}
+              id="tab-user"
+              role="tab"
+              aria-selected={role === 'user'}
+              onClick={() => setRole('user')}
+            >
+              User
+            </button>
+            <button
+              type="button"
+              className={`tab${role === 'admin' ? ' active' : ''}`}
+              id="tab-admin"
+              role="tab"
+              aria-selected={role === 'admin'}
+              onClick={() => setRole('admin')}
+            >
+              Admin
+            </button>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -87,5 +106,3 @@ const Signup = () => {
     </div>
   );
 }
-
-export default Signup;

@@ -73,7 +73,7 @@ function CertThumb({ cert, onOpen }) {
   );
 }
 
-const Certifications = () => {
+export default function Certifications() {
   const [openCertId, setOpenCertId] = useState(null);
   const [printingCertId, setPrintingCertId] = useState(null);
 
@@ -102,7 +102,7 @@ const Certifications = () => {
   }, [openCertId]);
 
   return (
-    <>
+    <div className="page-shell">
       <Navbar active="certifications" />
 
       <main>
@@ -158,8 +158,6 @@ const Certifications = () => {
       </div>
 
       <Footer />
-    </>
+    </div>
   );
 }
-
-export default Certifications;

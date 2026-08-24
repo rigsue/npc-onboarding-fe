@@ -239,26 +239,73 @@
 .cert-modal-thumb{
   width: 600px;
   max-width: 100%;
-  height: 450px;
-  max-height: 60vh;
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
   border-radius: 8px;
+  overflow: hidden;
 }
 
+/* The card thumbnail was sized for a 220px-wide grid column, so its text
+   and medal icon use tiny fixed px values. The original design tried to
+   enlarge the whole thing with `transform: scale(1.5)` on a fixed 400x300
+   box — but that clipped the signature row at the bottom whenever the
+   content's natural height didn't match the assumed 300px exactly. Instead,
+   let the box size itself naturally from its own aspect-ratio (already set
+   on .cert-thumb), and directly scale up the text/icon sizes that were
+   built for the small card view. Nothing can get clipped this way. */
 .cert-modal-thumb .cert-thumb{
-  width: 400px;
-  height: 300px;
-  aspect-ratio: auto;
+  width: 100%;
   cursor: default;
-  transform: scale(1.5);
-  transform-origin: top left;
 }
 
 .cert-modal-thumb .cert-thumb:hover{
-  transform: scale(1.5);
+  transform: none;
   box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+}
+
+.cert-modal-thumb .cert-body{
+  padding: 6% 10%;
+}
+
+.cert-modal-thumb .cert-medal svg{
+  width: 68px;
+  height: 68px;
+}
+
+.cert-modal-thumb .cert-title{
+  font-size: 35px;
+}
+
+.cert-modal-thumb .cert-subtitle{
+  font-size: 19px;
+  margin-bottom: 10px;
+}
+
+.cert-modal-thumb .cert-presented{
+  font-size: 16px;
+}
+
+.cert-modal-thumb .cert-name{
+  font-size: 42px;
+  margin: 6px 0;
+}
+
+.cert-modal-thumb .cert-reason{
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.cert-modal-thumb .cert-sign{
+  min-width: 130px;
+  padding-top: 6px;
+}
+
+.cert-modal-thumb .cert-sign-name{
+  font-size: 17px;
+}
+
+.cert-modal-thumb .cert-sign-role{
+  font-size: 15px;
 }
 
 .cert-modal-close{

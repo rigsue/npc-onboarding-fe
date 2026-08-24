@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import '../layout.css';
 import './LandingPage.css';
 
-const LandingPage = () => {
+export default function LandingPage() {
   return (
     <div className="landing-page">
       <main>
@@ -26,5 +26,3 @@ const LandingPage = () => {
     </div>
   );
 }
-
-export default LandingPage;

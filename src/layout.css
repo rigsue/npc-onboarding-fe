@@ -189,6 +189,14 @@ body{
   position: relative;
 }
 
+.avatar-img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
 .avatar-menu{
   left: auto;
   right: 0;
@@ -271,4 +279,55 @@ footer{
   .footer-top, .footer-bottom{ padding: 12px 20px; }
   .footer-top{ flex-direction: column; text-align: center; }
   .footer-bottom{ flex-direction: column; text-align: center; }
+}
+
+/* Uploadable profile photo (shared by Profile and Manage Account pages) */
+.profile-photo-editable{
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.profile-photo-img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.profile-photo-overlay{
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.profile-photo-editable:hover .profile-photo-overlay,
+.profile-photo-editable:focus-visible .profile-photo-overlay{
+  opacity: 1;
+}
+
+.profile-photo-input{
+  display: none;
+}
+
+/* Pins the footer to the bottom of the viewport on pages with short content.
+   Scoped to a wrapper div (not the raw body tag) because in a React app,
+   body's only real child is the #root div — styling body directly can't
+   reach the navbar/main/footer nested inside it. */
+.page-shell{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-shell main{
+  flex: 1;
 }
