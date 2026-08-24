@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useProfile } from '../context/ProfileContext';
 
-export default function ProfilePhoto({ size = 150 }) {
+const ProfilePhoto({ size = 150 }) => {
   const { profile, updateProfile } = useProfile();
   const inputRef = useRef(null);
 
@@ -56,3 +56,4 @@ export default function ProfilePhoto({ size = 150 }) {
     </div>
   );
 }
+export default ProfilePhoto;
