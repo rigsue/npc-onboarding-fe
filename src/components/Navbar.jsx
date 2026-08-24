@@ -16,7 +16,7 @@ function ComingSoonLink({ className, children }) {
   );
 }
 
-export default function Navbar({ active }) {
+const Navbar({ active }) => {
   const { profile } = useProfile();
   return (
     <header className="navbar">
@@ -76,3 +76,4 @@ export default function Navbar({ active }) {
     </header>
   );
 }
+export default Navbar;
