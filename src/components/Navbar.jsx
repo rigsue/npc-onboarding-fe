@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Navbar({ active }) {
+const Navbar = ({ active }) => {
   return (
     <header className="navbar">
       <Link className="nav-logo" to="/home">
@@ -18,15 +18,51 @@ export default function Navbar({ active }) {
             </svg>
           </button>
           <div className="nav-dropdown-menu" id="onboarding-menu">
-            <Link to="/hr" className="active">HR Modules</Link>
-            <Link to="/it">IT Modules</Link>
-            <Link to="/finance">Finance Modules</Link>
-            <Link to="/marketing">Marketing Modules</Link>
-            <Link to="/presales">Pre-sales Modules</Link>
-            <Link to="/customersuccess">Customer Success Modules</Link>
-            <Link to="/sales">Sales Modules</Link>
-            <Link to="/ppm">PPM Modules</Link>
-            <Link to="/ooc">OOC Modules</Link>
+            <Link 
+              className={`nav-link${active === 'HR' ? ' active' : ''}`} 
+              to="/hr">
+                HR Modules
+            </Link>
+            <Link 
+              className={`nav-link${active === 'IT' ? ' active' : ''}`} 
+              to="/it">
+                IT Modules
+            </Link>
+            <Link 
+              className={`nav-link${active === 'Finance' ? ' active' : ''}`} 
+              to="/finance">
+                Finance Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'Marketing' ? ' active' : ''}`} 
+              to="/marketing">
+                Marketing Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'PreSales' ? ' active' : ''}`} 
+              to="/presales">
+                PreSales Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'CustomerSuccess' ? ' active' : ''}`} 
+              to="/cust_success">
+                Customer Success Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'Sales' ? ' active' : ''}`} 
+              to="/sales">
+                Sales Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'PPM' ? ' active' : ''}`} 
+              to="/ppm">
+                PPM Modules
+            </Link>            
+            <Link 
+              className={`nav-link${active === 'OOC' ? ' active' : ''}`} 
+              to="/ooc">
+                OOC Modules
+            </Link>
           </div>
         </div>
         <Link className={`nav-link${active === 'certifications' ? ' active' : ''}`} to="/certifications">Certifications</Link>
@@ -54,3 +90,5 @@ export default function Navbar({ active }) {
     </header>
   );
 }
+
+export default Navbar;

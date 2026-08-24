@@ -10,7 +10,7 @@ const HERO_SLIDES = [
   'assets/hp3.jpg',
 ];
 
-export default function Home() {
+const Home = () => {
   const [slide, setSlide] = useState(0);
 
   useEffect(() => {
@@ -28,7 +28,13 @@ export default function Home() {
         {/* Hero carousel */}
         <section className="hero-wrap">
           <div className="hero-slide">
-            <img key={slide} className="content-image hero-fade" src={HERO_SLIDES[slide]} alt="Netrust hero banner" />
+            <img 
+            key={slide} 
+            className="content-image hero-fade" 
+            src={HERO_SLIDES[slide]} 
+            alt="Netrust hero banner" 
+            />
+
             <div className="hero-dots">
               {HERO_SLIDES.map((_, i) => (
                 <span
@@ -52,50 +58,85 @@ export default function Home() {
 
         {/* Welcome */}
         <section className="welcome">
-          <h1 className="welcome-title">Welcome to the Team, <span>NETS!</span></h1>
-          <a className="onboarding-pill" href="#">Proceed to your Onboarding Journey &gt;&gt;&gt;</a>
+          <h1 className="welcome-title">
+            Welcome to the Team, <span>NETS!</span>
+          </h1>
+          <a className="onboarding-pill" href="#">
+            Proceed to your Onboarding Journey &gt;&gt;&gt;
+          </a>
         </section>
 
         {/* Purpose section */}
         <section className="content-row">
-          <img className="content-image" src="assets/1pic.jpg" alt="Trust has changed campaign graphic" />
+          <img 
+            className="content-image" 
+            src="assets/1pic.jpg" 
+            alt="Trust has changed campaign graphic" 
+          />
           <div className="content-text">
             <h2>Keeping the Digital World Safe</h2>
-            <p>Netrust Philippines Corporation's purpose is to create a world where businesses, government organizations and individuals can securely transact in the digital space – through a wide range of Cybersecurity solutions that address multitudes of pain points and compliances.</p>
+            <p>
+              Netrust Philippines Corporation's purpose is to create a world 
+              where businesses, government organizations and individuals can 
+              securely transact in the digital space – through a wide range of 
+              Cybersecurity solutions that address multitudes of pain points 
+              and compliances.
+            </p>
 
             <h2>Security Made Simple</h2>
-            <p>Digital security can be difficult. That's why the goal of Netrust Philippines is to be a partner and not simply a solutions provider. So, we can help make security solutions easy to evaluate, easy to deploy, and easy to manage for organizations.</p>
+            <p>Digital security can be difficult. That's why the goal of Netrust 
+              Philippines is to be a partner and not simply a solutions 
+              provider. So, we can help make security solutions easy to 
+              evaluate, easy to deploy, and easy to manage for organizations.
+            </p>
           </div>
         </section>
 
         {/* Moving forward band */}
         <section className="moving-forward">
           <h2>Moving Forward</h2>
-          <p>As the digital security landscape continue to evolve, trust that Netrust will continue to help organizations strengthen the security of their users, applications and data – without the need for compromise between security and agility.</p>
+          <p>As the digital security landscape continue to evolve, trust that 
+            Netrust will continue to help organizations strengthen the 
+            security of their users, applications and data – without the need 
+            for compromise between security and agility.
+          </p>
         </section>
 
         {/* Strengthen section */}
         <section className="content-row reverse">
           <div className="content-text">
-            <h3 className="pill-heading">Strengthen the Security of your Users,<br />Applications and Data with Netrust</h3>
+            <h3 className="pill-heading">
+              Strengthen the Security of your Users,
+              <br />
+              Applications and Data with Netrust
+            </h3>
 
             <div className="feature-block">
               <h4>Secure Identity and Access</h4>
-              <p>Trusted digital identity for individuals and machines, and access that is controlled prevents data breaches and fraudulent transactions.</p>
+              <p>Trusted digital identity for individuals and machines, and access 
+                that is controlled prevents data breaches and fraudulent transactions.
+              </p>
             </div>
 
             <div className="feature-block">
               <h4>Application Security</h4>
-              <p>For secure online activities, application vulnerabilities must be identified and remediated early on before they are exploited.</p>
+              <p>For secure online activities, application vulnerabilities must 
+                be identified and remediated early on before they are exploited.
+              </p>
             </div>
 
             <div className="feature-block">
               <h4>Data Protection</h4>
-              <p>Data - in motion and at rest - must be protected anywhere they are - within and beyond the confines of the office or in the cloud.</p>
+              <p>Data - in motion and at rest - must be protected anywhere they 
+                are - within and beyond the confines of the office or in the cloud.
+              </p>
             </div>
           </div>
 
-          <img className="content-image" src="assets/2pic.jpg" alt="Trust has changed campaign graphic" />
+          <img className="content-image" 
+            src="assets/2pic.jpg" 
+            alt="Trust has changed campaign graphic" 
+          />
         </section>
 
       </main>
@@ -103,4 +144,6 @@ export default function Home() {
       <Footer />
     </>
   );
-}
+};
+
+export default Home;

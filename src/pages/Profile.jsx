@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 import '../layout.css';
 import './Profile.css';
 
-export default function Profile() {
+const Profile = () => {
   return (
     <>
       <Navbar active="profile" />
@@ -115,3 +115,5 @@ export default function Profile() {
     </>
   );
 }
+
+export default Profile;

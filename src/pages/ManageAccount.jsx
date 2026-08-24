@@ -16,7 +16,7 @@ function ChevronIcon() {
   );
 }
 
-export default function ManageAccount() {
+const ManageAccount = () => {
   const [headEditing, setHeadEditing] = useState(false);
   const [aboutEditing, setAboutEditing] = useState(false);
   const [openPanels, setOpenPanels] = useState({});
@@ -164,3 +164,5 @@ export default function ManageAccount() {
     </>
   );
 }
+
+export default ManageAccount
