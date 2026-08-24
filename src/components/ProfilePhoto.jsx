@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useProfile } from '../context/ProfileContext';
 
-const ProfilePhoto({ size = 150 }) => {
+const ProfilePhoto = ({ size = 150 }) => {
   const { profile, updateProfile } = useProfile();
   const inputRef = useRef(null);
 
