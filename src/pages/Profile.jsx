@@ -2,35 +2,34 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ProfilePhoto from '../components/ProfilePhoto';
+import { useProfile } from '../context/ProfileContext';
 import '../layout.css';
 import './Profile.css';
 
-const Profile = () => {
+export default function Profile() {
+  const { profile } = useProfile();
+
   return (
-    <>
+    <div className="page-shell">
       <Navbar active="profile" />
 
       <main>
         <section className="profile-panel">
 
           <div className="profile-head">
-            <div className="profile-photo">
-              <svg viewBox="0 0 24 24" width="60" height="60" fill="currentColor">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-              </svg>
-            </div>
+            <ProfilePhoto />
 
             <div className="profile-details">
-              <h1 className="profile-name">John Doe</h1>
-              <p className="profile-role">IT Operations</p>
+              <h1 className="profile-name">{profile.name}</h1>
+              <p className="profile-role">{profile.role}</p>
               <p className="profile-contact">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 6l10 7 10-7" /></svg>
-                JohnDoe@netrust.com.ph
+                {profile.email}
               </p>
               <p className="profile-contact">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.9 2.2z" /></svg>
-                +63 906 5389 280
+                {profile.phone}
               </p>
             </div>
 
@@ -43,6 +42,7 @@ const Profile = () => {
           </div>
 
           <div className="progress-grid">
+
 
             <div className="progress-card">
               <h3>Onboarding Progress</h3>
@@ -112,8 +112,6 @@ const Profile = () => {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }
-
-export default Profile;

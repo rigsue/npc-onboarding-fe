@@ -11,21 +11,10 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^7.18.2"
+    "react-router-dom": "^6.23.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^8.2.2"
-  },
-  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
-  "main": "eslint.config.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/maronnemarquez/npc-onboarding-FE.git"
-  },
-  "keywords": [],
-  "bugs": {
-    "url": "https://github.com/maronnemarquez/npc-onboarding-FE/issues"
-  },
-  "homepage": "https://github.com/maronnemarquez/npc-onboarding-FE#readme"
+    "vite": "^5.2.0"
+  }
 }

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ProfilePhoto from '../components/ProfilePhoto';
+import { useProfile } from '../context/ProfileContext';
 import '../layout.css';
 import './ManageAccount.css';
 
@@ -16,44 +18,58 @@ function ChevronIcon() {
   );
 }
 
-const ManageAccount = () => {
+export default function ManageAccount() {
+  const { profile, updateProfile } = useProfile();
   const [headEditing, setHeadEditing] = useState(false);
   const [aboutEditing, setAboutEditing] = useState(false);
   const [openPanels, setOpenPanels] = useState({});
+
+  const nameRef = useRef(null);
+  const roleRef = useRef(null);
+  const emailRef = useRef(null);
+  const phoneRef = useRef(null);
 
   const togglePanel = (id) => {
     setOpenPanels((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const toggleHeadEditing = () => {
+    if (headEditing) {
+      // Currently editing -> "Done" was clicked: save whatever's in the DOM now.
+      updateProfile({
+        name: nameRef.current.textContent.trim() || profile.name,
+        role: roleRef.current.textContent.trim() || profile.role,
+        email: emailRef.current.textContent.trim() || profile.email,
+        phone: phoneRef.current.textContent.trim() || profile.phone,
+      });
+    }
+    setHeadEditing((v) => !v);
+  };
+
   return (
-    <>
+    <div className="page-shell">
       <Navbar active="profile" />
 
       <main>
         <section className="account-panel">
 
           <div className="profile-head">
-            <div className="profile-photo">
-              <svg viewBox="0 0 24 24" width="60" height="60" fill="currentColor">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-              </svg>
-            </div>
+            <ProfilePhoto />
 
             <div className="profile-details">
-              <h1 className="profile-name" contentEditable={headEditing} suppressContentEditableWarning>John Doe</h1>
-              <p className="profile-role" contentEditable={headEditing} suppressContentEditableWarning>IT Operations</p>
+              <h1 className="profile-name" ref={nameRef} contentEditable={headEditing} suppressContentEditableWarning>{profile.name}</h1>
+              <p className="profile-role" ref={roleRef} contentEditable={headEditing} suppressContentEditableWarning>{profile.role}</p>
               <p className="profile-contact">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 6l10 7 10-7" /></svg>
-                <span contentEditable={headEditing} suppressContentEditableWarning>JohnDoe@netrust.com.ph</span>
+                <span ref={emailRef} contentEditable={headEditing} suppressContentEditableWarning>{profile.email}</span>
               </p>
               <p className="profile-contact">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.9 2.2z" /></svg>
-                <span contentEditable={headEditing} suppressContentEditableWarning>+63 906 5389 280</span>
+                <span ref={phoneRef} contentEditable={headEditing} suppressContentEditableWarning>{profile.phone}</span>
               </p>
             </div>
 
-            <button className="edit-btn" id="edit-head" onClick={() => setHeadEditing((v) => !v)}>
+            <button className="edit-btn" id="edit-head" onClick={toggleHeadEditing}>
               <EditIcon />
               <span>{headEditing ? 'Done' : 'Edit'}</span>
             </button>
@@ -67,6 +83,7 @@ const ManageAccount = () => {
                 <span>{aboutEditing ? 'Done' : 'Edit'}</span>
               </button>
             </div>
+
             <p contentEditable={aboutEditing} suppressContentEditableWarning id="about-text">committed to ensuring secure, efficient, and uninterrupted IT operations while providing quality technical support to employees and company systems.</p>
           </div>
 
@@ -161,8 +178,6 @@ const ManageAccount = () => {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }
-
-export default ManageAccount
