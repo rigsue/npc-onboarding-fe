@@ -9,7 +9,7 @@ import Profile from './pages/Profile';
 import Certifications from './pages/Certifications';
 import ManageAccount from './pages/ManageAccount';
 
-export default function App() {
+const App = () => {
   return (
     <ProfileProvider>
       <BrowserRouter>
@@ -27,3 +27,4 @@ export default function App() {
     </ProfileProvider>
   );
 }
+export default App;
