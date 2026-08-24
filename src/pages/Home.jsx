@@ -10,7 +10,7 @@ const HERO_SLIDES = [
   'assets/hp3.jpg',
 ];
 
-export default function Home() {
+const Home = () => {
   const [slide, setSlide] = useState(0);
 
   useEffect(() => {
@@ -104,3 +104,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home;
