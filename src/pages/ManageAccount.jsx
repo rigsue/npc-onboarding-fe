@@ -18,7 +18,7 @@ function ChevronIcon() {
   );
 }
 
-export default function ManageAccount() {
+const ManageAccount = () => {
   const { profile, updateProfile } = useProfile();
   const [headEditing, setHeadEditing] = useState(false);
   const [aboutEditing, setAboutEditing] = useState(false);
@@ -181,3 +181,4 @@ export default function ManageAccount() {
     </div>
   );
 }
+export default ManageAccount
