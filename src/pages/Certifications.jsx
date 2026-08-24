@@ -161,3 +161,4 @@ export default function Certifications() {
     </div>
   );
 }
+export default Certifications;
