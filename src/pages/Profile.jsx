@@ -7,7 +7,7 @@ import { useProfile } from '../context/ProfileContext';
 import '../layout.css';
 import './Profile.css';
 
-export default function Profile() {
+const Profile = () => {
   const { profile } = useProfile();
 
   return (
@@ -115,3 +115,4 @@ export default function Profile() {
     </div>
   );
 }
+export default Profile;
