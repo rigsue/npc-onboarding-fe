@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import '../layout.css';
 import './Login.css';
 
-export default function Signup() {
+const Signup = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState('user');
 
@@ -106,3 +106,4 @@ export default function Signup() {
     </div>
   );
 }
+export default Signup;
