@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProfilePhoto from '../components/ProfilePhoto';
 import { useProfile } from '../context/ProfileContext';
+import { useToast } from '../context/ToastContext';
 import '../layout.css';
 import './ManageAccount.css';
 
@@ -18,8 +19,9 @@ function ChevronIcon() {
   );
 }
 
-const ManageAccount = () => {
+export default function ManageAccount() {
   const { profile, updateProfile } = useProfile();
+  const { showToast } = useToast();
   const [headEditing, setHeadEditing] = useState(false);
   const [aboutEditing, setAboutEditing] = useState(false);
   const [openPanels, setOpenPanels] = useState({});
@@ -42,6 +44,7 @@ const ManageAccount = () => {
         email: emailRef.current.textContent.trim() || profile.email,
         phone: phoneRef.current.textContent.trim() || profile.phone,
       });
+      showToast('Profile updated');
     }
     setHeadEditing((v) => !v);
   };
@@ -105,7 +108,7 @@ const ManageAccount = () => {
                   <label>Current Password<input type="password" placeholder="Enter current password" /></label>
                   <label>New Password<input type="password" placeholder="Enter new password" /></label>
                   <label>Confirm New Password<input type="password" placeholder="Re-enter new password" /></label>
-                  <button className="panel-save">Save Password</button>
+                  <button className="panel-save" type="button" onClick={() => showToast('Password updated')}>Save Password</button>
                 </div>
               </div>
 
@@ -167,7 +170,7 @@ const ManageAccount = () => {
                       <option>Cebuano</option>
                     </select>
                   </label>
-                  <button className="panel-save">Save Language</button>
+                  <button className="panel-save" type="button" onClick={() => showToast('Language preference saved')}>Save Language</button>
                 </div>
               </div>
             </div>
@@ -181,4 +184,3 @@ const ManageAccount = () => {
     </div>
   );
 }
-export default ManageAccount

@@ -99,6 +99,30 @@
   font-weight: 600;
 }
 
+.admin-level-row{
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.admin-level-option{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+}
+
+.admin-level-option input{
+  accent-color: var(--teal-accent);
+}
+
+.admin-level-option.selected{
+  color: #1c3f5f;
+  font-weight: 600;
+}
+
 .field-label{
   display: block;
   font-size: 14px;

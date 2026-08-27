@@ -4,13 +4,13 @@ import Footer from '../components/Footer';
 import '../layout.css';
 import './LandingPage.css';
 
-const LandingPage = () => {
+export default function LandingPage() {
   return (
     <div className="landing-page">
       <main>
         <div className="card">
           <div className="logo">
-            <img className="logo-img" src="assets/logo.png" alt="Netrust Philippines Corporation" />
+            <img className="logo-img" src="/assets/logo.png" alt="Netrust Philippines Corporation" />
           </div>
 
           <Link className="btn-signin" to="/login">Sign In</Link>
@@ -26,4 +26,3 @@ const LandingPage = () => {
     </div>
   );
 }
-export default LandingPage;
