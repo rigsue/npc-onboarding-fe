@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import '../layout.css';
 import './Login.css';
 
-const Signup = () => {
+export default function Signup() {
   const navigate = useNavigate();
   const [role, setRole] = useState('user');
 
@@ -20,7 +20,7 @@ const Signup = () => {
           <Link className="close-btn" to="/" aria-label="Close">&times;</Link>
 
           <div className="card-logo">
-            <img className="card-logo-mark" src="assets/signuplogo.png" alt="Netrust Philippines Corporation" />
+            <img className="card-logo-mark" src="/assets/signuplogo.png" alt="Netrust Philippines Corporation" />
           </div>
 
           <h1 className="form-title">Sign Up</h1>
@@ -106,4 +106,3 @@ const Signup = () => {
     </div>
   );
 }
-export default Signup;

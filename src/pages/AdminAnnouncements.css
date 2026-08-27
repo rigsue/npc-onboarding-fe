@@ -1,0 +1,31 @@
+/* Announcement-card grid (Materials uses its own .materials-grid/.materials-card
+   below, since those cards have an extra thumbnail — everything else about the
+   page shell, toolbar, tabs, search, and modal lives in AdminLayout.css). */
+.announce-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.announce-card{
+  background: var(--admin-card-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.announce-card h3{
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.announce-card p{
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--admin-muted);
+  flex: 1;
+}

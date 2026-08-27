@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useToast } from '../context/ToastContext';
 import '../layout.css';
 import './Certifications.css';
 
@@ -73,7 +74,8 @@ function CertThumb({ cert, onOpen }) {
   );
 }
 
-const Certifications = () => {
+export default function Certifications() {
+  const { showToast } = useToast();
   const [openCertId, setOpenCertId] = useState(null);
   const [printingCertId, setPrintingCertId] = useState(null);
 
@@ -101,6 +103,11 @@ const Certifications = () => {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [openCertId]);
 
+  const startDownload = (id) => {
+    showToast('Preparing certificate — choose "Save as PDF" in the print dialog');
+    setPrintingCertId(id);
+  };
+
   return (
     <div className="page-shell">
       <Navbar active="certifications" />
@@ -121,7 +128,7 @@ const Certifications = () => {
                 className="cert-download"
                 aria-label="Download certificate"
                 title="Download certificate"
-                onClick={() => setPrintingCertId(cert.id)}
+                onClick={() => startDownload(cert.id)}
               >
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <path d="M12 3v12" />
@@ -141,7 +148,7 @@ const Certifications = () => {
             <div className="cert-modal-thumb" id="cert-modal-thumb">
               <CertThumb cert={openCert} />
             </div>
-            <button className="cert-modal-download" id="cert-modal-download" onClick={() => setPrintingCertId(openCert.id)}>
+            <button className="cert-modal-download" id="cert-modal-download" onClick={() => startDownload(openCert.id)}>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M12 3v12" />
                 <path d="M6 11l6 6 6-6" />
@@ -161,4 +168,3 @@ const Certifications = () => {
     </div>
   );
 }
-export default Certifications;

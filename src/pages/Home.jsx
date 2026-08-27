@@ -5,12 +5,12 @@ import '../layout.css';
 import './Home.css';
 
 const HERO_SLIDES = [
-  'assets/hp.jpg',
-  'assets/hp2.jpg',
-  'assets/hp3.jpg',
+  '/assets/hp.jpg',
+  '/assets/hp2.jpg',
+  '/assets/hp3.jpg',
 ];
 
-const Home = () => {
+export default function Home() {
   const [slide, setSlide] = useState(0);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const Home = () => {
 
         {/* Purpose section */}
         <section className="content-row">
-          <img className="content-image" src="assets/1pic.jpg" alt="Trust has changed campaign graphic" />
+          <img className="content-image" src="/assets/1pic.jpg" alt="Trust has changed campaign graphic" />
           <div className="content-text">
             <h2>Keeping the Digital World Safe</h2>
             <p>Netrust Philippines Corporation's purpose is to create a world where businesses, government organizations and individuals can securely transact in the digital space – through a wide range of Cybersecurity solutions that address multitudes of pain points and compliances.</p>
@@ -95,7 +95,7 @@ const Home = () => {
             </div>
           </div>
 
-          <img className="content-image" src="assets/2pic.jpg" alt="Trust has changed campaign graphic" />
+          <img className="content-image" src="/assets/2pic.jpg" alt="Trust has changed campaign graphic" />
         </section>
 
       </main>
@@ -104,5 +104,3 @@ const Home = () => {
     </div>
   );
 }
-
-export default Home;

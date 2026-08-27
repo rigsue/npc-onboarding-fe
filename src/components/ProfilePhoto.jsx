@@ -1,15 +1,20 @@
 import React, { useRef } from 'react';
 import { useProfile } from '../context/ProfileContext';
+import { useToast } from '../context/ToastContext';
 
-const ProfilePhoto = ({ size = 150 }) => {
+export default function ProfilePhoto({ size = 150 }) {
   const { profile, updateProfile } = useProfile();
+  const { showToast } = useToast();
   const inputRef = useRef(null);
 
   const handleFile = (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => updateProfile({ photo: reader.result });
+    reader.onload = () => {
+      updateProfile({ photo: reader.result });
+      showToast('Profile photo updated');
+    };
     reader.readAsDataURL(file);
   };
 
@@ -56,4 +61,3 @@ const ProfilePhoto = ({ size = 150 }) => {
     </div>
   );
 }
-export default ProfilePhoto;

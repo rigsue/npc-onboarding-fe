@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
+import { useAdminIdentity } from '../context/AdminIdentityContext';
 import '../layout.css';
 import './Login.css';
 
-const Login = () => {
+export default function Login() {
   const navigate = useNavigate();
+  const adminIdentity = useAdminIdentity();
   const [role, setRole] = useState('user');
+  const [adminLevel, setAdminLevel] = useState('super-admin');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate('/home');
+    if (role === 'admin') {
+      adminIdentity.setLevel(adminLevel);
+      navigate('/admin');
+    } else {
+      navigate('/home');
+    }
   };
 
   return (
@@ -20,7 +28,7 @@ const Login = () => {
           <Link className="close-btn" to="/" aria-label="Close">&times;</Link>
 
           <div className="card-logo">
-            <img className="card-logo-mark" src="assets/signinlogo.png" alt="Netrust Philippines Corporation" />
+            <img className="card-logo-mark" src="/assets/signinlogo.png" alt="Netrust Philippines Corporation" />
           </div>
 
           <h1 className="form-title">Sign In</h1>
@@ -47,6 +55,29 @@ const Login = () => {
               Admin
             </button>
           </div>
+
+          {role === 'admin' && (
+            <div className="admin-level-row" role="radiogroup" aria-label="Admin account type">
+              <label className={`admin-level-option${adminLevel === 'admin' ? ' selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="admin-level"
+                  checked={adminLevel === 'admin'}
+                  onChange={() => setAdminLevel('admin')}
+                />
+                Admin
+              </label>
+              <label className={`admin-level-option${adminLevel === 'super-admin' ? ' selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="admin-level"
+                  checked={adminLevel === 'super-admin'}
+                  onChange={() => setAdminLevel('super-admin')}
+                />
+                Super Admin
+              </label>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             <label className="field-label" htmlFor="email">Email address</label>
@@ -91,4 +122,3 @@ const Login = () => {
     </div>
   );
 }
-export default Login;
