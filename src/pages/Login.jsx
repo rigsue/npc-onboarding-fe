@@ -1,24 +1,43 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../components/Footer';
-import { useAdminIdentity } from '../context/AdminIdentityContext';
-import '../layout.css';
-import './Login.css';
+import { useDispatch } from "react-redux"
+import { login } from "../redux/slice/authSlice";
+import { loginUser } from "../services/authServices";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
+import { useAdminIdentity } from "../context/AdminIdentityContext";
+import "../layout.css";
+import "./Login.css";
 
-export default function Login() {
+const Login = () => {
   const navigate = useNavigate();
   const adminIdentity = useAdminIdentity();
   const [role, setRole] = useState('user');
   const [adminLevel, setAdminLevel] = useState('super-admin');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (role === 'admin') {
-      adminIdentity.setLevel(adminLevel);
-      navigate('/admin');
-    } else {
-      navigate('/home');
-    }
+
+    try {
+      const data = await loginUser(email, password);
+
+      dispatch(
+        login({
+          user: data.user,
+          token: data.token,
+        })
+      );
+        if (role === 'admin') {
+          adminIdentity.setLevel(adminLevel);
+          navigate('/admin');
+        } else {
+          navigate('/home');
+        }
+      } catch (error) {
+        console.error("login failed:", error);
+      }
   };
 
   return (
@@ -57,7 +76,11 @@ export default function Login() {
           </div>
 
           {role === 'admin' && (
-            <div className="admin-level-row" role="radiogroup" aria-label="Admin account type">
+            <div 
+              className="admin-level-row" 
+              role="radiogroup" 
+              aria-label="Admin account type"
+            >
               <label className={`admin-level-option${adminLevel === 'admin' ? ' selected' : ''}`}>
                 <input
                   type="radio"
@@ -81,7 +104,15 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <label className="field-label" htmlFor="email">Email address</label>
-            <input className="field-input" type="email" id="email" name="email" autoComplete="username" />
+            <input 
+              className="field-input" 
+              type="email" 
+              id="email" 
+              name="email" 
+              autoComplete="username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)} 
+            />
 
             <div className="field-row">
               <label className="field-label" htmlFor="password">Password</label>
@@ -94,7 +125,14 @@ export default function Login() {
                 <span>Hide</span>
               </span>
             </div>
-            <input className="field-input" type="password" id="password" name="password" autoComplete="current-password" />
+            <input 
+              className="field-input" 
+              type="password" id="password" 
+              name="password" 
+              autoComplete="current-password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
             <button type="submit" className="btn-submit">Sign in</button>
 
@@ -122,3 +160,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login;
