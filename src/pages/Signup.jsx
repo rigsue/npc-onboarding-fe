@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../components/Footer';
-import '../layout.css';
-import './Login.css';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
+import { registerUser } from "../services/userService";
+import "../layout.css";
+import "./Login.css";
 
-export default function Signup() {
+const Signup = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState('user');
 
@@ -106,3 +107,5 @@ export default function Signup() {
     </div>
   );
 }
+
+export default Signup;

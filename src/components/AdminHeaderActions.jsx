@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useAdminIdentity, getInitials } from '../context/AdminIdentityContext';
-import { useToast } from '../context/ToastContext';
+import { useState, useRef, useEffect } from "react";
+import { getInitials } from "../utils/getInitials";
+import { useToast } from "../context/ToastContext";
+import { useSelector } from "react-redux";
 
 const SAMPLE_NOTIFICATIONS = [
   {
@@ -28,7 +29,7 @@ function BellIcon() {
 }
 
 export default function AdminHeaderActions() {
-  const admin = useAdminIdentity();
+  const user = useSelector((state) => state.auth.user);
   const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState(SAMPLE_NOTIFICATIONS);
@@ -103,7 +104,9 @@ export default function AdminHeaderActions() {
         )}
       </div>
 
-      <div className="admin-avatar">{getInitials(admin.name)}</div>
+      <div className="admin-avatar">
+        {getInitials(`${user.first_name} ${user.last_name}`)}
+      </div>
     </>
   );
 }
