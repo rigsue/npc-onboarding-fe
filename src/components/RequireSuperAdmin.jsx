@@ -1,11 +1,15 @@
-import React from 'react';
+import React from "react";
 import { Navigate } from 'react-router-dom';
-import { useAdminIdentity } from '../context/AdminIdentityContext';
+import { useSelector } from "react-redux";
 
-export default function RequireSuperAdmin({ children }) {
-  const { isSuperAdmin } = useAdminIdentity();
-  if (!isSuperAdmin) {
+const RequireSuperAdmin = ({ children }) => {
+  const role = useSelector(
+    (state) => state.auth.user?.role_name
+  );
+  if (role !== "super_admin") {
     return <Navigate to="/admin" replace />;
   }
   return children;
 }
+
+export default RequireSuperAdmin;

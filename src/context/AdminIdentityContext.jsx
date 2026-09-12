@@ -1,15 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+/* 
+The admin side is fully separate from the onboarding employee's data in
+ProfileContext (that one belongs to the "User" login and gets edited from
+Manage Account) — the two should never read or write each other's data.
 
-// The admin side is fully separate from the onboarding employee's data in
-// ProfileContext (that one belongs to the "User" login and gets edited from
-// Manage Account) — the two should never read or write each other's data.
-//
-// Within the admin side there are two distinct account types, matching the
-// spec: Super Admin has full, unscoped access; Admin (a "department admin")
-// is scoped to a single department and can't manage accounts, roles, or
-// system settings. Rather than building two separate sets of pages, the
-// same admin pages read `isSuperAdmin` / `department` from here and adjust
-// what's visible and editable.
+Within the admin side there are two distinct account types, matching the
+spec: Super Admin has full, unscoped access; Admin (a "department admin")
+is scoped to a single department and can't manage accounts, roles, or
+system settings. Rather than building two separate sets of pages, the
+same admin pages read `isSuperAdmin` / `department` from here and adjust
+what's visible and editable.
+ */
 const STORAGE_KEY = 'netrust_admin_level';
 
 const SUPER_ADMIN = {
