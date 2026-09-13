@@ -52,7 +52,7 @@ const MODULES = [
   },
 ];
 
-const HR = () => {
+const HRModules = () => {
     console.log('HR component loaded');
   const [selectedModule, setSelectedModule] = useState(1);
 
@@ -208,4 +208,4 @@ const HR = () => {
   );
 };
 
-export default HR;
+export default HRModules;

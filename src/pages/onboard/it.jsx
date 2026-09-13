@@ -22,7 +22,7 @@ const MODULES = [
   },
 ];
 
-const IT = () => {
+const ITModules = () => {
   console.log('IT component loaded');
 
   const [selectedModule, setSelectedModule] = useState(1);
@@ -191,4 +191,4 @@ const IT = () => {
   );
 };
 
-export default IT;
+export default ITModules;
