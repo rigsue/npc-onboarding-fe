@@ -161,3 +161,34 @@
   padding: 10px 12px;
   border-radius: 6px;
 }
+
+/* superadmin dashboard togglestatus */
+.status-toggle {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+/* Currently active */
+.status-toggle.active {
+    color: #dc2626;
+}
+
+.status-toggle.active:hover {
+    background-color: #fee2e2;
+}
+
+/* Currently inactive */
+.status-toggle.inactive {
+    color: #16a34a;
+}
+
+.status-toggle.inactive:hover {
+    background-color: #dcfce7;
+}
