@@ -14,7 +14,7 @@ const MODULES = [
   },
 ];
 
-const CustomerSuccess = () => {
+const CustomerSuccessModules = () => {
   console.log('Customer Success component loaded');
 
   const [selectedModule, setSelectedModule] = useState(1);
@@ -173,4 +173,4 @@ const CustomerSuccess = () => {
   );
 };
 
-export default CustomerSuccess;
+export default CustomerSuccessModules;

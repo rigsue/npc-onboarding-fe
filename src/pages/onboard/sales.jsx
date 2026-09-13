@@ -1,11 +1,11 @@
-import React from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import '../../layout.css';
-import './onboarding.css';
+import React from "react";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import "../../layout.css";
+import "./onboarding.css";
 
-const Sales = () => {
-  console.log('Sales component loaded');
+const SalesModules = () => {
+  console.log("Sales component loaded");
 
   return (
     <div className="page">
@@ -143,4 +143,4 @@ const Sales = () => {
   );
 };
 
-export default Sales;
+export default SalesModules;

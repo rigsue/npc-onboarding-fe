@@ -19,7 +19,7 @@ const SLIDES = [
   },
 ];
 
-const Presales = () => {
+const PreSalesModules= () => {
   const [selectedModule, setSelectedModule] = useState(1);
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -165,4 +165,4 @@ const Presales = () => {
   );
 };
 
-export default Presales;
+export default PreSalesModules;

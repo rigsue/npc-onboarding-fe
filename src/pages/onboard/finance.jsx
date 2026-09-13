@@ -17,7 +17,7 @@ const MODULES = [
   },
 ];
 
-const Finance = () => {
+const FinanceModules = () => {
   const [selectedModule, setSelectedModule] = useState(1);
 
   const currentModule = MODULES.find(
@@ -163,4 +163,4 @@ const Finance = () => {
   );
 };
 
-export default Finance;
+export default FinanceModules;

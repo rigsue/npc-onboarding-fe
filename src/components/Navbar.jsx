@@ -44,7 +44,14 @@ export default function Navbar({ active }) {
         aria-expanded={mobileOpen}
         onClick={() => setMobileOpen((v) => !v)}
       >
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg 
+          viewBox="0 0 24 24" 
+          width="24" 
+          height="24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2"
+        >
           {mobileOpen ? (
             <path d="M6 6l12 12M18 6L6 18" />
           ) : (
@@ -54,36 +61,189 @@ export default function Navbar({ active }) {
       </button>
 
       <nav className={`nav-links${mobileOpen ? ' mobile-open' : ''}`}>
-        <Link className={`nav-link${active === 'home' ? ' active' : ''}`} to="/home" onClick={() => setMobileOpen(false)}>Home</Link>
+        <Link 
+          className={
+            `nav-link${
+              active === 'home' ? ' active' : ''
+              }`
+            } to="/home" onClick={
+              () => setMobileOpen(false)
+            }
+        >
+          Home
+        </Link>
         <div className="nav-dropdown">
-          <button className="nav-link nav-dropdown-toggle" id="onboarding-toggle" aria-haspopup="true" aria-expanded="false">
+          <button 
+            className="nav-link 
+            nav-dropdown-toggle" 
+            id="onboarding-toggle" 
+            aria-haspopup="true" 
+            aria-expanded="false"
+          >
             Onboarding
-            <svg className="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg 
+              className="chevron" 
+              viewBox="0 0 24 24" 
+              width="14" height="14" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
           <div className="nav-dropdown-menu" id="onboarding-menu">
-            <ComingSoonLink className="active">HR Modules</ComingSoonLink>
-            <ComingSoonLink>IT Modules</ComingSoonLink>
-            <ComingSoonLink>Finance Modules</ComingSoonLink>
-            <ComingSoonLink>Marketing Modules</ComingSoonLink>
-            <ComingSoonLink>Pre-sales Modules</ComingSoonLink>
-            <ComingSoonLink>Customer Success Modules</ComingSoonLink>
-            <ComingSoonLink>Sales Modules</ComingSoonLink>
-            <ComingSoonLink>PPM Modules</ComingSoonLink>
-            <ComingSoonLink>OOC Modules</ComingSoonLink>
+
+            <Link
+              className={
+                `nav-link${
+                  active === "hr" ? "active" : ""
+                }`
+              } to = "/hr" onClick={
+                () => setMobileOpen(false)
+              }
+            >
+              HR Modules
+            </Link>
+
+            <Link
+              className={
+                `nav-link${
+                  active === "it" ? "active" : ""
+                }`
+              } to = "/it" oncClick={
+                () => setMobileOpen(false)
+              }
+            >
+              IT Modules
+            </Link>
+
+            <Link
+              className={
+                `nav-link${
+                  active === "finance" ? "active" : ""
+                }`
+              } to = "/finance" onClick={
+                () => setMobileOpen(false)
+              }
+            >
+              Finance Modules
+            </Link>
+
+            <Link
+              className={
+                `nav-link${
+                  active === "marketing" ? "active" : ""
+                }`
+              } to = "/marketing" onClick={
+                () => setMobileOpen(false)
+              }
+            >
+              Marketing Modules
+            </Link>
+
+            <Link
+              className={
+                `nav-link${
+                  active == "preSales" ? "active" : ""
+                }`
+              } to = "/presales" onClick={
+                () => setMobileOpen(false)
+              }  
+            >
+              PreSales Modules
+            </Link>
+
+            <Link
+              className={
+                `nav-link${
+                  active === "customerSuccess" ? "active" : ""
+                }`
+              } to = "/customerSuccess" onClick={
+                () => setMobileOpen(false)
+              }
+            >
+              Customer Success Modules
+            </Link>
+
+            <Link
+              className={
+                `nav-link${
+                  active === "sales" ? "active" : ""
+                }`
+              } to = "/sales" onClick={
+                () => setMobileOpen(false)
+              }
+            >
+              Sales Modules
+            </Link>
+
+            <Link
+              className={
+                `nav-link${
+                  active === "ppm" ? "active" : ""
+                }`
+              } to = "/ppm" onClick={
+                () => setMobileOpen(false)
+              }
+            >
+              PPM Modules
+            </Link>
+
+            <Link
+              className={
+                `nav-link${
+                  active === "ooc" ? "active" : ""
+                }`
+              } to = "/ooc" onClick={
+                () => setMobileOpen(false)
+              }
+            >
+              OOC Modules
+            </Link>
           </div>
         </div>
-        <Link className={`nav-link${active === 'certifications' ? ' active' : ''}`} to="/certifications" onClick={() => setMobileOpen(false)}>Certifications</Link>
-        <Link className={`nav-link${active === 'profile' ? ' active' : ''}`} to="/profile" onClick={() => setMobileOpen(false)}>Profile</Link>
+        
+        <Link 
+          className={
+            `nav-link${
+              active === 'certifications' ? ' active' : ''
+              }`
+            } to="/certifications" onClick={
+              () => setMobileOpen(false)
+            }
+        >
+          Certifications
+        </Link>
+        <Link 
+          className={
+            `nav-link${
+              active === 'profile' ? ' active' : ''
+              }`
+            } to="/profile" onClick={
+              () => setMobileOpen(false)
+            }
+        >
+          Profile
+        </Link>
 
         <span className="nav-indicator"></span>
       </nav>
 
       <div className="nav-actions">
         <div className="nav-dropdown">
-          <button className="icon-btn" aria-label="Notifications" aria-haspopup="true">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <button 
+            className="icon-btn" 
+            aria-label="Notifications" 
+            aria-haspopup="true"
+          >
+            <svg 
+              viewBox="0 0 24 24" 
+              width="20" height="20" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="1.8"
+            >
               <path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6" />
               <path d="M10 20a2 2 0 0 0 4 0" />
             </svg>
@@ -113,7 +273,11 @@ export default function Navbar({ active }) {
           </div>
         </div>
         <div className="nav-dropdown avatar-dropdown">
-          <button className="avatar" id="avatar-toggle" aria-haspopup="true" aria-expanded="false">
+          <button 
+            className="avatar" 
+            id="avatar-toggle" 
+            aria-haspopup="true" 
+            aria-expanded="false">
             {profile.photo ? (
               <img src={profile.photo} alt={profile.name} className="avatar-img" />
             ) : (

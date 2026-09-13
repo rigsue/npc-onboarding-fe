@@ -14,6 +14,15 @@ import AdminAnnouncements from "./pages/AdminAnnouncements";
 import AdminMaterials from "./pages/AdminMaterials";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import ProtectedRoutes from "./ProtectedRoutes";
+import HRModules from "./pages/onboard/hr";
+import ITModules from "./pages/onboard/it";
+import FinanceModules from "./pages/onboard/finance";
+import MarketingModules from "./pages/onboard/marketing";
+import PreSalesModules from "./pages/onboard/presales";
+import CustomerSuccessModules from "./pages/onboard/cust_success";
+import SalesModules from "./pages/onboard/sales";
+import PPMModules from "./pages/onboard/ppm";
+import OOCModules from "./pages/onboard/ooc";
 
 export default function App() {
   return (
@@ -43,13 +52,16 @@ export default function App() {
                   path="/admin/materials" 
                   element={<AdminMaterials />} 
                 />
-{/*                 <Route 
-                path="/admin/users" 
-                element={
-                  <RequireSuperAdmin>
-                      <AdminUsers />
-                  </RequireSuperAdmin>} 
-                /> */}
+                {/* onboarding pages */}
+                <Route path="/hr" element={<HRModules/>}/>
+                <Route path="/it" element={<ITModules/>}/>
+                <Route path="/finance" element={<FinanceModules/>}/>
+                <Route path="/marketing" element={<MarketingModules/>}/>
+                <Route path="/preSales" element={<PreSalesModules/>}/>
+                <Route path="/customerSuccess" element={<CustomerSuccessModules/>}/>
+                <Route path="/sales" element={<SalesModules/>}/>
+                <Route path="/ppm" element={<PPMModules/>}/>
+                <Route path="/ooc" element={<OOCModules/>}/>
               </Route>
             </Routes>
           </BrowserRouter>

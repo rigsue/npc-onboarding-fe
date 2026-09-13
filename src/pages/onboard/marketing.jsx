@@ -22,7 +22,7 @@ const MODULES = [
   },
 ];
 
-const Marketing = () => {
+const MarketingModules = () => {
   console.log('Marketing component loaded');
 
   const [selectedModule, setSelectedModule] = useState(1);
@@ -219,4 +219,4 @@ const Marketing = () => {
   );
 };
 
-export default Marketing;
+export default MarketingModules;
