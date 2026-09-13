@@ -3,23 +3,18 @@ import AdminSidebar from "../components/AdminSidebar";
 import { useToast } from '../context/ToastContext';
 import AdminHeaderActions from "../components/AdminHeaderActions";
 import AdminFooter from "../components/AdminFooter";
-import { getUsers, registerUser } from "../services/userService";
+import { 
+  getUsers, 
+  registerUser, 
+  deactivateUser,
+  activateUser 
+} from "../services/userService";
 import { getDepartments } from "../services/departmentService";
 import { getRoles } from "../services/roleService";
 import "../components/AdminLayout.css";
-import "./AdminUsers.css";
+import "./SuperAdminDB.css";
 import { useSelector } from "react-redux";
 
-// const ROLES = ["Local User", "Admin"];
-
-/* const StatusBadge = ({ status }) => {
-  return (
-    <span>
-      {status ? "Active" : "Inactive"}
-    </span>
-    );
-}
- */
 function EditUserModal({ initial, onClose, onSave }) {
 /*   const [name, setName] = useState(
     `${initial.first_name || "no FN"} ${initial.last_name || "no LN"}`.trim()
@@ -176,7 +171,7 @@ export default function SuperAdminDashboard() {
 
         const data = await getUsers(token);
 
-        // console.log("Data received from userServices:", data);
+        console.log("Data received from userServices:", data);
 
         setUsers(data.data);
       } catch (err) {
@@ -303,11 +298,35 @@ try {
     }
   };
 
-  const handleDelete = (userId) => {
-    setUsers((prev) => 
-      prev.filter((u) => u.user_id !== userId)
-    );
-    showToast('Account deleted');
+  //  - - - -   TOGGLE STATUS - - - -
+  const handleToggleStatus = async (userId, is_active) => {
+    try{
+      if(is_active) {
+        console.log("Daectivating user:", userId);
+              
+        const response = await deactivateUser(token, userId);
+
+        console.log("Backend response:", response);
+
+        showToast("User Deactivated Successfully");
+
+      } else {
+
+        console.log("Activating user:", userId);
+
+        const response = await activateUser(token, userId);
+
+        console.log("Backend response:", response);
+      }
+
+      const updatedUsers = await getUsers(token);
+
+      setUsers(updatedUsers.data);
+
+    } catch (err) {
+      console.error("Error deactivating user:", err);
+      showToast?.(err.message, "showToast error here");
+    }
   };
     
   const handleSaveEdit = (data) => {
@@ -433,8 +452,10 @@ try {
                           </button>
                           <button 
                             type="button" 
-                            aria-label="Delete" 
-                            onClick={() => handleDelete(u.user_id)}
+                            className={u.is_active ? "status-toggle active" : "status-toggle inactive"}
+                            aria-label={u.is_active ? "Deactivate" : "Activate"} 
+                            title={u.is_active ? "Deactivate user" : "Activate user"}
+                            onClick={() => handleToggleStatus(u.user_id, u.is_active)}
                           >
                             <svg 
                               viewBox="0 0 24 24" 
@@ -443,10 +464,11 @@ try {
                               fill="none" 
                               stroke="currentColor" 
                               strokeWidth="1.8"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             >
-                              <path d="M3 6h18" />
-                              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                              <path d="M12 2v10" />
+                              <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
                             </svg>
                           </button>
                         </div>

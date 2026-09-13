@@ -43,7 +43,43 @@ export async function getUser(params) {
 export async function updateUser(params) {
     
 }
+*/
+export async function deactivateUser(token, userId) {
+    const response = await fetch(
+        `${API_URL}/user/${userId}/deactivate`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(userId),
+        }
+    );
+    const data = await response.json();
 
-export async function deleteUser(params) {
-    
-} */
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Failed to deactivate user"
+        );
+    }
+    return data;
+} 
+
+export async function activateUser(token, userId) {
+    const response = await fetch(
+        `${API_URL}/user/${userId}/activate`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            // body: JSON.stringify(userId),
+        }
+    );
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Failed to activate user"
+        );
+    }
+    return data;
+}
