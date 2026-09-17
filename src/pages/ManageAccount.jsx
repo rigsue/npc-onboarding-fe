@@ -9,17 +9,37 @@ import './ManageAccount.css';
 
 function EditIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></svg>
+    <svg 
+      viewBox="0 0 24 24" 
+      width="15" 
+      height="15" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="1.8"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+    </svg>
   );
 }
 
 function ChevronIcon() {
   return (
-    <svg className="row-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+    <svg 
+      className="row-chevron" 
+      viewBox="0 0 24 24" 
+      width="16" 
+      height="16" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2"
+    >
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
   );
 }
 
-export default function ManageAccount() {
+export default function ManageAccount( {onClose} ) {
   const { profile, updateProfile } = useProfile();
   const { showToast } = useToast();
   const [headEditing, setHeadEditing] = useState(false);
@@ -50,10 +70,22 @@ export default function ManageAccount() {
   };
 
   return (
-    <div className="page-shell">
-      <Navbar active="profile" />
+    <div className="manage-account-overlay" onClick={onClose}>
+      {/* <Navbar active="profile" /> */}
 
-      <main>
+      <div
+        className="manage-account-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="manage-account-close"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          x
+        </button>
+
         <section className="account-panel">
 
           <div className="profile-head">
@@ -174,13 +206,10 @@ export default function ManageAccount() {
                 </div>
               </div>
             </div>
-
           </div>
-
         </section>
-      </main>
-
-      <Footer />
+      </div>
+      {/* <Footer /> */}
     </div>
   );
 }
