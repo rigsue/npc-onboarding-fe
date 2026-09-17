@@ -80,7 +80,7 @@ export default function Navbar({ active }) {
             aria-haspopup="true" 
             aria-expanded="false"
           >
-            Onboarding
+            Modules
             <svg 
               className="chevron" 
               viewBox="0 0 24 24" 
@@ -103,7 +103,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }
             >
-              HR Modules
+              People & Culture
             </Link>
 
             <Link
@@ -115,7 +115,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }
             >
-              IT Modules
+              Service Delivery
             </Link>
 
             <Link
@@ -127,7 +127,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }
             >
-              Finance Modules
+              Accounting & Finance
             </Link>
 
             <Link
@@ -139,7 +139,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }
             >
-              Marketing Modules
+              Marketing
             </Link>
 
             <Link
@@ -151,7 +151,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }  
             >
-              PreSales Modules
+              Presales
             </Link>
 
             <Link
@@ -163,7 +163,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }
             >
-              Customer Success Modules
+              Customer Success
             </Link>
 
             <Link
@@ -175,7 +175,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }
             >
-              Sales Modules
+              Sales
             </Link>
 
             <Link
@@ -187,7 +187,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }
             >
-              PPM Modules
+              Project Management
             </Link>
 
             <Link
@@ -199,7 +199,7 @@ export default function Navbar({ active }) {
                 () => setMobileOpen(false)
               }
             >
-              OOC Modules
+              Office of the CEO
             </Link>
           </div>
         </div>
