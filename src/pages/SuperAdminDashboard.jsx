@@ -1,382 +1,227 @@
 import React, { useEffect, useState } from "react";
-import AdminSidebar from "../components/AdminSidebar";
-import { useToast } from '../context/ToastContext';
-import AdminHeaderActions from "../components/AdminHeaderActions";
-import AdminFooter from "../components/AdminFooter";
-import { 
-  getUsers, 
-  registerUser, 
-  deactivateUser,
-  activateUser 
-} from "../services/userService";
-import { getDepartments } from "../services/departmentService";
-import { getRoles } from "../services/roleService";
-import "../components/AdminLayout.css";
-import "./SuperAdminDB.css";
 import { useSelector } from "react-redux";
 
-function EditUserModal({ initial, onClose, onSave }) {
-/*   const [name, setName] = useState(
-    `${initial.first_name || "no FN"} ${initial.last_name || "no LN"}`.trim()
-  ); */
-  const [first_name, setFirstName] = useState(initial.first_name || "no mail");
-  const [last_name, setLastName] = useState(initial.last_name || "no mail");
-  const [email, setEmail] = useState(initial.email || "no mail");
-  const [contact, setContact] = useState(initial.contact || "no CN");
-  const [role_name, setRole] = useState(initial.role || "Local User");
-  const [department_name, setDepartment] = useState(initial.department || "no dept");
-  const [status, setStatus] = useState(initial.status || "no data");
+import AdminSidebar from "../components/AdminSidebar";
+import AdminHeaderActions from "../components/AdminHeaderActions";
+import AdminFooter from "../components/AdminFooter";
 
-  const handleSave = () => {
-    if (!first_name.trim() || !last_name.trim() || !email.trim()) return;
+import AddUserModal from "../components/users/AddUserModal";
+import EditUserModal from "../components/users/EditUserModal";
 
-    onSave({ 
-      user_id: initial.user_id,
-      first_name: first_name.trim(), 
-      last_name: last_name.trim(), 
-      email: email.trim(), 
-      contact: contact.trim(), 
-      role_name: role_name.trim(), 
-      department_name: department_name.trim(), 
-      // status: status.trim() ,
-    });
-  };
+import { useToast } from "../context/ToastContext";
 
-  return (
-    <div className="materials-modal-overlay" onClick={onClose}>
-      <div 
-        className="materials-modal-box" 
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="materials-modal-head">
-          <h2>EDIT ACCOUNT</h2>
-          <button 
-            type="button" 
-            className="materials-modal-close" 
-            aria-label="Close" 
-            onClick={onClose}
-          >
-            &times;
-          </button>
-        </div>
-          {/* this is for the overlay forms  */}
-        <div className="materials-modal-body">
-          <label className="materials-field">
-            <span className="materials-field-label">First Name</span>
-            <input type="text" value={first_name} onChange={(e) => setFirstName(e.target.value)} />
-          </label>
-                    
-          <label className="materials-field">
-            <span className="materials-field-label">First Name</span>
-            <input type="text" value={last_name} onChange={(e) => setLastName(e.target.value)} />
-          </label>
+import {
+  getUsers,
+  registerUser,
+  updateUser,
+  deactivateUser,
+  activateUser,
+} from "../services/userService";
 
-          <label className="materials-field">
-            <span className="materials-field-label">Email</span>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </label>
+import { getDepartments } from "../services/departmentService";
+import { getRoles } from "../services/roleService";
 
-          <label className="materials-field">
-            <span className="materials-field-label">Contact number</span>
-            <input type="text" value={contact} onChange={(e) => setContact(e.target.value)} />
-          </label>
-
-          <div className="materials-field-row">
-            <label className="materials-field">
-              <span className="materials-field-label">Role</span>
-              <select value={role_name} onChange={(e) => setRole(e.target.value)}>
-              </select>
-            </label>
-            <label className="materials-field">
-              <span className="materials-field-label">Department</span>
-              <select value={department_name} onChange={(e) => setDepartment(e.target.value)}>
-              </select>
-            </label>
-          </div>
-
-          <label className="materials-field">
-            <span className="materials-field-label">Status</span>
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="active">Active</option>
-              <option value="pending">Pending Invite</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </label>
-        </div>
-
-        <div className="materials-modal-footer">
-          <span className="materials-file-count">
-            Role and department changes take effect immediately.
-          </span>
-
-          <div className="materials-modal-footer-btns">
-            <button 
-              type="button" 
-              className="materials-cancel-btn" 
-              onClick={onClose}>
-              Cancel
-            </button>
-            <button 
-              type="button" 
-              className="materials-primary-btn" 
-              onClick={handleSave} 
-              disabled={!first_name.trim() || !last_name.trim() || !email.trim()}
-            >
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import "../components/AdminLayout.css";
+import "./SuperAdminDB.css";
 
 export default function SuperAdminDashboard() {
   const token = useSelector((state) => state.auth.token);
+  const currentUser = useSelector((state) => state.auth.user);
 
   const { showToast } = useToast();
 
   const [users, setUsers] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [roles, setRoles] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [editingUser, setEditingUser] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
 
-  // Add-account form state
-  const [first_name, setFirstName] = useState("");
-  const [last_name, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [contact, setContact] = useState("");
-  const [department, setDepartment] = useState("");
-  const [departments, setDepartments] = useState([]);
-  const [role, setRole] = useState("");
-  const [roles, setRoles] = useState([]);
-  const [accessMode, setAccessMode] = useState('invite'); // 'invite' | 'password'
-  const [password, setPassword] = useState("");
+  // GET USERS
+  const fetchUsers = async () => {
+    if (!token) return;
 
-  useEffect(() => {
-    async function fetchUsers() {
+    try {
+      setLoading(true);
 
-      // console.log("Redux token:", token);
+      const response = await getUsers(token);
 
-      if (!token) {
-        // console.log("Not auth token avail");
-        setLoading(false);
-        return;
-      }
+      setUsers(response.data ?? []);
+      setError(null);
 
-      try {
-        // console.log("calling getUsers()...");
+    } catch (err) {
+      console.error("Error fetching users:", err);
 
-        const data = await getUsers(token);
+      setError("Unable to load user accounts.");
 
-        console.log("Data received from userServices:", data);
-
-        setUsers(data.data);
-      } catch (err) {
-        
-        // console.error("Error fetching users:", error);
-
-        setError("Unable to load user accounts.");
-
-        showToast?.(error.message, "showToast error here");
-        // setUsers([]);
-      } finally {
-        setLoading(false);
-      }
+      showToast?.(
+        err.message,
+        "showToast error here"
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
+  // GET DEPARTMENTS
+  const fetchDepartments = async () => {
+    if (!token) return;
+
+    try {
+      const response = await getDepartments(token);
+
+      setDepartments(response.data ?? []);
+
+    } catch (err) {
+      console.error( "Error fetching departments:", err);
+
+      showToast?.( err.message, "showToast error here" );
+    }
+  };
+
+  // GET ROLES
+  const fetchRoles = async () => {
+    if (!token) return;
+
+    try {
+      const response = await getRoles(token);
+
+      setRoles(response.data ?? []);
+
+    } catch (err) {
+      console.error(
+        "Error fetching roles:",
+        err
+      );
+      showToast?.(err.message, "showToast error here");
+    }
+  };
+
+  // INITIAL DATA LOAD
+  useEffect(() => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     fetchUsers();
-  }, [token]);
-
-  useEffect(() => {
-    async function fetchDepartments() {
-      if (!token) {
-        return;
-      }
-      try {
-        console.log("calling getDepartments?...");
-
-        const data = await getDepartments(token);
-
-        console.log("Departments received:", data);
-
-        setDepartments(data.data);
-
-      } catch (err) {
-        console.error("Error fetching departments:", err)
-        setError("Unable to load user accounts.");
-
-        showToast?.(err.message, "showToast error here");
-      } 
-    };
     fetchDepartments();
-  }, [token]);
-
-  useEffect(() => {
-    async function fetchRoles() {
-      if (!token) {
-        return;
-      }
-      try {
-        console.log("calling getRoles?...");
-
-        const data = await getRoles(token);
-
-        console.log("Roles received:", data);
-
-        setRoles(data.data);
-
-      } catch (err) {
-        console.error("Error fetching roles:", err)
-        setError("Unable to load user roles.");
-
-        showToast?.(err.message, "showToast error here");
-      } 
-    };
     fetchRoles();
   }, [token]);
 
-  const canSubmit =
-   first_name.trim() && 
-   last_name.trim() && 
-   email.trim() && 
-   contact.trim() && 
-   role && 
-   department && 
-   (accessMode === 'invite' || password.trim());
+  // CREATE USER
+  const handleCreateUser = async (userData) => {
+    try {
+      const response = await registerUser(
+        token, userData
+      );
+      console.log("Create user response:", response);
 
-  const resetForm = () => {
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setContact("");
-    setRole("");
-    setDepartment("");
-    setAccessMode("invite");
-    setPassword("");
-  };
+      showToast("Account created");
 
-  const closeAdd = () => {
-    resetForm();
-    setAddOpen(false);
-  };
+      await fetchUsers();
 
-  const handleSend = async () => {
-    if (!canSubmit) {
-      console.log("Form unable to submit")
-      return;
-    }
-    const userData = {
-      firstName: first_name.trim(),
-      lastName: last_name.trim(),
-      email: email.trim(),
-      contactNumber: contact.trim(),
-      roleId: Number(role),
-      departmentId: Number(department),
-      password: password.trim(),
-    };
-
-    console.log("Data sending to backend");
-    console.log(userData);
-    console.log("JWT token:", token);
-
-try {
-  const response = await registerUser(token, userData);
-  console.log("backend response:", response);
-  showToast("Account created");
-
-    const updatedUsers = await getUsers(token);
-    setUsers(updatedUsers.data);
-
-    closeAdd(); 
-
-    } catch(err) {
-      console.error("error creating user:", err);
-      showToast?.(err.message, "showToast error here");
-    }
-  };
-
-  //  - - - -   TOGGLE STATUS - - - -
-  const handleToggleStatus = async (userId, is_active) => {
-    try{
-      if(is_active) {
-        console.log("Daectivating user:", userId);
-              
-        const response = await deactivateUser(token, userId);
-
-        console.log("Backend response:", response);
-
-        showToast("User Deactivated Successfully");
-
-      } else {
-
-        console.log("Activating user:", userId);
-
-        const response = await activateUser(token, userId);
-
-        console.log("Backend response:", response);
-      }
-
-      const updatedUsers = await getUsers(token);
-
-      setUsers(updatedUsers.data);
+      setAddOpen(false);
 
     } catch (err) {
-      console.error("Error deactivating user:", err);
+      console.error( "Error creating user:", err);
+
       showToast?.(err.message, "showToast error here");
     }
   };
-    
-  const handleSaveEdit = (data) => {
-    setUsers((prev) => 
-      prev.map((u) => 
-        u.user_id === data.user_id 
-          ? { 
-            ...u, 
-            email: data.email,
-            contact: data.contact,
-            role: data.role,
-            department: data.department,
-            status: data.status,
-            } 
-          : u
-        )
-      );
 
-    showToast('Account updated');
-    setEditingUser(null);
+  // UPDATE USER
+  const handleSaveEdit = async (userData) => {
+    try {
+      const response = await updateUser(
+        token, userData.userId,
+        {
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          contactNumber: userData.contactNumber,
+          employeeNumber: userData.employeeNumber,
+          position: userData.position,
+          roleId: userData.roleId,
+          departmentId: userData.departmentId,
+          updatedBy: currentUser?.userId,
+        }
+      );
+      console.log("Update user response:", response);
+
+      showToast("Account updated successfully");
+
+      await fetchUsers();
+
+      setEditingUser(null);
+
+    } catch (err) {
+      console.error("Error updating user:", err);
+
+      showToast?.(err.message, "showToast error here");
+    }
   };
 
+  // ACTIVATE / DEACTIVATE USER
+  const handleToggleStatus = async (
+    userId, isActive
+  ) => {
+    try {
+      if (isActive) {
+
+        await deactivateUser(
+          token, userId
+        );
+        showToast("User deactivated successfully");
+
+      } else {
+        await activateUser(
+          token, userId
+        );
+        showToast("User activated successfully");
+      }
+      await fetchUsers();
+
+    } catch (err) {
+      console.error("Error changing user status:", err);
+
+      showToast?.( err.message, "showToast error here");
+    }
+  };
+
+  // RENDER
   return (
     <div className="admin-shell">
       <AdminSidebar active="users" />
-
       <div className="admin-main">
         <header className="announce-banner">
           <div>
             <h1>User Accounts</h1>
             <p>
-              Create and manage Local User and Admin User 
-              accounts for your organization.
+              Create and manage Local User and
+              Admin User accounts for your
+              organization.
             </p>
           </div>
+
           <div className="admin-header-actions">
             <AdminHeaderActions />
           </div>
+
         </header>
         <div className="users-body">
           <div className="announce-toolbar">
             <span className="announce-date-pill">
               {users.length} total accounts
             </span>
-            <button 
-              type="button" 
-              className="announce-new-btn" 
+            <button
+              type="button"
+              className="announce-new-btn"
               onClick={() => setAddOpen(true)}
-            >+ 
-              Add User
+            >
+              + Add User
             </button>
           </div>
 
@@ -386,19 +231,22 @@ try {
                 <tr>
                   <th>User</th>
                   <th>Email</th>
-                  <th>Contact number</th>
-                  <th>Roles</th>
+                  <th>Employee Number</th>
+                  <th>Contact Number</th>
+                  <th>Role</th>
                   <th>Status</th>
+                  <th>Position</th>
                   <th>Department</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-
               <tbody>
+
                 {loading ? (
                   <tr>
                     <td
-                      colSpan={5}
-                      className="admin-table-emppty"
+                      colSpan={9}
+                      className="admin-table-empty"
                     >
                       Loading...
                     </td>
@@ -406,7 +254,7 @@ try {
                 ) : error ? (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={9}
                       className="admin-table-empty"
                     >
                       {error}
@@ -415,53 +263,76 @@ try {
                 ) : users.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={9}
                       className="admin-table-empty"
                     >
-                      No datasss
+                      No users found.
                     </td>
                   </tr>
                 ) : (
-                  users.map((u) => (
-                    <tr key={u.user_id}>
-                      <td>{u.first_name} {u.last_name}</td>
-                      <td>{u.email}</td>
-                      <td>{u.contact_number}</td>
-                      <td>{u.role_name}</td>
-                      <td>{u.is_active ? "Active" : "Inactive"}</td>
-                      <td>{u.department_name}</td>
+                  users.map((user) => (
+                    <tr key={user.user_id}>
+
+                      <td>{user.first_name}{" "}{user.last_name}</td>
+
+                      <td>{user.email}</td>
+
+                      <td>{user.employee_number}</td>
+
+                      <td>{user.contact_number}</td>
+
+                      <td>{user.role_name}</td>
+
+                      <td>{user.is_active ? "Active" : "Inactive"}</td>
+
+                      <td>{user.position}</td>
+
+                      <td>{user.department_name}</td>
+
                       <td>
                         <div className="announce-card-actions users-row-actions">
-                          <button 
-                            type="button" 
-                            aria-label="Edit" 
-                            onClick={() => setEditingUser(u)}
+                          <button
+                            type="button"
+                            aria-label="Edit"
+                            onClick={() => setEditingUser(user)}
                           >
-                            <svg 
-                              viewBox="0 0 24 24" 
-                              width="15" 
-                              height="15" 
-                              fill="none" 
-                              stroke="currentColor" 
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="15"
+                              height="15"
+                              fill="none"
+                              stroke="currentColor"
                               strokeWidth="1.8"
                             >
                               <path d="M12 20h9" />
                               <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
                             </svg>
                           </button>
-                          <button 
-                            type="button" 
-                            className={u.is_active ? "status-toggle active" : "status-toggle inactive"}
-                            aria-label={u.is_active ? "Deactivate" : "Activate"} 
-                            title={u.is_active ? "Deactivate user" : "Activate user"}
-                            onClick={() => handleToggleStatus(u.user_id, u.is_active)}
+
+                          <button
+                            type="button"
+                            className={
+                              user.is_active
+                                ? "status-toggle active" : "status-toggle inactive"
+                            }
+                            aria-label={
+                              user.is_active ? "Deactivate" : "Activate"
+                            }
+                            title={
+                              user.is_active ? "Deactivate user" : "Activate user"
+                            }
+                            onClick={() =>
+                              handleToggleStatus(
+                                user.user_id, user.is_active
+                              )
+                            }
                           >
-                            <svg 
-                              viewBox="0 0 24 24" 
-                              width="15" 
-                              height="15" 
-                              fill="none" 
-                              stroke="currentColor" 
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="15"
+                              height="15"
+                              fill="none"
+                              stroke="currentColor"
                               strokeWidth="1.8"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -479,210 +350,27 @@ try {
             </table>
           </section>
         </div>
-
         <AdminFooter />
       </div>
-      
-        {/* Forms for add users */}
+
+      {/* ADD USER */}
       {addOpen && (
-        <div className="materials-modal-overlay" 
-          onClick={closeAdd}
-        >
-          <div 
-            className="materials-modal-box" 
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="materials-modal-head">
-              <h2>ADD USER</h2>
-              <button 
-                type="button" 
-                className="materials-modal-close" 
-                aria-label="Close" 
-                onClick={closeAdd}
-              >
-                &times;
-              </button>
-            </div>
-
-            <div className="materials-modal-body">
-              <div className="users-add-header">
-                <div className="users-add-icon">
-                  <span className="users-add-dot dot-a"></span>
-                  <span className="users-add-dot dot-b"></span>
-                  <span className="users-add-plus">+</span>
-                </div>
-                <p>Add a new local account to the system</p>
-              </div>
-
-              <label className="materials-field">
-                <span className="materials-field-label">
-                  First Name
-                  <span className="users-req">*</span>
-                </span>
-
-                <input 
-                  type="text" 
-                  placeholder="e.g Maria Santos" 
-                  value={first_name} 
-                  onChange={(e) => setFirstName(e.target.value)} 
-                />
-              </label>
-              <label className="materials-field">
-                <span className="materials-field-label">
-                  Last Name
-                  <span className="users-req">*</span>
-                </span>
-
-                <input 
-                  type="text" 
-                  placeholder="e.g Maria Santos" 
-                  value={last_name} 
-                  onChange={(e) => setLastName(e.target.value)} 
-                />
-              </label>
-
-              <label className="materials-field">
-                <span className="materials-field-label">
-                  Email
-                  <span className="users-req">*</span>
-                </span>
-                <input 
-                  type="email" 
-                  placeholder="mariasantos@netrust.com.ph" 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                />
-              </label>
-
-              <label className="materials-field">
-                <span className="materials-field-label">
-                  Contact number
-                  <span className="users-req">*</span>
-                </span>
-                <input 
-                  type="text" 
-                  placeholder="+63 912 4567 896" 
-                  value={contact} 
-                  onChange={(e) => setContact(e.target.value)} 
-                />
-              </label>
-              {/* Role */}
-              <label className="materials-field">
-                <span className="materials-field-label">
-                  Role Name
-                  <span className="users-req">*</span>
-                </span>
-                <select value={role} 
-                  onChange={(e) => setRole(e.target.value)} 
-                >
-                <option value="">Select Role</option>
-
-                {roles.map((rol) => (
-                  <option 
-                    key={rol.role_id}
-                    value={rol.role_id}
-                  >
-                    {rol.role_name}
-                  </option>
-                ))}
-                </select>
-              </label>
-                {/* department */}
-              <label className="materials-field">
-                <span className="materials-field-label">
-                  Department
-                  <span className="users-req">*</span>
-                </span>
-                <select value={department} 
-                onChange={(e) => setDepartment(e.target.value)}
-                >
-                  <option value="">Select Department</option>
-
-                  {departments.map((dept) => (
-                    <option
-                      key={dept.department_id}
-                      value={dept.department_id}
-                    >
-                      {dept.department_name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-
-                <div className="materials-field">
-                <span className="materials-field-label">Account Access</span>
-                <div className="users-access-toggle">
-                
-{/*  uncomment this once sending email is enabled
-                  <button 
-                    type="button" 
-                    className={
-                      accessMode === "invite" ? "active" : ""
-                      } 
-                    onClick={() => setAccessMode("invite")}>
-                      Email Invite
-                  </button> */}
-                  <button 
-                    type="button" 
-                    className={
-                      accessMode === "password" ? "active" : ""
-                      } onClick={() => setAccessMode("password")}
-                  >
-                        Set password now
-                  </button>
-                </div>
-              </div>
-
-              {accessMode === "invite" ? (
-                <p className="users-add-note">
-                  We'll email a link to the address above so they can set their 
-                  own password and access their account.
-                </p>
-              ) : (
-                <label className="materials-field">
-                  <span className="materials-field-label">
-                    Temporary password
-                    <span className="users-req">*</span>
-                  </span>
-                  <input 
-                    type="password" 
-                    placeholder="Set a temporary password" 
-                    value={password} onChange={(e) => setPassword(e.target.value)} 
-                  />
-                </label>
-              )}
-            </div>
-
-            <div className="materials-modal-footer">
-              <span className="materials-file-count"></span>
-              <div className="materials-modal-footer-btns">
-                <button 
-                  type="button" 
-                  className="materials-cancel-btn" 
-                  onClick={closeAdd}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="button" 
-                  className="materials-primary-btn" 
-                  onClick={handleSend} disabled={!canSubmit}
-                >
-                  {accessMode === "invite" ? "Send Invite" : "Create Account"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AddUserModal
+          roles={roles}
+          departments={departments}
+          onClose={() => setAddOpen(false)}
+          onSubmit={handleCreateUser}
+        />
       )}
 
+      {/* EDIT USER */}
       {editingUser && (
-        <EditUserModal 
-          initial={editingUser} 
-          onClose={() => setEditingUser(null)} 
-          onSave={handleSaveEdit} 
+        <EditUserModal
+          initial={editingUser}
+          roles={roles}
+          departments={departments}
+          onClose={() => setEditingUser(null)}
+          onSave={handleSaveEdit}
         />
       )}
     </div>

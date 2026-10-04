@@ -9,7 +9,7 @@ const AdminSidebar = ({ active }) => {
   const fullName = `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim();
   const role = user?.role_name;
 
-  const isSuperAdmin = role === "super_admin";
+  const isSuperAdmin = role === "Super admin";
 
   return (
     <aside className="admin-sidebar">
