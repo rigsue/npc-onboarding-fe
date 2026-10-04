@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import AdminSidebar from "../components/AdminSidebar";
+// import AdminSidebar from "../components/AdminSidebar";
 import AdminHeaderActions from "../components/AdminHeaderActions";
 import AdminFooter from "../components/AdminFooter";
 
@@ -194,7 +194,7 @@ export default function SuperAdminDashboard() {
   // RENDER
   return (
     <div className="admin-shell">
-      <AdminSidebar active="users" />
+      {/* <AdminSidebar active="users" /> */}
       <div className="admin-main">
         <header className="announce-banner">
           <div>

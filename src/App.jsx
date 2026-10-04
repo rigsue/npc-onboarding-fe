@@ -12,7 +12,8 @@ import ManageAccount from "./pages/ManageAccount";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAnnouncements from "./pages/AdminAnnouncements";
 import AdminMaterials from "./pages/AdminMaterials";
-import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import SuperAdmin from "./pages/SuperAdmin";
+import SuperAdminLayout from "./pages/SuperAdminLayout";
 import ProtectedRoutes from "./ProtectedRoutes";
 import HRModules from "./pages/onboard/hr";
 import ITModules from "./pages/onboard/it";
@@ -38,30 +39,31 @@ export default function App() {
   {/* Protected */}
               <Route element ={<ProtectedRoutes />}>
                 <Route path="/home" element={<Home />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/superadmin" element={<SuperAdminDashboard />} 
-                />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/certifications" element={<Certifications />} />
-                <Route path="/manageaccount" element={<ManageAccount />} />
-                <Route 
-                  path="/admin/announcements" 
-                  element={<AdminAnnouncements />} 
-                />
-                <Route 
-                  path="/admin/materials" 
-                  element={<AdminMaterials />} 
-                />
-                {/* onboarding pages */}
-                <Route path="/hr" element={<HRModules/>}/>
-                <Route path="/it" element={<ITModules/>}/>
-                <Route path="/finance" element={<FinanceModules/>}/>
-                <Route path="/marketing" element={<MarketingModules/>}/>
-                <Route path="/preSales" element={<PreSalesModules/>}/>
-                <Route path="/customerSuccess" element={<CustomerSuccessModules/>}/>
-                <Route path="/sales" element={<SalesModules/>}/>
-                <Route path="/ppm" element={<PPMModules/>}/>
-                <Route path="/ooc" element={<OOCModules/>}/>
+                <Route path="/superadmin" element={<SuperAdminLayout />}>
+                  <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="users" element={<SuperAdmin />} />
+                </Route>
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/certifications" element={<Certifications />} />
+                  <Route path="/manageaccount" element={<ManageAccount />} />
+                  <Route 
+                    path="/admin/announcements" 
+                    element={<AdminAnnouncements />} 
+                  />
+                  <Route 
+                    path="/admin/materials" 
+                    element={<AdminMaterials />} 
+                  />
+                  {/* onboarding pages */}
+                  <Route path="/hr" element={<HRModules/>}/>
+                  <Route path="/it" element={<ITModules/>}/>
+                  <Route path="/finance" element={<FinanceModules/>}/>
+                  <Route path="/marketing" element={<MarketingModules/>}/>
+                  <Route path="/preSales" element={<PreSalesModules/>}/>
+                  <Route path="/customerSuccess" element={<CustomerSuccessModules/>}/>
+                  <Route path="/sales" element={<SalesModules/>}/>
+                  <Route path="/ppm" element={<PPMModules/>}/>
+                  <Route path="/ooc" element={<OOCModules/>}/>
               </Route>
             </Routes>
           </BrowserRouter>
