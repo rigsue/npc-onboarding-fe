@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import ProfilePhoto from '../components/ProfilePhoto';
-import { useProfile } from '../context/ProfileContext';
 import { useToast } from '../context/ToastContext';
+import { getUserById, updateUser, updateUserPassword } 
+from '../services/userService';
 import '../layout.css';
 import './ManageAccount.css';
 
@@ -40,22 +40,180 @@ function ChevronIcon() {
 }
 
 export default function ManageAccount( {onClose} ) {
-  const { profile, updateProfile } = useProfile();
+  const { user, token } = useSelector((state) => state.auth);
+  const [account, setAccount] = useState(null);
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    contactNumber: "",
+    employeeNumber: "",
+    position: "",
+    departmentName: "",
+    roleName: "",
+  });
+
+  const [passwordForm, setPasswordForm] = useState({
+  currentPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+});
+const [language, setLanguage] = useState(
+  localStorage.getItem("language") || "English"
+);
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const { showToast } = useToast();
   const [headEditing, setHeadEditing] = useState(false);
   const [aboutEditing, setAboutEditing] = useState(false);
   const [openPanels, setOpenPanels] = useState({});
 
-  const nameRef = useRef(null);
-  const roleRef = useRef(null);
-  const emailRef = useRef(null);
-  const phoneRef = useRef(null);
-
   const togglePanel = (id) => {
     setOpenPanels((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const toggleHeadEditing = () => {
+  useEffect(() => {
+    async function loadAccount() {
+      if (!token || !user?.user_id){
+        return;
+      }
+      try {
+        setLoading(true);
+
+        const result = await getUserById(
+          token, user.user_id
+        );
+
+        console.log("Manage Account user:", result);
+
+        const accountData = result?.data ?? result;
+
+        setAccount(accountData);
+
+        setForm({
+          firstName: accountData.first_name ?? "",
+          lastName: accountData.last_name ?? "",
+          email: accountData.email ?? "",
+          contactNumber: accountData.contact_number ?? "",
+          employeeNumber: accountData.employee_number ?? "",
+          position: accountData.position ?? "",
+          departmentName: accountData.department_name ?? "",
+          roleName: accountData.role_name ?? "",
+        });
+      } catch (error) {
+        console.error(
+          "Failed to load account:", error
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadAccount();
+  }, [token, user?.user_id]);
+
+  const handleSaveProfile = async () => {
+  if (!token || !user?.user_id || !account) {
+    return;
+  }
+
+  try {
+    setSaving(true);
+
+    const payload = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      departmentId: account.department_id,
+      contactNumber: form.contactNumber,
+      employeeNumber: account.employee_number,
+      position: form.position,
+      roleId: account.role_id,
+    };
+
+    const result = await updateUser(
+      token,
+      user.user_id,
+      payload
+    );
+
+    console.log(
+      "Account update response:",
+      result
+    );
+
+    showToast("Profile updated");
+
+    setHeadEditing(false);
+
+  } catch (error) {
+    console.error(
+      "Failed to update account:",
+      error
+    );
+
+    showToast(
+      error.message || "Failed to update profile"
+    );
+
+  } finally {
+    setSaving(false);
+  }
+};
+
+const handlePasswordUpdate = async () => {
+  if (!token || !user?.user_id) {
+    return;
+  }
+
+  if (!passwordForm.newPassword) {
+    showToast("Enter a new password");
+    return;
+  }
+
+  if (
+    passwordForm.newPassword !==
+    passwordForm.confirmPassword
+  ) {
+    showToast("Passwords do not match");
+    return;
+  }
+
+  try {
+    await updateUserPassword(
+      token,
+      user.user_id,
+      passwordForm.newPassword
+    );
+
+    showToast("Password updated");
+
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+
+  } catch (error) {
+    console.error(
+      "Password update failed:",
+      error
+    );
+
+    showToast(
+      error.message || "Password update failed"
+    );
+  }
+};
+
+const handleLanguageSave = () => {
+  localStorage.setItem("language", language);
+
+  showToast("Language preference saved");
+};
+
+
+/*   const toggleHeadEditing = () => {
     if (headEditing) {
       // Currently editing -> "Done" was clicked: save whatever's in the DOM now.
       updateProfile({
@@ -67,7 +225,7 @@ export default function ManageAccount( {onClose} ) {
       showToast('Profile updated');
     }
     setHeadEditing((v) => !v);
-  };
+  }; */
 
   return (
     <div className="manage-account-overlay" onClick={onClose}>
@@ -85,26 +243,138 @@ export default function ManageAccount( {onClose} ) {
         >
           x
         </button>
-
         <section className="account-panel">
 
           <div className="profile-head">
             <ProfilePhoto />
 
-            <div className="profile-details">
-              <h1 className="profile-name" ref={nameRef} contentEditable={headEditing} suppressContentEditableWarning>{profile.name}</h1>
-              <p className="profile-role" ref={roleRef} contentEditable={headEditing} suppressContentEditableWarning>{profile.role}</p>
-              <p className="profile-contact">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 6l10 7 10-7" /></svg>
-                <span ref={emailRef} contentEditable={headEditing} suppressContentEditableWarning>{profile.email}</span>
-              </p>
-              <p className="profile-contact">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.9 2.2z" /></svg>
-                <span ref={phoneRef} contentEditable={headEditing} suppressContentEditableWarning>{profile.phone}</span>
-              </p>
-            </div>
+<div className="profile-details">
+  {headEditing ? (
+    <div className="profile-edit-form">
 
-            <button className="edit-btn" id="edit-head" onClick={toggleHeadEditing}>
+      <label>
+        First Name
+        <input
+          value={form.firstName}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              firstName: e.target.value,
+            })
+          }
+        />
+      </label>
+
+      <label>
+        Last Name
+        <input
+          value={form.lastName}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              lastName: e.target.value,
+            })
+          }
+        />
+      </label>
+
+      <label>
+        Position
+        <input
+          value={form.position}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              position: e.target.value,
+            })
+          }
+        />
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          value={form.email}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              email: e.target.value,
+            })
+          }
+        />
+      </label>
+
+      <label>
+        Contact Number
+        <input
+          value={form.contactNumber}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              contactNumber: e.target.value,
+            })
+          }
+        />
+      </label>
+
+    </div>
+  ) : (
+    <>
+      <h1 className="profile-name">
+        {form.firstName} {form.lastName}
+      </h1>
+
+      <p className="profile-role">
+        {form.position}
+      </p>
+
+      <p className="profile-contact">
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
+          <rect
+            x="2"
+            y="4"
+            width="20"
+            height="16"
+            rx="2"
+          />
+          <path d="M2 6l10 7 10-7" />
+        </svg>
+
+        <span>{form.email}</span>
+      </p>
+
+      <p className="profile-contact">
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
+          <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 0 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.9 2.2z" />
+        </svg>
+
+        <span>{form.contactNumber}</span>
+      </p>
+    </>
+  )}
+</div>
+            <button className="edit-btn" id="edit-head" onClick={() => {
+              if (headEditing) {
+                handleSaveProfile();
+              } else {setHeadEditing(true);}
+            }}
+            disabled={saving}
+            >
               <EditIcon />
               <span>{headEditing ? 'Done' : 'Edit'}</span>
             </button>
@@ -119,31 +389,100 @@ export default function ManageAccount( {onClose} ) {
               </button>
             </div>
 
-            <p contentEditable={aboutEditing} suppressContentEditableWarning id="about-text">committed to ensuring secure, efficient, and uninterrupted IT operations while providing quality technical support to employees and company systems.</p>
+            <p id="about-text">committed to ensuring secure, efficient, and uninterrupted IT operations while providing quality technical support to employees and company systems.</p>
           </div>
 
           <div className="settings-grid">
 
             <div className="settings-card">
               <h3>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" /></svg>
+                <svg viewBox="0 0 24 24"
+                  width="20" 
+                  height="20" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="1.6"
+                >
+                  <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" />
+                </svg>
                 Account Security
               </h3>
 
               <div className="settings-item">
-                <button className="settings-row" aria-expanded={!!openPanels['panel-password']} onClick={() => togglePanel('panel-password')}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                <button className="settings-row" 
+                  aria-expanded={!!openPanels['panel-password']} 
+                  onClick={() => togglePanel('panel-password')}
+                >
+                  <svg viewBox="0 0 24 24" 
+                    width="18" 
+                    height="18" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.6"
+                  >
+                    <rect x="4" y="10" width="16" height="10" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                  </svg>
                   <span>Change Password</span>
                   <ChevronIcon />
                 </button>
                 <div className="settings-panel" hidden={!openPanels['panel-password']}>
-                  <label>Current Password<input type="password" placeholder="Enter current password" /></label>
-                  <label>New Password<input type="password" placeholder="Enter new password" /></label>
-                  <label>Confirm New Password<input type="password" placeholder="Re-enter new password" /></label>
-                  <button className="panel-save" type="button" onClick={() => showToast('Password updated')}>Save Password</button>
+                 <label>
+                  Current Password
+                  <input
+                    type="password"
+                    placeholder="Enter current password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        currentPassword: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+
+                <label>
+                  New Password
+                  <input
+                    type="password"
+                    placeholder="Enter new password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        newPassword: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+
+                <label>
+                  Confirm New Password
+                  <input
+                    type="password"
+                    placeholder="Re-enter new password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) =>
+                      setPasswordForm({
+                        ...passwordForm,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+
+                <button
+                  className="panel-save"
+                  type="button"
+                  onClick={handlePasswordUpdate}
+                >
+                  Save Password
+                </button>
                 </div>
               </div>
 
+                {/* Ignore this */}
               <div className="settings-item">
                 <button className="settings-row" aria-expanded={!!openPanels['panel-devices']} onClick={() => togglePanel('panel-devices')}>
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="4" width="18" height="12" rx="1" /><path d="M2 20h20" /></svg>
@@ -196,13 +535,18 @@ export default function ManageAccount( {onClose} ) {
                 </button>
                 <div className="settings-panel" hidden={!openPanels['panel-language']}>
                   <label>Display Language
-                    <select>
-                      <option>English</option>
-                      <option>Filipino</option>
-                      <option>Cebuano</option>
+                    <select
+                      value={language}
+                      onChange={(e) => setLanguage(e.target.value)}
+                    >
+                      <option value="English">English</option>
+                      <option value="Filipino">Filipino</option>
+                      <option value="Cebuano">Cebuano</option>
                     </select>
                   </label>
-                  <button className="panel-save" type="button" onClick={() => showToast('Language preference saved')}>Save Language</button>
+
+                  <button className="panel-save" type="button" onClick={handleLanguageSave}>Save Language</button>
+
                 </div>
               </div>
             </div>

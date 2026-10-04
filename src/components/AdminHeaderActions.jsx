@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { getInitials } from "../utils/getInitials";
 import { useToast } from "../context/ToastContext";
 import { useSelector } from "react-redux";
-import ManageAccount from "../pages/ManageAccount";
 
 const SAMPLE_NOTIFICATIONS = [
   {
@@ -60,7 +59,6 @@ export default function AdminHeaderActions() {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState(SAMPLE_NOTIFICATIONS);
   const wrapRef = useRef(null);
-  const [showManageAccount, setShowManageAccount] = useState(false);
 
   useEffect(() => {
 
@@ -167,26 +165,21 @@ export default function AdminHeaderActions() {
       <div className="nav-dropdown avatar-dropdown">
         <button className="avatar">
           <div className="admin-avatar">
-            {getInitials(`${user.first_name} ${user.last_name}`)}
+            {getInitials(`${user.firstName} ${user.lastName}`)}
           </div>
         </button>
                   
         <div className="nav-dropdown-menu avatar-menu">
-          <button
+{/*           <button
             type="button"
             onClick={() => setShowManageAccount(true)}
           >
             Manage Account
-          </button>
+          </button> */}
 
           <Link to="/">Log out</Link>
         </div>
       </div>
-      {showManageAccount && (
-        <ManageAccount
-          onClose={() => setShowManageAccount(false)}
-        />
-      )}
     </>
   );
 }

@@ -47,6 +47,28 @@ export async function getUsers(token) {
       data.message || "Failed to fetch users"
     );
   }
+  return data;
+}
+
+// GET SINGLE USER
+export async function getUserById(token, userId) {
+  const response = await fetch(
+    `${API_URL}/user/${userId}/get-user`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch user"
+    );
+  }
 
   return data;
 }
@@ -72,7 +94,7 @@ export async function updateUser(
 
   if (!response.ok) {
     console.error("Update user API error:", data);
-    
+
     throw new Error(
       data.message || "User update failed"
     );
@@ -83,6 +105,34 @@ export async function updateUser(
     console.error("Update user API error:", errorData);
     throw new Error(errorData.message || "User update failed");
 } */
+}
+
+// UPDATE USER PASSWORD
+export async function updateUserPassword(
+  token, userId, password
+) {
+  const response = await fetch(
+    `${API_URL}/user/${userId}/password`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        password,
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Password update failed"
+    );
+  }
+  return data;
 }
 
 // DEACTIVATE USER
