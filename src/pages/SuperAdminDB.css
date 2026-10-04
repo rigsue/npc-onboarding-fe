@@ -177,7 +177,7 @@
 
 /* Currently active */
 .status-toggle.active {
-    color: #dc2626;
+    color: #16a34a;
 }
 
 .status-toggle.active:hover {
@@ -186,7 +186,7 @@
 
 /* Currently inactive */
 .status-toggle.inactive {
-    color: #16a34a;
+    color: #dc2626;
 }
 
 .status-toggle.inactive:hover {

@@ -6,7 +6,7 @@ const RequireSuperAdmin = ({ children }) => {
   const role = useSelector(
     (state) => state.auth.user?.role_name
   );
-  if (role !== "super_admin") {
+  if (role !== "Super admin") {
     return <Navigate to="/admin" replace />;
   }
   return children;

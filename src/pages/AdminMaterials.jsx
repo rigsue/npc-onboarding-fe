@@ -1,78 +1,17 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import AdminSidebar from '../components/AdminSidebar';
 import AdminHeaderActions from '../components/AdminHeaderActions';
 import AdminFooter from '../components/AdminFooter';
 import { useToast } from '../context/ToastContext';
-import { useAdminIdentity } from '../context/AdminIdentityContext';
+// import { useAdminIdentity } from '../context/AdminIdentityContext';
 import '../components/AdminLayout.css';
 import './AdminMaterials.css';
+import { useSelector } from 'react-redux';
+import { getDepartments } from '../services/departmentService';
 
-const FOLDERS = ['Human Resources', 'IT', 'Finance', 'Marketing', 'Sales', 'General'];
+const GENERAL_FOLDER = 'General';
 const PASSING_SCORES = ['60%', '70%', '80%', '90%', '100%'];
 const QUESTION_TYPES = ['Multiple Choice', 'True or False', 'Short Answer'];
-
-const STATUS_LABELS = {
-  published: 'PUBLISHED',
-  scheduled: 'SCHEDULED',
-  draft: 'DRAFT',
-};
-
-const INITIAL_MATERIALS = [
-  {
-    id: 1,
-    category: 'General',
-    status: 'published',
-    title: 'HR MODULE',
-    description: 'A centralized HR module designed to manage employee profiles, onboarding requirements, and company records efficiently.',
-    date: 'July 30, 2026',
-  },
-  {
-    id: 2,
-    category: 'General',
-    status: 'published',
-    title: 'IT Assessment',
-    description: "Assess the employee's understanding of company policies, workplace expectations, code of conduct, and HR guidelines.",
-    date: 'July 30, 2026',
-  },
-  {
-    id: 3,
-    category: 'General',
-    status: 'scheduled',
-    title: 'Finance MODULE',
-    description: 'Handle payroll setup, salary information, benefits enrollment, expense approvals, and financial onboarding requirements for new employees.',
-    date: 'July 30, 2026',
-  },
-  {
-    id: 4,
-    category: 'General',
-    status: 'published',
-    title: 'Onboarding Assessment',
-    description: "Test the employee's understanding of the onboarding process, company policies, department procedures, and essential workplace information.",
-    date: 'July 30, 2026',
-  },
-  {
-    id: 5,
-    category: 'IT',
-    status: 'published',
-    title: 'IT ASSESSMENT',
-    description: "Evaluate the employee's technical knowledge, cybersecurity awareness, and understanding of company IT policies and systems.",
-    date: 'July 30, 2026',
-  },
-];
-
-function ThumbIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6">
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <circle cx="8.5" cy="8.5" r="1.5" />
-      <path d="M21 15l-5-5L5 21" />
-    </svg>
-  );
-}
-
-function todayLabel() {
-  return new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
-}
 
 /* ---------- Upload Materials modal ---------- */
 
@@ -338,7 +277,18 @@ function CreateAssessmentModal({ onClose, onSave, folderOptions }) {
 
 export default function AdminMaterials() {
   const { showToast } = useToast();
-  const admin = useAdminIdentity();
+  const user = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
+  const userRole = user?.role_name?.trim().toLowerCase();
+
+  const isSuperAdmin = user?.role === "Super admin";
+  const isAdmin = user?.role === "Admin";
+  const isLocalAccount = user?.role_name === "Local account";
+
+  const [departments, setDepartments] = useState([]);
+
+  const departmentKey = user?.department_name;
+  
   const [materials, setMaterials] = useState(INITIAL_MATERIALS);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
@@ -346,28 +296,48 @@ export default function AdminMaterials() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [assessmentOpen, setAssessmentOpen] = useState(false);
 
-  const folderOptions = admin.isSuperAdmin ? FOLDERS : ['General', admin.departmentKey];
+  useEffect(() => {
+  const fetchDepartments = async() => {
+    try {
+      const data = await getDepartments(token);
 
-  const scoped = useMemo(
-    () => (admin.isSuperAdmin ? materials : materials.filter((m) => m.category === 'General' || m.category === admin.departmentKey)),
-    [materials, admin.isSuperAdmin, admin.departmentKey]
-  );
+      setDepartments(data.data || []);
+    } catch (error) {
+      console.error("Failed to fetch departments:", error);
+      showToast("Failed to load departments");
+    }
+  };
+  if (token) {
+    fetchDepartments();
+  }
+}, [token]);
 
-  const counts = useMemo(() => ({
-    all: scoped.length,
-    published: scoped.filter((m) => m.status === 'published').length,
-    scheduled: scoped.filter((m) => m.status === 'scheduled').length,
-    draft: scoped.filter((m) => m.status === 'draft').length,
-  }), [scoped]);
 
-  const visible = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return scoped.filter((m) => {
-      const matchesFilter = filter === 'all' || m.status === filter;
-      const matchesSearch = !q || m.title.toLowerCase().includes(q) || m.category.toLowerCase().includes(q);
-      return matchesFilter && matchesSearch;
-    });
-  }, [scoped, filter, search]);
+  const activeDepartments = useMemo(() => {
+    return departments.filter((department) => department.is_active);
+  }, [departments]);
+
+  const folderOptions = useMemo(() => {
+    const departmentNames = activeDepartments.map(
+      (department) => department.department_name
+    );
+    if (isSuperAdmin) {
+      return [GENERAL_FOLDER, ...departmentNames];
+    }
+
+    const useDepartment = user?.department_name;
+
+    return [
+      GENERAL_FOLDER,
+      ...departmentNames.filter(
+        (name) => name === useDepartment
+      )
+    ];
+  }, [
+    activeDepartments,
+    isSuperAdmin,
+    user?.department_name
+  ]);
 
   const handleDelete = (id) => {
     setMaterials((prev) => prev.filter((m) => m.id !== id));

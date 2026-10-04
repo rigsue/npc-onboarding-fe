@@ -33,14 +33,14 @@ const Login = () => {
           token: data.token,
         })
       );
-        if (data.user.role_name === "super_admin") {
-          dispatch(setCurrentView("super_admin"));
+        if (data.user.roleName === "Super admin") {
+          dispatch(setCurrentView("Super admin"));
           navigate("/superadmin");
-        } else if (data.user.role_name === "admin"){
-          dispatch(setCurrentView("admin"));
+        } else if (data.user.roleName === "Admin"){
+          dispatch(setCurrentView("Admin"));
           navigate("/admin");
-        } else if(data.user.role_name === "local_user"){
-          dispatch(setCurrentView("local_user"));
+        } else if(data.user.roleName === "Local account"){
+          dispatch(setCurrentView("Local user"));
           navigate('/home');
         }
       } catch (error) {
