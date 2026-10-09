@@ -374,7 +374,9 @@ return (
                   </button>
                 </div>
 
-                <p id="about-text">committed to ensuring secure, efficient, and uninterrupted IT operations while providing quality technical support to employees and company systems.</p>
+                <p id="about-text">
+                  committed to ensuring secure, efficient, and uninterrupted IT operations while providing quality technical support to employees and company systems.
+                </p>
               </div>
 
           <div className="settings-grid">
