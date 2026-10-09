@@ -13,8 +13,36 @@ main{
   flex: 1;
 }
 
+/* Deivce CSS */
+
+/* .device-row {
+  display: flex;
+} */
+
+.device-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 5px solid rgba(255,255,255,0.08);
+}
+
+/* .device-row p {
+  margin: 0;
+  width: 200px;
+} */
+
+.device-row:last-child{
+  border-bottom: none;
+}
+
+.device-header {
+  display: flex;
 
 
+}
+
+/* Profile CSS */
 .profile-head{
   background: var(--panel-bg);
   border-radius: 8px;
@@ -112,10 +140,10 @@ main{
   font-size: 24px;
   font-weight: 400;
 }
-
+/* 
 .about-block .edit-btn{
   position: static;
-}
+} */
 
 .about-block p{
   margin: 0;
@@ -250,19 +278,6 @@ main{
 
 .panel-save:hover{
   background: #24756a;
-}
-
-.device-row{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.device-row:last-child{
-  border-bottom: none;
 }
 
 .device-name{
