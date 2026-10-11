@@ -35,7 +35,7 @@ const Login = () => {
       );
         if (data.user.roleName === "Super admin") {
           dispatch(setCurrentView("Super admin"));
-          navigate("/superadmin");
+          navigate("/superadmin/dashboard");
         } else if (data.user.roleName === "Admin"){
           dispatch(setCurrentView("Admin"));
           navigate("/admin");

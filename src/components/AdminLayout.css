@@ -50,7 +50,8 @@
   gap: 12px;
   padding: 16px 18px;
   margin: 0 12px 18px;
-  background: rgba(255,255,255,0.06);
+  /* background: rgba(255,255,255,0.06); */
+ background: rgba(35, 181, 174, 0.121);
   border-radius: 10px;
 }
 
@@ -58,6 +59,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 8px 8px 24px 8px;
+  border-radius: 10px;
+  border: 3px solid rgba(255,255,255,0.2);
+
 }
 
 .admin-user-avatar{
@@ -70,7 +75,7 @@
   justify-content: center;
   overflow: hidden;
   flex-shrink: 0;
-  color: #ffffff;
+  color: #f1f1f1;
   font-size: 16px;
   font-weight: 700;
 }
@@ -79,13 +84,19 @@
   margin: 0;
   font-size: 14px;
   font-weight: 700;
+  color: #ffffff;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  /* background-color: var(--admin-teal);
+  padding: 5px;
+  border-radius: 5px; */
 }
 
 .admin-user-role,
 .admin-user-dept{
-  margin: 2px 0 0;
+  margin: 6px 0 0;
   font-size: 11px;
-  color: rgba(255,255,255,0.65);
+  color: #f1f1f1;
   line-height: 1.4;
 }
 
@@ -146,6 +157,28 @@
   background: var(--admin-teal);
   color: #ffffff;
   font-weight: 600;
+}
+
+.manage-account{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  margin-top: 6px;
+  border-radius: 10px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+}
+
+.manage-account:hover{
+  background: var(--admin-teal);
 }
 
 /* Main area */
