@@ -3,11 +3,12 @@ import AdminSidebar from '../components/AdminSidebar';
 import AdminHeaderActions from '../components/AdminHeaderActions';
 import AdminFooter from '../components/AdminFooter';
 import { useToast } from '../context/ToastContext';
-// import { useAdminIdentity } from '../context/AdminIdentityContext';
 import '../components/AdminLayout.css';
 import './AdminMaterials.css';
 import { useSelector } from 'react-redux';
 import { getDepartments } from '../services/departmentService';
+import { getModules } from '../services/moduleService';
+
 
 const GENERAL_FOLDER = 'General';
 const PASSING_SCORES = ['60%', '70%', '80%', '90%', '100%'];
@@ -27,11 +28,21 @@ function UploadMaterialsModal({ onClose, onUpload, folderOptions }) {
     setFiles((prev) => [...prev, ...Array.from(fileList)]);
   };
 
-  const handleSubmit = () => {
-    if (files.length === 0) return;
-    const status = when === 'now' ? 'published' : when === 'schedule' ? 'scheduled' : 'draft';
-    onUpload({ files, folder, status, note: note.trim() });
-  };
+const handleSubmit = () => {
+  if (files.length === 0) return;
+  const maxSize = 100 * 1024 * 1024;
+
+  const oversizedFile = files.find((file) => file.size > maxSize);
+
+  if (oversizedFile) {
+    alert(`${oversizedFile.name} exceeds the 100 MB limit.`);
+    return;
+  }
+
+  const status = when === 'now' ? 'published' : when === 'schedule' ? 'scheduled' : 'draft';
+
+  onUpload({files, folder, status, note: note.trim(),});
+};
 
   return (
     <div className="materials-modal-overlay" onClick={onClose}>
@@ -63,7 +74,11 @@ function UploadMaterialsModal({ onClose, onUpload, folderOptions }) {
               type="file"
               multiple
               hidden
-              onChange={(e) => { if (e.target.files) addFiles(e.target.files); }}
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.webp"
+              onChange={(e) => { 
+                if (e.target.files) {addFiles(e.target.files); 
+                e.target.values = "";}
+              }}
             />
           </div>
 
@@ -115,9 +130,11 @@ function newQuestion() {
   return { id: Math.random().toString(36).slice(2), type: 'Multiple Choice', text: '', choices: [c1, c2], correctId: c1.id, shortAnswer: '' };
 }
 
-function CreateAssessmentModal({ onClose, onSave, folderOptions }) {
+function CreateAssessmentModal({ onClose, onSave, modules }) {
   const [title, setTitle] = useState('');
-  const [linkedModule, setLinkedModule] = useState(folderOptions[0]);
+  const [linkedModule, setLinkedModule] = useState(
+    modules[0]?.learn_mod_id ? String(modules[0].learn_mod_id) : ""
+    );
   const [passingScore, setPassingScore] = useState('');
   const [questions, setQuestions] = useState([newQuestion()]);
 
@@ -168,6 +185,11 @@ function CreateAssessmentModal({ onClose, onSave, folderOptions }) {
     onSave({ title: title.trim(), linkedModule, passingScore, questions });
   };
 
+  useEffect(() => {
+    if (!linkedModule && modules.length > 0) {
+        setLinkedModule(String(modules[0].learn_mod_id));
+    }
+}, [modules, linkedModule]);
   return (
     <div className="materials-modal-overlay" onClick={onClose}>
       <div className="materials-modal-box assessment-modal-box" onClick={(e) => e.stopPropagation()}>
@@ -186,8 +208,14 @@ function CreateAssessmentModal({ onClose, onSave, folderOptions }) {
           <div className="materials-field-row">
             <label className="materials-field">
               <span className="materials-field-label">Linked Module</span>
-              <select value={linkedModule} onChange={(e) => setLinkedModule(e.target.value)}>
-                {folderOptions.map((f) => <option key={f} value={f}>{f}</option>)}
+              <select value={linkedModule} onChange={(e) => setLinkedModule(e.target.value)}
+              required>
+                <option value="">Select a module</option>
+                {modules.map((module) => (
+                  <option key={module.learn_mod_id} value={String(module.learn_mod_id)}>
+                    {module.title} ({module.department_name})
+                  </option>
+                ))}
               </select>
             </label>
             <label className="materials-field">
@@ -273,22 +301,63 @@ function CreateAssessmentModal({ onClose, onSave, folderOptions }) {
   );
 }
 
+const INITIAL_MATERIALS = [];
+
+const STATUS_LABELS = {
+  published: 'Published', scheduled: 'Scheduled', draft: 'Draft',
+};
+
+function todayLabel() {
+  return new Date().toLocaleDateString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric',
+  });
+}
+
+function ThumbIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="32"
+      height="32"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      aria-hidden="true"
+    >
+      <path d="M6 2h8l5 5v15H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
+      <path d="M14 2v6h5M8 13h8M8 17h8" />
+    </svg>
+  );
+}
+
+
 /* ---------- Main page ---------- */
 
 export default function AdminMaterials() {
   const { showToast } = useToast();
   const user = useSelector((state) => state.auth.user);
   const token = useSelector((state) => state.auth.token);
-  const userRole = user?.role_name?.trim().toLowerCase();
+  const roleName = (
+    user?.roleName ??
+    user?.role_name ??
+    user?.role ??
+    ""
+  ).trim();
 
-  const isSuperAdmin = user?.role === "Super admin";
-  const isAdmin = user?.role === "Admin";
-  const isLocalAccount = user?.role_name === "Local account";
+  const departmentName = (
+    user?.departmentName ??
+    user?.department_name ??
+    ""
+  ).trim();
 
-  const [departments, setDepartments] = useState([]);
+  const normalizeRole = roleName.toLowerCase();
 
-  const departmentKey = user?.department_name;
-  
+  const isSuperAdmin = normalizeRole === "Super admin";
+  const isAdmin = normalizeRole === "Admin";
+  const isLocalAccount = normalizeRole === "Local account";
+
+  const [departments, setDepartments] = useState([])
+  const [modules, setModules] = useState([]);
   const [materials, setMaterials] = useState(INITIAL_MATERIALS);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
@@ -305,39 +374,94 @@ export default function AdminMaterials() {
     } catch (error) {
       console.error("Failed to fetch departments:", error);
       showToast("Failed to load departments");
+      }
+    };
+    if (token) {
+      fetchDepartments();
     }
-  };
-  if (token) {
-    fetchDepartments();
-  }
-}, [token]);
+  }, [token]);
 
+
+  useEffect(() => {
+      if (!token) return;
+
+      let cancelled = false;
+      const fetchModules = async () => {
+          try {
+              const response = await getModules(token);
+              const rows = Array.isArray(response)
+                  ? response
+                  : Array.isArray(response.data)
+                      ? response.data
+                      : [];
+
+              if (!cancelled) {
+                  setModules(
+                      rows.filter((module) => module.is_active === true)
+                  );
+              }
+          } catch (error) {
+              console.error("Failed to fetch learning modules:", error);
+
+              if (!cancelled) {
+                  showToast("Failed to load learning modules");
+              }
+          }
+      };
+      fetchModules();
+
+      return () => {
+          cancelled = true;
+      };
+  }, [token]);
 
   const activeDepartments = useMemo(() => {
-    return departments.filter((department) => department.is_active);
+    return departments.filter(
+      (department) => department.is_active === true
+    );
   }, [departments]);
 
   const folderOptions = useMemo(() => {
     const departmentNames = activeDepartments.map(
       (department) => department.department_name
-    );
+    ).filter(Boolean);
+
     if (isSuperAdmin) {
-      return [GENERAL_FOLDER, ...departmentNames];
+      return [
+        GENERAL_FOLDER, ...departmentNames.filter(
+          (name) => name !== GENERAL_FOLDER
+        )];
     }
 
-    const useDepartment = user?.department_name;
-
+    if (isAdmin) {
     return [
       GENERAL_FOLDER,
-      ...departmentNames.filter(
-        (name) => name === useDepartment
-      )
+      ...(departmentName &&
+      departmentNames.includes(departmentName)
+      ? [departmentName] : [])
     ];
+  }
   }, [
     activeDepartments,
     isSuperAdmin,
-    user?.department_name
+    isAdmin,
+    departmentName,
   ]);
+
+
+  const availableModules = useMemo(() => {
+      if (isSuperAdmin) {
+          return modules;
+      }
+
+      if (isAdmin) {
+          return modules.filter(
+              (module) => module.department_name === departmentName
+          );
+      }
+
+      return [];
+  }, [modules, isSuperAdmin, isAdmin, departmentName]);
 
   const handleDelete = (id) => {
     setMaterials((prev) => prev.filter((m) => m.id !== id));
@@ -345,8 +469,15 @@ export default function AdminMaterials() {
   };
 
   const addMaterial = (entry) => {
-    const nextId = Math.max(0, ...materials.map((m) => m.id)) + 1;
-    setMaterials((prev) => [{ id: nextId, date: todayLabel(), ...entry }, ...prev]);
+    setMaterials((prev) => {
+      const nextId = Math.max(
+        0,
+        ...prev.map((material) => material.id)
+      ) + 1;
+      return [{
+          id: nextId, date: todayLabel(), ...entry,
+        }, ...prev,];
+    });
   };
 
   const handleUpload = ({ files, folder, status, note }) => {
@@ -361,18 +492,81 @@ export default function AdminMaterials() {
     showToast(status === 'published' ? 'Material uploaded' : status === 'scheduled' ? 'Upload scheduled' : 'Draft saved');
   };
 
-  const handleSaveAssessment = ({ title, linkedModule, passingScore, questions }) => {
-    addMaterial({
-      category: linkedModule,
-      status: 'published',
-      title,
-      description: `Assessment — ${questions.length} question${questions.length === 1 ? '' : 's'}${passingScore ? `, passing score ${passingScore}` : ''}.`,
-    });
-    setAssessmentOpen(false);
-    showToast('Assessment created');
-  };
+const handleSaveAssessment = ({
+  title, linkedModule, passingScore, questions,
+}) => {
+  addMaterial({
+    category: linkedModule,
+    status: 'published',
+    title,
+    description: `Assessment — ${questions.length} questions`,
+  });
+};
 
   const today = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  
+const counts = useMemo(() => {
+  const accessibleMaterials = materials.filter((material) => {
+    if (isSuperAdmin) return true;
+
+    return (
+      material.category === GENERAL_FOLDER ||
+      material.category === departmentName
+    );
+  });
+
+  return {
+    all: accessibleMaterials.length,
+    published: accessibleMaterials.filter(
+      (m) => m.status === 'published'
+    ).length,
+    scheduled: accessibleMaterials.filter(
+      (m) => m.status === 'scheduled'
+    ).length,
+    draft: accessibleMaterials.filter(
+      (m) => m.status === 'draft'
+    ).length,
+  };
+}, [materials, isSuperAdmin, departmentName]);
+
+const visible = useMemo(() => {
+  const query = search.trim().toLowerCase();
+
+  return materials.filter((material) => {
+    // Restrict the visible categories for non-Super Admins.
+    if (
+      !isSuperAdmin &&
+      material.category !== GENERAL_FOLDER &&
+      material.category !== departmentName
+    ) {
+      return false;
+    }
+
+    if (
+      filter !== 'all' &&
+      material.status !== filter
+    ) {
+      return false;
+    }
+
+    if (!query) return true;
+
+    return [
+      material.title,
+      material.description,
+      material.category,
+    ].some((value) =>
+      String(value ?? '').toLowerCase().includes(query)
+    );
+  });
+}, [
+  materials,
+  filter,
+  search,
+  isSuperAdmin,
+  departmentName,
+]);
 
   return (
     <div className="admin-shell">
@@ -384,9 +578,9 @@ export default function AdminMaterials() {
             <h1>Department Materials</h1>
             <p>Browse important documents, standard operating procedures (SOPs), manuals, and resources provided by your department.</p>
           </div>
-          <div className="admin-header-actions">
+            {/*           <div className="admin-header-actions">
             <AdminHeaderActions />
-          </div>
+          </div> */}
         </header>
 
         <div className="announce-body">
@@ -468,10 +662,15 @@ export default function AdminMaterials() {
       </div>
 
       {uploadOpen && (
-        <UploadMaterialsModal onClose={() => setUploadOpen(false)} onUpload={handleUpload} folderOptions={folderOptions} />
+        <UploadMaterialsModal onClose={
+          () => setUploadOpen(false)} 
+          onUpload={handleUpload} folderOptions={folderOptions} />
       )}
       {assessmentOpen && (
-        <CreateAssessmentModal onClose={() => setAssessmentOpen(false)} onSave={handleSaveAssessment} folderOptions={folderOptions} />
+        <CreateAssessmentModal 
+        onClose={() => setAssessmentOpen(false)} 
+        onSave={handleSaveAssessment} 
+        folderOptions={availableModules} />
       )}
     </div>
   );

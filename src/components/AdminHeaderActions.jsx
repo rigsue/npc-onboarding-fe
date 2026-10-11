@@ -176,7 +176,7 @@ export default function AdminHeaderActions() {
           >
             Manage Account
           </button> */}
-
+          <Link to="/profile">Profile</Link>
           <Link to="/">Log out</Link>
         </div>
       </div>

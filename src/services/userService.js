@@ -75,10 +75,10 @@ export async function getUserById(token, userId) {
 
 // UPDATE USER
 export async function updateUser(
-  token, id, userData
+  token, userId, userData
 ) {
   const response = await fetch(
-    `${API_URL}/user/${id}/update-user`,
+    `${API_URL}/user/${userId}/update-user`,
     {
       method: "PUT",
 

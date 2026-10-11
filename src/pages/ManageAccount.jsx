@@ -48,19 +48,20 @@ export default function ManageAccount( {onClose} ) {
     lastName: "",
     email: "",
     contactNumber: "",
-    employeeNumber: "",
-    position: "",
-    departmentName: "",
-    roleName: "",
+    aboutMe: "",
+    // employeeNumber: "",
+    // position: "",
+    // departmentName: "",
+    // roleName: "",
   });
 
   const [passwordForm, setPasswordForm] = useState({
-  currentPassword: "",
+  // currentPassword: "",
   newPassword: "",
   confirmPassword: "",
 });
 const [language, setLanguage] = useState(
-  localStorage.getItem("language") || "English"
+  localStorage.getItem("language") || "English" || "Tagalog"
 );
 
   const [loading, setLoading] = useState(true);
@@ -86,19 +87,19 @@ const [language, setLanguage] = useState(
         const result = await getUserById(
           token, user.userId
         );
-/* 
+      /* 
         console.log("Manage Account user:", result);
         console.log(token, user?.userId)
- */
+      */
         const accountData = result?.data ?? result;
-/* 
+      /* 
         console.log("Redux user:", user);
         console.log("Redux roleId:", user?.roleName);
-  */
-      setAccount({
-        ...accountData,
-        roleName: user.roleName,
-      });
+    */
+      // setAccount({
+      //   ...accountData,
+      //   roleName: user.roleName,
+      // });
         // console.log("account data:", accountData);
 
         setForm({
@@ -110,6 +111,7 @@ const [language, setLanguage] = useState(
           position: accountData.position ?? "",
           departmentName: accountData.department_name ?? "",
           roleName: user.roleName ?? "",
+          aboutMe: user.abou_me ?? "",
         });
       } catch (error) {
         console.error(
@@ -123,26 +125,36 @@ const [language, setLanguage] = useState(
   }, [token, user?.userId]);
 
   const handleSaveProfile = async () => {
-  if (!token || !user?.user_id || !account) {
+
+      console.log("1. Save button triggered");
+      console.log("User object:", user);
+      // console.log("Account object:", account);
+
+  if (!token || !user?.userId) {
+    console.error("Missing required data:", {
+      token: !!token,
+      userId: user?.userId,
+      // account: !!account,
+    });
+    showToast("Unable to update, missing user data");
     return;
   }
-
-  try {
     setSaving(true);
-
+  try {
     const payload = {
-      firstName: form.firstName,
-      lastName: form.lastName,
+      first_name: form.firstName,
+      last_name: form.lastName,
       email: form.email,
-      departmentId: account.departmentId,
-      contactNumber: form.contactNumber,
-      employeeNumber: account.employeeNumber,
-      position: form.position,
-      roleName: account.roleName
+      contact_number: form.contactNumber,
+      // about_me: form.aboutMe,
+      // departmentId: account.departmentId,
+      // employeeNumber: account.employeeNumber,
+      // position: form.position,
+      // roleName: account.roleName
     };
 
     const result = await updateUser(
-      token, user.user_id, payload
+      token, user.userId, payload
     );
 
     console.log("Account update response:", result);
@@ -156,6 +168,36 @@ const [language, setLanguage] = useState(
 
     showToast(error.message || "Failed to update profile");
 
+  } finally {
+    setSaving(false);
+  }
+};
+
+const handleSaveAbout = async () => {
+  if (!token || !user?.userId) {
+    showToast("User session is missing.");
+    return;
+  }
+
+  setSaving(true);
+
+  try {
+    const payload = {
+      aboutMe: form.aboutMe,
+    };
+
+    const result = await updateUser(
+      token,
+      user.userId,
+      payload
+    );
+
+    console.log("About section updated:", result);
+    showToast("About section updated successfully");
+    setAboutEditing(false);
+  } catch (error) {
+    console.error("Failed to update About section:", error);
+    showToast(error.message || "Failed to update About section");
   } finally {
     setSaving(false);
   }
@@ -186,7 +228,7 @@ const handlePasswordUpdate = async () => {
     showToast("Password updated");
 
     setPasswordForm({
-      currentPassword: "",
+      // currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     });
@@ -233,10 +275,10 @@ return (
             <div className="profile-details">
               {headEditing ? (
                 <div className="profile-edit-form">
-
+                <div className='name-edit'>
                   <label>
                     First Name
-                    <input
+                    <input className='name-data-box'
                       value={form.firstName}
                       onChange={(e) =>
                         setForm({
@@ -249,7 +291,7 @@ return (
 
                   <label>
                     Last Name
-                    <input
+                    <input className='name-data-box'
                       value={form.lastName}
                       onChange={(e) =>
                         setForm({
@@ -259,10 +301,12 @@ return (
                       }
                     />
                   </label>
+                </div>
 
-                  <label>
+                <div className='name-edit'>
+{/*                   <label>
                     Position
-                    <input
+                    <input className='name-data-box'
                       value={form.position}
                       onChange={(e) =>
                         setForm({
@@ -271,11 +315,11 @@ return (
                         })
                       }
                     />
-                  </label>
+                  </label> */}
                   
                   <label>
                     Email
-                    <input
+                    <input className='name-data-box'
                       type="email"
                       value={form.email}
                       onChange={(e) =>
@@ -286,10 +330,12 @@ return (
                       }
                     />
                   </label>
+{/*                 </div>
 
+                <div className='name-edit'> */}
                   <label>
                     Contact Number
-                    <input
+                    <input className='name-data-box'
                       value={form.contactNumber}
                       onChange={(e) =>
                         setForm({
@@ -299,6 +345,7 @@ return (
                       }
                     />
                   </label>
+                </div>
 
                 </div>
                 ) : (
@@ -332,10 +379,8 @@ return (
                         />
                         <path d="M2 6l10 7 10-7" />
                       </svg>
-
                       <span>{form.email}</span>
                     </p>
-
                     <p className="profile-contact">
                       <svg
                         viewBox="0 0 24 24"
@@ -347,37 +392,60 @@ return (
                       >
                         <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8.1 9.7a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 0 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.9 2.2z" />
                       </svg>
-
                       <span>{form.contactNumber}</span>
                     </p>
                   </>
                 )}
             </div>
-                  <button className="edit-btn" id="edit-head" onClick={() => {
-                    if (headEditing) {
-                      handleSaveProfile();
-                    } else {setHeadEditing(true);}
-                  }}
-                  disabled={saving}
-                  >
-                    <EditIcon />
-                    <span>{headEditing ? 'Done' : 'Edit'}</span>
-                  </button>
+            <button 
+              className="edit-btn" 
+              id="edit-head" onClick={() => {
+                if (headEditing) {
+                  handleSaveProfile();
+                } else {setHeadEditing(true);}
+              }}
+            disabled={saving}
+            >
+              <EditIcon />
+              <span>{headEditing ? 'Done' : 'Edit'}</span>
+            </button>
           </div>
 
-              <div className="about-block">
-                <div className="about-head">
-                  <h2>About</h2>
-                  <button className="edit-btn" id="edit-about" onClick={() => setAboutEditing((v) => !v)}>
-                    <EditIcon />
-                    <span>{aboutEditing ? 'Done' : 'Edit'}</span>
-                  </button>
-                </div>
+          <div className="about-block">
+            <h2>About</h2>
+            <div className="about-head">
+              {aboutEditing ? (
 
-                <p id="about-text">
-                  committed to ensuring secure, efficient, and uninterrupted IT operations while providing quality technical support to employees and company systems.
-                </p>
-              </div>
+                <label>
+                  Life's Motto or short Summary about yourself
+
+                  <textarea
+                    value={form.aboutMe}
+                    onChange={(e) =>
+                      setForm({...form, aboutMe: e.target.value})
+                    }
+                  />
+                </label>
+                ) : (
+                  <p id="about-text">{form.aboutMe}</p> 
+              )}
+              <button 
+                className="edit-btn" 
+                id="edit-about"
+                onClick={() => {
+                  if (aboutEditing) {
+                    handleSaveAbout();
+                  } else {
+                    setAboutEditing(true);
+                  }
+                }}
+                 disabled={saving}
+              >
+              <EditIcon />
+              <span>{aboutEditing ? 'Done' : 'Edit'}</span>
+            </button>
+          </div>
+        </div>
 
           <div className="settings-grid">
 
@@ -414,7 +482,7 @@ return (
                       <ChevronIcon />
                     </button>
                     <div className="settings-panel" hidden={!openPanels['panel-password']}>
-                      <label>
+{/*                       <label>
                       Current Password
                       <input
                         type="password"
@@ -427,7 +495,7 @@ return (
                           })
                         }
                       />
-                      </label>
+                      </label> */}
 
                       <label>
                         New Password
@@ -469,7 +537,6 @@ return (
                     </div>
                   </div>
 
-                    {/* Ignore this */}
                   <div className="settings-item">
                     <button className="settings-row" 
                     aria-expanded={!!openPanels['panel-devices']} 
@@ -563,15 +630,35 @@ return (
                   </div>
 
                   <div className="settings-item">
-                    <button className="settings-row" aria-expanded={!!openPanels['panel-history']} onClick={() => togglePanel('panel-history')}>
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
+                    <button 
+                      className="settings-row" 
+                      aria-expanded={!!openPanels['panel-history']} 
+                      onClick={() => togglePanel('panel-history')}
+                    >
+                      <svg 
+                        viewBox="0 0 24 24" 
+                        width="18" 
+                        height="18" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="1.6"
+                      >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7v5l3 3" />
+                      </svg>
                       <span>Login History</span>
                       <ChevronIcon />
                     </button>
                     <div className="settings-panel" hidden={!openPanels['panel-history']}>
-                      <div className="history-row"><span>Aug 6, 2026 — 9:14 AM</span><span>Chrome on Windows</span></div>
-                      <div className="history-row"><span>Aug 4, 2026 — 6:02 PM</span><span>Safari on iPhone</span></div>
-                      <div className="history-row"><span>Aug 1, 2026 — 8:47 AM</span><span>Chrome on Windows</span></div>
+                      <div className="history-row">
+                        <span>Aug 6, 2026 — 9:14 AM</span><span>Chrome on Windows</span>
+                      </div>
+                      <div className="history-row">
+                        <span>Aug 4, 2026 — 6:02 PM</span><span>Safari on iPhone</span>
+                      </div>
+                      <div className="history-row">
+                        <span>Aug 1, 2026 — 8:47 AM</span><span>Chrome on Windows</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -581,34 +668,49 @@ return (
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
                     Account Preferences
                   </h3>
-
                   <div className="settings-item">
-                    <button className="settings-row" aria-expanded={!!openPanels['panel-language']} onClick={() => togglePanel('panel-language')}>
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z" /></svg>
+                    <button 
+                      className="settings-row" 
+                      aria-expanded={!!openPanels['panel-language']} 
+                      onClick={() => togglePanel('panel-language')}
+                    >
+                      <svg 
+                        viewBox="0 0 24 24" 
+                        width="18" 
+                        height="18" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="1.6"
+                      >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z" />
+                      </svg>
                       <span>Language</span>
                       <ChevronIcon />
                     </button>
                     <div className="settings-panel" hidden={!openPanels['panel-language']}>
                       <label>Display Language
-                        <select
+                        <select 
                           value={language}
                           onChange={(e) => setLanguage(e.target.value)}
                         >
-                          <option value="English">English</option>
-                          <option value="Filipino">Filipino</option>
-                          <option value="Cebuano">Cebuano</option>
+                          <option className='language' value="English">English</option>
+                          <option className='language' value="Filipino">Tagalog</option>
+                          <option className='language' value="Cebuano">Cebuano</option>
                         </select>
                       </label>
-
-                      <button className="panel-save" type="button" onClick={handleLanguageSave}>Save Language</button>
-
+                      <button 
+                        className="panel-save" type="button" 
+                        onClick={handleLanguageSave}
+                        >
+                          Save Language
+                      </button>
                     </div>
                   </div>
                 </div>
           </div>
         </section>
       </div>
-      {/* <Footer /> */}
     </div>
   );
 }
