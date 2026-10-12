@@ -16,9 +16,9 @@ const QUESTION_TYPES = ['Multiple Choice', 'True or False', 'Short Answer'];
 
 /* ---------- Upload Materials modal ---------- */
 
-function UploadMaterialsModal({ onClose, onUpload, folderOptions }) {
+function UploadMaterialsModal({ onClose, onUpload, folderOptions = []}) {
   const [files, setFiles] = useState([]);
-  const [folder, setFolder] = useState(folderOptions[0]);
+  const [folder, setFolder] = useState(folderOptions[0] ?? "General");
   const [when, setWhen] = useState('now');
   const [note, setNote] = useState('');
   const [dragOver, setDragOver] = useState(false);
@@ -84,7 +84,7 @@ const handleSubmit = () => {
 
           <label className="materials-field">
             <span className="materials-field-label">Folder</span>
-            <select value={folder} onChange={(e) => setFolder(e.target.value)}>
+            <select type="text" value={folder} onChange={(e) => setFolder(e.target.value)}>
               {folderOptions.map((f) => <option key={f} value={f}>{f}</option>)}
             </select>
           </label>
@@ -130,7 +130,7 @@ function newQuestion() {
   return { id: Math.random().toString(36).slice(2), type: 'Multiple Choice', text: '', choices: [c1, c2], correctId: c1.id, shortAnswer: '' };
 }
 
-function CreateAssessmentModal({ onClose, onSave, modules }) {
+function CreateAssessmentModal({ onClose, onSave, modules = [] }) {
   const [title, setTitle] = useState('');
   const [linkedModule, setLinkedModule] = useState(
     modules[0]?.learn_mod_id ? String(modules[0].learn_mod_id) : ""
@@ -188,8 +188,12 @@ function CreateAssessmentModal({ onClose, onSave, modules }) {
   useEffect(() => {
     if (!linkedModule && modules.length > 0) {
         setLinkedModule(String(modules[0].learn_mod_id));
+        
+        console.log("Modules passed to modal:", modules);
+        console.log("Selected module ID:", linkedModule);
     }
 }, [modules, linkedModule]);
+
   return (
     <div className="materials-modal-overlay" onClick={onClose}>
       <div className="materials-modal-box assessment-modal-box" onClick={(e) => e.stopPropagation()}>
@@ -212,7 +216,7 @@ function CreateAssessmentModal({ onClose, onSave, modules }) {
               required>
                 <option value="">Select a module</option>
                 {modules.map((module) => (
-                  <option key={module.learn_mod_id} value={String(module.learn_mod_id)}>
+                  <option key={module.learnModId} value={String(module.learnModId)}>
                     {module.title} ({module.department_name})
                   </option>
                 ))}
@@ -389,11 +393,17 @@ export default function AdminMaterials() {
       const fetchModules = async () => {
           try {
               const response = await getModules(token);
+
+              console.log("1. Modules API response:", response);
+
               const rows = Array.isArray(response)
                   ? response
                   : Array.isArray(response.data)
                       ? response.data
                       : [];
+
+              console.log("2. Modules received by frontend:", rows);
+              console.log("3. First module ID:", rows[0]?.learn_mod_id);
 
               if (!cancelled) {
                   setModules(
@@ -414,6 +424,7 @@ export default function AdminMaterials() {
           cancelled = true;
       };
   }, [token]);
+  
 
   const activeDepartments = useMemo(() => {
     return departments.filter(
@@ -590,7 +601,11 @@ const visible = useMemo(() => {
             <div className="materials-new-dropdown">
               <button type="button" className="announce-new-btn" onClick={() => setNewMenuOpen((v) => !v)}>
                 + New Materials
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+                <svg viewBox="0 0 24 24" 
+                  width="14" height="14" fill="none" 
+                  stroke="currentColor" strokeWidth="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </button>
               {newMenuOpen && (
                 <div className="materials-new-menu">
