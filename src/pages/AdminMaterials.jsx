@@ -8,6 +8,7 @@ import './AdminMaterials.css';
 import { useSelector } from 'react-redux';
 import { getDepartments } from '../services/departmentService';
 import { getModules } from '../services/moduleService';
+import { getMaterials, createMaterials, uploadMaterials } from '../services/materialService';
 
 
 const GENERAL_FOLDER = 'General';
@@ -52,6 +53,19 @@ const handleSubmit = () => {
 
   const status = when === 'now' ? 'published' : when === 'schedule' ? 'scheduled' : 'draft';
 
+  console.log(" = = Upload Module = = ");
+  console.log("Selected files:", files);
+  console.log("Selected module ID:", linkedModule);
+  console.log("status", status);
+  console.log("Note", note.trim());
+
+  files.forEach((file, index) => {
+    console.log(`File ${index + 1}:`, {
+      name: file.name,
+      type: file.type, 
+      size: file.size,
+    });
+  });
   onUpload({files, linkedModule, status, note: note.trim(),});
 };
 
@@ -109,7 +123,7 @@ useEffect(() => {
               <option value="">Select Module</option>
                 {modules.map((module) => <option 
                   key={module.learn_mod_id} 
-                  value={String(learn_mod_id)}>
+                  value={module.learn_mod_id}>
                     {module.title} ({module.department_name})
               </option>)}
             </select>
@@ -536,13 +550,13 @@ export default function AdminMaterials() {
     });
   };
 
-  const handleUpload = ({ files, folder, status, note }) => {
+  const handleUpload = ({ files, linkedModule, status, note }) => {
     const title = files.length === 1 ? files[0].name : `${files.length} files uploaded`;
     addMaterial({
-      category: folder,
+      category: linkedModule,
       status,
       title,
-      description: note || `Uploaded to ${folder}.`,
+      description: note || `Uploaded to ${linkedModule}.`,
     });
     setUploadOpen(false);
     showToast(
