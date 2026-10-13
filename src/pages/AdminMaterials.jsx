@@ -16,9 +16,10 @@ const QUESTION_TYPES = ['Multiple Choice', 'True or False', 'Short Answer'];
 
 /* ---------- Upload Materials modal ---------- */
 
-function UploadMaterialsModal({ onClose, onUpload, folderOptions = []}) {
+function UploadMaterialsModal({ onClose, onUpload, modules = []}) {
   const [files, setFiles] = useState([]);
-  const [folder, setFolder] = useState(folderOptions[0] ?? "General");
+  const [linkedModule, setLinkedModule] = useState(
+    modules[0]?.learn_mod_id ? String(modules[0].learn_mod_id) : "");
   const [when, setWhen] = useState('now');
   const [note, setNote] = useState('');
   const [dragOver, setDragOver] = useState(false);
@@ -29,10 +30,20 @@ function UploadMaterialsModal({ onClose, onUpload, folderOptions = []}) {
   };
 
 const handleSubmit = () => {
-  if (files.length === 0) return;
+  if (files.length === 0) {
+    alert("Please select atlease 1 file");
+    return;
+  }
+
+  if (!linkedModule) {
+    alert("Please select learning module");
+    return;
+  }
+    
   const maxSize = 100 * 1024 * 1024;
 
-  const oversizedFile = files.find((file) => file.size > maxSize);
+  const oversizedFile = files.find(
+    (file) => file.size > maxSize);
 
   if (oversizedFile) {
     alert(`${oversizedFile.name} exceeds the 100 MB limit.`);
@@ -41,8 +52,17 @@ const handleSubmit = () => {
 
   const status = when === 'now' ? 'published' : when === 'schedule' ? 'scheduled' : 'draft';
 
-  onUpload({files, folder, status, note: note.trim(),});
+  onUpload({files, linkedModule, status, note: note.trim(),});
 };
+
+useEffect(() => {
+  if (
+    modules.length > 0 && !modules.some(
+      module => String(module.learn_mod_id) === linkedModule
+      )
+    ) {setLinkedModule(String(modules[0].learn_mod_id));
+  }
+}, [modules, linkedModule]);
 
   return (
     <div className="materials-modal-overlay" onClick={onClose}>
@@ -77,15 +97,21 @@ const handleSubmit = () => {
               accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.webp"
               onChange={(e) => { 
                 if (e.target.files) {addFiles(e.target.files); 
-                e.target.values = "";}
+                e.target.value = "";}
               }}
             />
           </div>
 
           <label className="materials-field">
-            <span className="materials-field-label">Folder</span>
-            <select type="text" value={folder} onChange={(e) => setFolder(e.target.value)}>
-              {folderOptions.map((f) => <option key={f} value={f}>{f}</option>)}
+            <span className="materials-field-label">Learning Module</span>
+            <select type="text" value={linkedModule}
+             onChange={(e) => setLinkedModule(e.target.value)} required>
+              <option value="">Select Module</option>
+                {modules.map((module) => <option 
+                  key={module.learn_mod_id} 
+                  value={String(learn_mod_id)}>
+                    {module.title} ({module.department_name})
+              </option>)}
             </select>
           </label>
 
@@ -93,24 +119,33 @@ const handleSubmit = () => {
             <div className="materials-field">
               <span className="materials-field-label">When</span>
               <div className="materials-when-group">
-                <button type="button" className={when === 'now' ? 'active' : ''} onClick={() => setWhen('now')}>Publish now</button>
-                <button type="button" className={when === 'schedule' ? 'active' : ''} onClick={() => setWhen('schedule')}>Schedule</button>
-                <button type="button" className={when === 'draft' ? 'active' : ''} onClick={() => setWhen('draft')}>Save Draft</button>
+                <button type="button" className={when === 'now' ? 'active' : ''} 
+                  onClick={() => setWhen('now')}>Publish now</button>
+                <button type="button" className={when === 'schedule' ? 'active' : ''} 
+                  onClick={() => setWhen('schedule')}>Schedule</button>
+                <button type="button" className={when === 'draft' ? 'active' : ''} 
+                  onClick={() => setWhen('draft')}>Save Draft</button>
               </div>
             </div>
 
             <label className="materials-field">
               <span className="materials-field-label">Note</span>
-              <input type="text" placeholder="e.g Updated 2026" value={note} onChange={(e) => setNote(e.target.value)} />
+              <input type="text" placeholder="e.g Updated 2026" value={note} 
+                onChange={(e) => setNote(e.target.value)} />
             </label>
           </div>
         </div>
 
         <div className="materials-modal-footer">
-          <span className="materials-file-count">{files.length} file{files.length === 1 ? '' : 's'} selected</span>
+          <span className="materials-file-count">{files.length} 
+            file{files.length === 1 ? '' : 's'} selected
+          </span>
           <div className="materials-modal-footer-btns">
-            <button type="button" className="materials-cancel-btn" onClick={onClose}>Cancel</button>
-            <button type="button" className="materials-primary-btn" onClick={handleSubmit} disabled={files.length === 0}>Upload Materials</button>
+            <button type="button" className="materials-cancel-btn" 
+              onClick={onClose}>Cancel</button>
+            <button type="button" className="materials-primary-btn" 
+              onClick={handleSubmit} disabled={files.length === 0}>Upload Materials
+            </button>
           </div>
         </div>
       </div>
@@ -127,7 +162,9 @@ function newChoice() {
 function newQuestion() {
   const c1 = newChoice();
   const c2 = newChoice();
-  return { id: Math.random().toString(36).slice(2), type: 'Multiple Choice', text: '', choices: [c1, c2], correctId: c1.id, shortAnswer: '' };
+  return { id: Math.random().toString(36).slice(2), 
+    type: 'Multiple Choice', text: '', choices: [c1, c2], 
+    correctId: c1.id, shortAnswer: '' };
 }
 
 function CreateAssessmentModal({ onClose, onSave, modules = [] }) {
@@ -160,7 +197,9 @@ function CreateAssessmentModal({ onClose, onSave, modules = [] }) {
   };
 
   const addChoice = (qId) => {
-    setQuestions((prev) => prev.map((q) => (q.id === qId ? { ...q, choices: [...q.choices, newChoice()] } : q)));
+    setQuestions((prev) => prev.map(
+      (q) => (q.id === qId ? { ...q, choices: [...q.choices, newChoice()] } : q)
+    ));
   };
 
   const removeChoice = (qId, choiceId) => {
@@ -200,13 +239,16 @@ function CreateAssessmentModal({ onClose, onSave, modules = [] }) {
         <div className="materials-modal-head">
           <h2>CREATE ASSESSMENT</h2>
           <p>add questions, pick an answer type, and set the correct answer</p>
-          <button type="button" className="materials-modal-close" aria-label="Close" onClick={onClose}>&times;</button>
+          <button type="button" className="materials-modal-close" aria-label="Close" onClick={onClose}>
+            &times;
+          </button>
         </div>
 
         <div className="materials-modal-body assessment-modal-scroll">
           <label className="materials-field">
             <span className="materials-field-label">Title</span>
-            <input type="text" placeholder="Add title" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <input type="text" placeholder="Add title" value={title}
+              onChange={(e) => setTitle(e.target.value)} />
           </label>
 
           <div className="materials-field-row">
@@ -216,7 +258,7 @@ function CreateAssessmentModal({ onClose, onSave, modules = [] }) {
               required>
                 <option value="">Select a module</option>
                 {modules.map((module) => (
-                  <option key={module.learnModId} value={String(module.learnModId)}>
+                  <option key={module.learn_mod_id} value={String(module.learn_mod_id)}>
                     {module.title} ({module.department_name})
                   </option>
                 ))}
@@ -297,7 +339,10 @@ function CreateAssessmentModal({ onClose, onSave, modules = [] }) {
           <span className="materials-file-count">{questions.length} Question{questions.length === 1 ? '' : 's'} added</span>
           <div className="materials-modal-footer-btns">
             <button type="button" className="materials-cancel-btn" onClick={onClose}>Cancel</button>
-            <button type="button" className="materials-primary-btn" onClick={handleSave} disabled={!title.trim()}>Save Assessment</button>
+            <button type="button" className="materials-primary-btn" 
+              onClick={handleSave} disabled={!title.trim()}>
+                Save Assessment
+            </button>
           </div>
         </div>
       </div>
@@ -356,9 +401,9 @@ export default function AdminMaterials() {
 
   const normalizeRole = roleName.toLowerCase();
 
-  const isSuperAdmin = normalizeRole === "Super admin";
-  const isAdmin = normalizeRole === "Admin";
-  const isLocalAccount = normalizeRole === "Local account";
+  const isSuperAdmin = normalizeRole === "super admin";
+  const isAdmin = normalizeRole === "admin";
+  const isLocalAccount = normalizeRole === "local account";
 
   const [departments, setDepartments] = useState([])
   const [modules, setModules] = useState([]);
@@ -500,7 +545,9 @@ export default function AdminMaterials() {
       description: note || `Uploaded to ${folder}.`,
     });
     setUploadOpen(false);
-    showToast(status === 'published' ? 'Material uploaded' : status === 'scheduled' ? 'Upload scheduled' : 'Draft saved');
+    showToast(
+      status === 'published' ? 'Material uploaded' : status === 'scheduled' ? 'Upload scheduled' : 'Draft saved'
+    );
   };
 
 const handleSaveAssessment = ({
@@ -514,7 +561,9 @@ const handleSaveAssessment = ({
   });
 };
 
-  const today = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const today = new Date().toLocaleDateString(undefined, { 
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+  });
 
   
 const counts = useMemo(() => {
@@ -589,9 +638,9 @@ const visible = useMemo(() => {
             <h1>Department Materials</h1>
             <p>Browse important documents, standard operating procedures (SOPs), manuals, and resources provided by your department.</p>
           </div>
-            {/*           <div className="admin-header-actions">
+          <div className="admin-header-actions">
             <AdminHeaderActions />
-          </div> */}
+          </div>
         </header>
 
         <div className="announce-body">
@@ -609,12 +658,29 @@ const visible = useMemo(() => {
               </button>
               {newMenuOpen && (
                 <div className="materials-new-menu">
-                  <button type="button" onClick={() => { setNewMenuOpen(false); setUploadOpen(true); }}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 16V4" /><path d="M6 10l6-6 6 6" /><path d="M4 20h16" /></svg>
+                  <button type="button" onClick={() => { 
+                    setNewMenuOpen(false); setUploadOpen(true); 
+                    }}>
+                    <svg viewBox="0 0 24 24" 
+                      width="16" height="16" 
+                      fill="none" stroke="currentColor" 
+                      strokeWidth="1.8">
+                        <path d="M12 16V4" />
+                        <path d="M6 10l6-6 6 6" />
+                        <path d="M4 20h16" />
+                    </svg>
                     Upload Material
                   </button>
-                  <button type="button" onClick={() => { setNewMenuOpen(false); setAssessmentOpen(true); }}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                  <button type="button" onClick={() => { 
+                    setNewMenuOpen(false); setAssessmentOpen(true); 
+                    }}>
+                    <svg viewBox="0 0 24 24" 
+                      width="16" height="16" 
+                      fill="none" stroke="currentColor" 
+                      strokeWidth="1.8">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>
                     Create Assessment
                   </button>
                 </div>
@@ -624,14 +690,24 @@ const visible = useMemo(() => {
 
           <div className="announce-controls">
             <div className="announce-tabs">
-              <button type="button" className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>All {counts.all}</button>
-              <button type="button" className={filter === 'published' ? 'active' : ''} onClick={() => setFilter('published')}>Published {counts.published}</button>
-              <button type="button" className={filter === 'scheduled' ? 'active' : ''} onClick={() => setFilter('scheduled')}>Scheduled {counts.scheduled}</button>
-              <button type="button" className={filter === 'draft' ? 'active' : ''} onClick={() => setFilter('draft')}>Draft {counts.draft}</button>
+              <button type="button" className={filter === 'all' ? 'active' : ''} 
+                onClick={() => setFilter('all')}>All {counts.all}</button>
+              <button type="button" className={filter === 'published' ? 'active' : ''} 
+                onClick={() => setFilter('published')}>Published {counts.published}</button>
+              <button type="button" className={filter === 'scheduled' ? 'active' : ''} 
+                onClick={() => setFilter('scheduled')}>Scheduled {counts.scheduled}</button>
+              <button type="button" className={filter === 'draft' ? 'active' : ''} 
+                onClick={() => setFilter('draft')}>Draft {counts.draft}</button>
             </div>
 
             <div className="announce-search">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" /></svg>
+              <svg viewBox="0 0 24 24" 
+                width="15" height="15" 
+                fill="none" stroke="currentColor" 
+                strokeWidth="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.35-4.35" />
+              </svg>
               <input
                 type="text"
                 placeholder="Search department, roles etc"
@@ -646,7 +722,9 @@ const visible = useMemo(() => {
               <article className="materials-card" key={m.id}>
                 <div className="announce-card-head">
                   <span className="announce-category-pill">{m.category}</span>
-                  <span className={`announce-status-pill status-${m.status}`}>{STATUS_LABELS[m.status]}</span>
+                  <span className={`announce-status-pill status-${m.status}`}>
+                    {STATUS_LABELS[m.status]}
+                  </span>
                 </div>
 
                 <div className="materials-thumb"><ThumbIcon /></div>
@@ -657,11 +735,26 @@ const visible = useMemo(() => {
                 <div className="announce-card-foot">
                   <span>{m.date}</span>
                   <div className="announce-card-actions">
-                    <button type="button" aria-label="Edit" onClick={() => showToast('Editing isn\u2019t wired up yet')}>
-                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></svg>
+                    <button type="button" aria-label="Edit" 
+                    onClick={() => showToast('Editing isn\u2019t wired up yet')}>
+                    <svg viewBox="0 0 24 24" 
+                      width="15" height="15" 
+                      fill="none" stroke="currentColor" 
+                      strokeWidth="1.8">
+                        <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                    </svg>
                     </button>
-                    <button type="button" aria-label="Delete" onClick={() => handleDelete(m.id)}>
-                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /></svg>
+                    <button type="button" aria-label="Delete" 
+                    onClick={() => handleDelete(m.id)}>
+                      <svg viewBox="0 0 24 24" width="15" 
+                        height="15" fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="1.8">
+                          <path d="M3 6h18" />
+                          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -677,15 +770,16 @@ const visible = useMemo(() => {
       </div>
 
       {uploadOpen && (
-        <UploadMaterialsModal onClose={
-          () => setUploadOpen(false)} 
-          onUpload={handleUpload} folderOptions={folderOptions} />
+        <UploadMaterialsModal 
+          onClose={() => setUploadOpen(false)} 
+          onUpload={handleUpload} 
+          modules={availableModules} />
       )}
       {assessmentOpen && (
         <CreateAssessmentModal 
         onClose={() => setAssessmentOpen(false)} 
         onSave={handleSaveAssessment} 
-        folderOptions={availableModules} />
+        modules={availableModules} />
       )}
     </div>
   );
