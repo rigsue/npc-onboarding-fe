@@ -16,7 +16,7 @@ export async function getMaterials(token) {
     }
     return result;
 }
-
+/* 
 export async function createMaterials(token, payload) {
 
     try {
@@ -45,8 +45,8 @@ export async function createMaterials(token, payload) {
     next(error);
     }
 }
-
-export async function uploadMaterials(token, {
+ */
+/* export async function uploadMaterials(token, {
     files, linkedModule, note
 }) {
     const formData = new FormData();
@@ -57,7 +57,6 @@ export async function uploadMaterials(token, {
     for (const file of files) {
         formData.append("files", file);
     }
-
         // FormData entries can be inspected this way.
     for (const [key, value] of formData.entries()) {
         if (value instanceof File) {
@@ -70,7 +69,6 @@ export async function uploadMaterials(token, {
         console.log(`${key}:`, value);
         }
     }
-    
     const response = await fetch(
         `${MATERIAL_URL}/create-material`,
         {
@@ -81,7 +79,6 @@ export async function uploadMaterials(token, {
             body: formData
         }
     );
-
     console.log("HTTP response status:", response.status);
     console.log("HTTP response OK:", response.ok);
 
@@ -93,4 +90,50 @@ export async function uploadMaterials(token, {
         throw new Error(data.message || "Failed to upload materials");
     }
     return data;
+} */
+
+export async function uploadMaterials(token, {
+    files,
+    linkedModule,
+    note,
+    title,
+    materialType = "document",
+    displayOrder = 0,
+    minDurationMinutes = 5,
+    maxDurationMinutes = 30
+}) {
+    const formData = new FormData();
+
+    formData.append("learnModId", linkedModule);
+    formData.append("title", title);
+    formData.append("description", note);
+    formData.append("materialType", materialType);
+    formData.append("displayOrder", displayOrder);
+    formData.append("minDurationMinutes", minDurationMinutes);
+    formData.append("maxDurationMinutes", maxDurationMinutes);
+
+    for (const file of files) {
+        formData.append("files", file);
+    }
+
+    const response = await fetch(
+        `${MATERIAL_URL}/create-material`,
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            body: formData
+        }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result.message || "Failed to upload materials"
+        );
+    }
+
+    return result;
 }
