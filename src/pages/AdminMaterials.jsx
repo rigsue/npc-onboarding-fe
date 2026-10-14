@@ -8,7 +8,10 @@ import './AdminMaterials.css';
 import { useSelector } from 'react-redux';
 import { getDepartments } from '../services/departmentService';
 import { getModules } from '../services/moduleService';
-import { getMaterials, createMaterials, uploadMaterials } from '../services/materialService';
+import { 
+  getMaterials, 
+  // createMaterials, 
+  uploadMaterials } from '../services/materialService';
 
 
 const GENERAL_FOLDER = 'General';
@@ -394,6 +397,26 @@ function ThumbIcon() {
 }
 
 
+
+function normalizeMaterial(material) {
+    return {
+        ...material,
+
+        id: material.learn_mat_id,
+
+        category: material.module_title,
+
+        status: material.is_active
+            ? "published"
+            : "draft",
+
+        date: material.created_at
+            ? new Date(material.created_at).toLocaleDateString()
+            : ""
+    };
+}
+
+
 /* ---------- Main page ---------- */
 
 export default function AdminMaterials() {
@@ -421,7 +444,8 @@ export default function AdminMaterials() {
 
   const [departments, setDepartments] = useState([])
   const [modules, setModules] = useState([]);
-  const [materials, setMaterials] = useState(INITIAL_MATERIALS);
+  const [materials, setMaterials] = useState([]);
+  const [materialsIsLoading, setMaterialsIsLoading] = useState(false);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [newMenuOpen, setNewMenuOpen] = useState(false);
@@ -491,6 +515,58 @@ export default function AdminMaterials() {
     );
   }, [departments]);
 
+  
+useEffect(() => {
+    if (!token) {
+        setMaterials([]);
+        return;
+    }
+
+    let cancelled = false;
+
+    const fetchMaterials = async () => {
+        setMaterialsLoading(true);
+
+        try {
+            const response = await getMaterials(token);
+
+            console.log(
+                "Learning materials API response:",
+                response
+            );
+
+            const rows = Array.isArray(response.data)
+                ? response.data
+                : [];
+
+            if (!cancelled) {
+                setMaterials(rows.map(normalizeMaterial));
+            }
+
+        } catch (error) {
+            console.error(
+                "Failed to fetch learning materials:",
+                error
+            );
+
+            if (!cancelled) {
+                showToast("Failed to load learning materials");
+            }
+
+        } finally {
+            if (!cancelled) {
+                setMaterialIsLoading(false);
+            }
+        }
+    };
+
+    fetchMaterials();
+
+    return () => {
+        cancelled = true;
+    };
+}, [token]);
+
   const folderOptions = useMemo(() => {
     const departmentNames = activeDepartments.map(
       (department) => department.department_name
@@ -550,18 +626,30 @@ export default function AdminMaterials() {
     });
   };
 
-  const handleUpload = ({ files, linkedModule, status, note }) => {
-    const title = files.length === 1 ? files[0].name : `${files.length} files uploaded`;
-    addMaterial({
-      category: linkedModule,
-      status,
-      title,
-      description: note || `Uploaded to ${linkedModule}.`,
+  const handleUpload = async ({ files, linkedModule, status, note }) => {
+    try {
+      if (status !== "published") {
+        showToast("Scheduled uploads and drafts not yet supported");
+        return;
+      }
+    
+    const title = files.length === 1 ? files[0].name.replace(/\.[^.]+$/, "") : "Learning Materials";
+
+    await uploadMaterials(token, {
+      files, linkedModule, note, title, materialType: "document"
     });
+    const response = await getMaterials(token);
+
+    const rows = Array.isArray(response.data) ? response.data : [];
+
+    setMaterials(rows.map(normalizeMaterial));
+
     setUploadOpen(false);
-    showToast(
-      status === 'published' ? 'Material uploaded' : status === 'scheduled' ? 'Upload scheduled' : 'Draft saved'
-    );
+
+    showToast("Learni materials upload success");
+    } catch (error) {console.error("material upload failed", error);
+    showToast( error.message || "Failed to upload learn materials");
+    };
   };
 
 const handleSaveAssessment = ({
