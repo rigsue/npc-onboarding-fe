@@ -24,8 +24,15 @@ function UploadMaterialsModal({ onClose, onUpload, modules = []}) {
   const [files, setFiles] = useState([]);
   const [linkedModule, setLinkedModule] = useState(
     modules[0]?.learn_mod_id ? String(modules[0].learn_mod_id) : "");
-  const [when, setWhen] = useState('now');
-  const [note, setNote] = useState('');
+  const [when, setWhen] = useState("now");
+
+  const [note, setNote] = useState("");
+  const [title, setTitle] = useState("");
+  const [materialType, setMaterialType] = useState("document");
+  const [displayOrder, setDisplayOrder] = useState("");
+  const [minDurationMinutes, setMinDurationMinutes] = useState(5);
+  const [maxDurationMinutes, setMaxDurationMinutes] = useState(30);
+
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef(null);
 
@@ -33,17 +40,17 @@ function UploadMaterialsModal({ onClose, onUpload, modules = []}) {
     setFiles((prev) => [...prev, ...Array.from(fileList)]);
   };
 
-const handleSubmit = () => {
-  if (files.length === 0) {
-    alert("Please select atlease 1 file");
-    return;
-  }
+  const handleSubmit = () => {
+    if (files.length === 0) {
+      alert("Please select atlease 1 file");
+      return;
+    }
 
-  if (!linkedModule) {
-    alert("Please select learning module");
-    return;
-  }
-    
+    if (!linkedModule) {
+      alert("Please select learning module");
+      return;
+    }
+      
   const maxSize = 100 * 1024 * 1024;
 
   const oversizedFile = files.find(
@@ -51,6 +58,31 @@ const handleSubmit = () => {
 
   if (oversizedFile) {
     alert(`${oversizedFile.name} exceeds the 100 MB limit.`);
+    return;
+  }
+
+  if (!title.trim()) {
+    alert("Please enter a material title.");
+    return;
+  }
+
+  const minDuration = Number(minDurationMinutes);
+  const maxDuration = Number(maxDurationMinutes);
+
+  if(
+    !Number.isSafeInteger(minDuration) ||
+    !Number.isSafeInteger(maxDuration) ||
+    minDuration < 1 || maxDuration < minDuration
+    ) {
+      alert("Please enter valid minimum and maximum duration.");
+      return;
+    }
+    if (displayOrder !== "" && (
+      !Number.isSafeInteger(Number(displayOrder)) ||
+      Number(displayOrder) < 1
+    )
+  ) {
+    alert("Display order must be a positive integer");
     return;
   }
 
@@ -69,8 +101,20 @@ const handleSubmit = () => {
       size: file.size,
     });
   });
-  onUpload({files, linkedModule, status, note: note.trim(),});
+  onUpload({
+    files,
+    linkedModule,
+    status,
+    note: note.trim(),
+    title: title.trim(),
+    materialType,
+    displayOrder:
+        displayOrder === "" ? null : Number(displayOrder),
+    minDurationMinutes: minDuration,
+    maxDurationMinutes: maxDuration
+  });
 };
+
 
 useEffect(() => {
   if (
@@ -86,7 +130,9 @@ useEffect(() => {
       <div className="materials-modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="materials-modal-head">
           <h2>UPLOAD MATERIALS</h2>
-          <button type="button" className="materials-modal-close" aria-label="Close" onClick={onClose}>&times;</button>
+          <button type="button" className="materials-modal-close" aria-label="Close" onClick={onClose}>
+            &times;
+          </button>
         </div>
 
         <div className="materials-modal-body">
@@ -102,7 +148,10 @@ useEffect(() => {
             }}
           >
             <div className="materials-dropzone-icon">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2"><path d="M12 16V4" /><path d="M6 10l6-6 6 6" /><path d="M4 20h16" /></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2">
+                <path d="M12 16V4" />
+                <path d="M6 10l6-6 6 6" />
+                <path d="M4 20h16" /></svg>
             </div>
             <p><strong>Click to Browse</strong> or Drag file here</p>
             <span>PDF, DOCS, PPTX, XLSX, or images up to 100mb each</span>
@@ -132,6 +181,79 @@ useEffect(() => {
             </select>
           </label>
 
+          {/* Material title */}
+          <label className="materials-field">
+            <span className="materials-field-label">
+              Material Title
+            </span>
+            <input type="text" 
+              maxLength={100}
+              placeholder="e.g. IT Onboarding Guide"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </label>
+
+            {/* Description */}
+          <label className="materials-field">
+            <span className="materials-field-label">
+              Description
+            </span>
+            <textarea maxLength={500}
+              placeholder="Please describe you learnin materials"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              rows={3}
+            />
+          </label>
+
+          {/* Material Type / Display Order */}
+          <div className="material-field-row">
+            <label className="material-field">
+              <span className="materials-field-label">
+                Material Type
+              </span>
+              <select value={materialType} 
+                onChange={(e) => setMaterialType(e.target.value)}
+              >
+                <option value="document">Document</option>
+                <option value="presentation">Presentation</option>
+                <option value="image">Image</option>
+              </select>
+            </label>
+
+            <label className="material-field">
+              <span className="materials-field-label">
+                Display Order
+              </span>
+              <input type="number" min="1" step="1" placeholder="auto" value={displayOrder}
+                onChange={(e) => setDisplayOrder(e.target.value)}
+              />
+            </label>
+          </div>
+
+                  {/* Duration */}
+          <div className="material-field-row">
+            <label className="material-field">
+              <span className="materials-field-label">
+                Minimum Duration (minutes)
+              </span>
+              <input type="number"min="1" step="1" value={minDurationMinutes}
+                onChange={(e) => setMinDurationMinutes(e.target.value)}
+                />
+            </label>
+
+            <label className="material-field">
+              <span className="materials-field-label">
+                Maximum Duration (minutes)
+              </span>
+              <input type="number"min="1" step="1" value={maxDurationMinutes}
+                onChange={(e) => setMaxDurationMinutes(e.target.value)}
+                />
+            </label>
+          </div>
+
           <div className="materials-field-row">
             <div className="materials-field">
               <span className="materials-field-label">When</span>
@@ -145,11 +267,11 @@ useEffect(() => {
               </div>
             </div>
 
-            <label className="materials-field">
+{/*             <label className="materials-field">
               <span className="materials-field-label">Note</span>
               <input type="text" placeholder="e.g Updated 2026" value={note} 
                 onChange={(e) => setNote(e.target.value)} />
-            </label>
+            </label> */}
           </div>
         </div>
 
@@ -525,7 +647,7 @@ useEffect(() => {
     let cancelled = false;
 
     const fetchMaterials = async () => {
-        setMaterialsLoading(true);
+        setMaterialsIsLoading(true);
 
         try {
             const response = await getMaterials(token);
@@ -555,7 +677,7 @@ useEffect(() => {
 
         } finally {
             if (!cancelled) {
-                setMaterialIsLoading(false);
+                setMaterialsIsLoading(false);
             }
         }
     };
@@ -626,17 +748,19 @@ useEffect(() => {
     });
   };
 
-  const handleUpload = async ({ files, linkedModule, status, note }) => {
+  const handleUpload = async ({ 
+    files, linkedModule, status, note, title, materialType, displayOrder, minDurationMinutes, maxDurationMinutes 
+  }) => {
     try {
       if (status !== "published") {
         showToast("Scheduled uploads and drafts not yet supported");
         return;
       }
     
-    const title = files.length === 1 ? files[0].name.replace(/\.[^.]+$/, "") : "Learning Materials";
+    // const title = files.length === 1 ? files[0].name.replace(/\.[^.]+$/, "") : "Learning Materials";
 
     await uploadMaterials(token, {
-      files, linkedModule, note, title, materialType: "document"
+      files, linkedModule, note, title, materialType, displayOrder, minDurationMinutes, maxDurationMinutes
     });
     const response = await getMaterials(token);
 
@@ -647,8 +771,10 @@ useEffect(() => {
     setUploadOpen(false);
 
     showToast("Learni materials upload success");
-    } catch (error) {console.error("material upload failed", error);
-    showToast( error.message || "Failed to upload learn materials");
+
+    } catch (error) {
+      console.error("material upload failed", error);
+    showToast(error.message || "Failed to upload learn materials");
     };
   };
 

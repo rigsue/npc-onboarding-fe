@@ -98,7 +98,7 @@ export async function uploadMaterials(token, {
     note,
     title,
     materialType = "document",
-    displayOrder = 0,
+    displayOrder = null,
     minDurationMinutes = 5,
     maxDurationMinutes = 30
 }) {
@@ -108,9 +108,14 @@ export async function uploadMaterials(token, {
     formData.append("title", title);
     formData.append("description", note);
     formData.append("materialType", materialType);
-    formData.append("displayOrder", displayOrder);
+    // formData.append("displayOrder", displayOrder);
     formData.append("minDurationMinutes", minDurationMinutes);
     formData.append("maxDurationMinutes", maxDurationMinutes);
+
+    if (displayOrder !== null && displayOrder !== "") {
+        formData.append("displayOrder", displayOrder);
+    }
+
 
     for (const file of files) {
         formData.append("files", file);
@@ -121,7 +126,7 @@ export async function uploadMaterials(token, {
         {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
             },
             body: formData
         }
