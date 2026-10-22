@@ -1,495 +1,24 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import AdminSidebar from '../components/AdminSidebar';
+import { useSelector } from 'react-redux';
+
 import AdminHeaderActions from '../components/AdminHeaderActions';
 import AdminFooter from '../components/AdminFooter';
+
+// import AdminSidebar from '../components/AdminSidebar';
+import AddMaterialsModal from '../components/materials/addMaterials';
+
+import CreateAssessment from '../components/materials/addAssessment';
+
 import { useToast } from '../context/ToastContext';
-import '../components/AdminLayout.css';
-import './AdminMaterials.css';
-import { useSelector } from 'react-redux';
+
 import { getDepartments } from '../services/departmentService';
 import { getModules } from '../services/moduleService';
-import { 
-  getMaterials, 
-  // createMaterials, 
-  uploadMaterials } from '../services/materialService';
+import { getMaterials, uploadMaterials } from '../services/materialService';
 
+import '../components/AdminLayout.css';
+import './AdminMaterials.css';
 
 const GENERAL_FOLDER = 'General';
-const PASSING_SCORES = ['60%', '70%', '80%', '90%', '100%'];
-const QUESTION_TYPES = ['Multiple Choice', 'True or False', 'Short Answer'];
-
-/* ---------- Upload Materials modal ---------- */
-
-function UploadMaterialsModal({ onClose, onUpload, modules = []}) {
-  const [files, setFiles] = useState([]);
-  const [linkedModule, setLinkedModule] = useState(
-    modules[0]?.learn_mod_id ? String(modules[0].learn_mod_id) : "");
-  const [when, setWhen] = useState("now");
-
-  const [note, setNote] = useState("");
-  const [title, setTitle] = useState("");
-  const [materialType, setMaterialType] = useState("document");
-  const [displayOrder, setDisplayOrder] = useState("");
-  const [minDurationMinutes, setMinDurationMinutes] = useState(5);
-  const [maxDurationMinutes, setMaxDurationMinutes] = useState(30);
-
-  const [dragOver, setDragOver] = useState(false);
-  const inputRef = useRef(null);
-
-  const addFiles = (fileList) => {
-    setFiles((prev) => [...prev, ...Array.from(fileList)]);
-  };
-
-  const handleSubmit = () => {
-    if (files.length === 0) {
-      alert("Please select atlease 1 file");
-      return;
-    }
-
-    if (!linkedModule) {
-      alert("Please select learning module");
-      return;
-    }
-      
-  const maxSize = 100 * 1024 * 1024;
-
-  const oversizedFile = files.find(
-    (file) => file.size > maxSize);
-
-  if (oversizedFile) {
-    alert(`${oversizedFile.name} exceeds the 100 MB limit.`);
-    return;
-  }
-
-  if (!title.trim()) {
-    alert("Please enter a material title.");
-    return;
-  }
-
-  const minDuration = Number(minDurationMinutes);
-  const maxDuration = Number(maxDurationMinutes);
-
-  if(
-    !Number.isSafeInteger(minDuration) ||
-    !Number.isSafeInteger(maxDuration) ||
-    minDuration < 1 || maxDuration < minDuration
-    ) {
-      alert("Please enter valid minimum and maximum duration.");
-      return;
-    }
-    if (displayOrder !== "" && (
-      !Number.isSafeInteger(Number(displayOrder)) ||
-      Number(displayOrder) < 1
-    )
-  ) {
-    alert("Display order must be a positive integer");
-    return;
-  }
-
-  const status = when === 'now' ? 'published' : when === 'schedule' ? 'scheduled' : 'draft';
-
-  console.log(" = = Upload Module = = ");
-  console.log("Selected files:", files);
-  console.log("Selected module ID:", linkedModule);
-  console.log("status", status);
-  console.log("Note", note.trim());
-
-  files.forEach((file, index) => {
-    console.log(`File ${index + 1}:`, {
-      name: file.name,
-      type: file.type, 
-      size: file.size,
-    });
-  });
-  onUpload({
-    files,
-    linkedModule,
-    status,
-    note: note.trim(),
-    title: title.trim(),
-    materialType,
-    displayOrder:
-        displayOrder === "" ? null : Number(displayOrder),
-    minDurationMinutes: minDuration,
-    maxDurationMinutes: maxDuration
-  });
-};
-
-
-useEffect(() => {
-  if (
-    modules.length > 0 && !modules.some(
-      module => String(module.learn_mod_id) === linkedModule
-      )
-    ) {setLinkedModule(String(modules[0].learn_mod_id));
-  }
-}, [modules, linkedModule]);
-
-  return (
-    <div className="materials-modal-overlay" onClick={onClose}>
-      <div className="materials-modal-box" onClick={(e) => e.stopPropagation()}>
-        <div className="materials-modal-head">
-          <h2>UPLOAD MATERIALS</h2>
-          <button type="button" className="materials-modal-close" aria-label="Close" onClick={onClose}>
-            &times;
-          </button>
-        </div>
-
-        <div className="materials-modal-body">
-          <div
-            className={`materials-dropzone${dragOver ? ' dragover' : ''}`}
-            onClick={() => inputRef.current && inputRef.current.click()}
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={(e) => {
-              e.preventDefault();
-              setDragOver(false);
-              if (e.dataTransfer.files && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
-            }}
-          >
-            <div className="materials-dropzone-icon">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2">
-                <path d="M12 16V4" />
-                <path d="M6 10l6-6 6 6" />
-                <path d="M4 20h16" /></svg>
-            </div>
-            <p><strong>Click to Browse</strong> or Drag file here</p>
-            <span>PDF, DOCS, PPTX, XLSX, or images up to 100mb each</span>
-            <input
-              ref={inputRef}
-              type="file"
-              multiple
-              hidden
-              accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.webp"
-              onChange={(e) => { 
-                if (e.target.files) {addFiles(e.target.files); 
-                e.target.value = "";}
-              }}
-            />
-          </div>
-
-          <label className="materials-field">
-            <span className="materials-field-label">Learning Module</span>
-            <select type="text" value={linkedModule}
-             onChange={(e) => setLinkedModule(e.target.value)} required>
-              <option value="">Select Module</option>
-                {modules.map((module) => <option 
-                  key={module.learn_mod_id} 
-                  value={module.learn_mod_id}>
-                    {module.title} ({module.department_name})
-              </option>)}
-            </select>
-          </label>
-
-          {/* Material title */}
-          <label className="materials-field">
-            <span className="materials-field-label">
-              Material Title
-            </span>
-            <input type="text" 
-              maxLength={100}
-              placeholder="e.g. IT Onboarding Guide"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </label>
-
-            {/* Description */}
-          <label className="materials-field">
-            <span className="materials-field-label">
-              Description
-            </span>
-            <textarea maxLength={500}
-              placeholder="Please describe you learnin materials"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              rows={3}
-            />
-          </label>
-
-          {/* Material Type / Display Order */}
-          <div className="material-field-row">
-            <label className="material-field">
-              <span className="materials-field-label">
-                Material Type
-              </span>
-              <select value={materialType} 
-                onChange={(e) => setMaterialType(e.target.value)}
-              >
-                <option value="document">Document</option>
-                <option value="presentation">Presentation</option>
-                <option value="image">Image</option>
-              </select>
-            </label>
-
-            <label className="material-field">
-              <span className="materials-field-label">
-                Display Order
-              </span>
-              <input type="number" min="1" step="1" placeholder="auto" value={displayOrder}
-                onChange={(e) => setDisplayOrder(e.target.value)}
-              />
-            </label>
-          </div>
-
-                  {/* Duration */}
-          <div className="material-field-row">
-            <label className="material-field">
-              <span className="materials-field-label">
-                Minimum Duration (minutes)
-              </span>
-              <input type="number"min="1" step="1" value={minDurationMinutes}
-                onChange={(e) => setMinDurationMinutes(e.target.value)}
-                />
-            </label>
-
-            <label className="material-field">
-              <span className="materials-field-label">
-                Maximum Duration (minutes)
-              </span>
-              <input type="number"min="1" step="1" value={maxDurationMinutes}
-                onChange={(e) => setMaxDurationMinutes(e.target.value)}
-                />
-            </label>
-          </div>
-
-          <div className="materials-field-row">
-            <div className="materials-field">
-              <span className="materials-field-label">When</span>
-              <div className="materials-when-group">
-                <button type="button" className={when === 'now' ? 'active' : ''} 
-                  onClick={() => setWhen('now')}>Publish now</button>
-                <button type="button" className={when === 'schedule' ? 'active' : ''} 
-                  onClick={() => setWhen('schedule')}>Schedule</button>
-                <button type="button" className={when === 'draft' ? 'active' : ''} 
-                  onClick={() => setWhen('draft')}>Save Draft</button>
-              </div>
-            </div>
-
-{/*             <label className="materials-field">
-              <span className="materials-field-label">Note</span>
-              <input type="text" placeholder="e.g Updated 2026" value={note} 
-                onChange={(e) => setNote(e.target.value)} />
-            </label> */}
-          </div>
-        </div>
-
-        <div className="materials-modal-footer">
-          <span className="materials-file-count">{files.length} 
-            file{files.length === 1 ? '' : 's'} selected
-          </span>
-          <div className="materials-modal-footer-btns">
-            <button type="button" className="materials-cancel-btn" 
-              onClick={onClose}>Cancel</button>
-            <button type="button" className="materials-primary-btn" 
-              onClick={handleSubmit} disabled={files.length === 0}>Upload Materials
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------- Create Assessment modal ---------- */
-
-function newChoice() {
-  return { id: Math.random().toString(36).slice(2), text: '' };
-}
-
-function newQuestion() {
-  const c1 = newChoice();
-  const c2 = newChoice();
-  return { id: Math.random().toString(36).slice(2), 
-    type: 'Multiple Choice', text: '', choices: [c1, c2], 
-    correctId: c1.id, shortAnswer: '' };
-}
-
-function CreateAssessmentModal({ onClose, onSave, modules = [] }) {
-  const [title, setTitle] = useState('');
-  const [linkedModule, setLinkedModule] = useState(
-    modules[0]?.learn_mod_id ? String(modules[0].learn_mod_id) : ""
-    );
-  const [passingScore, setPassingScore] = useState('');
-  const [questions, setQuestions] = useState([newQuestion()]);
-
-  const updateQuestion = (id, patch) => {
-    setQuestions((prev) => prev.map((q) => (q.id === id ? { ...q, ...patch } : q)));
-  };
-
-  const setQuestionType = (id, type) => {
-    setQuestions((prev) => prev.map((q) => {
-      if (q.id !== id) return q;
-      if (type === 'True or False') {
-        const t = { id: 'true', text: 'True' };
-        const f = { id: 'false', text: 'False' };
-        return { ...q, type, choices: [t, f], correctId: t.id };
-      }
-      if (type === 'Multiple Choice' && q.choices.length < 2) {
-        const c1 = newChoice();
-        const c2 = newChoice();
-        return { ...q, type, choices: [c1, c2], correctId: c1.id };
-      }
-      return { ...q, type };
-    }));
-  };
-
-  const addChoice = (qId) => {
-    setQuestions((prev) => prev.map(
-      (q) => (q.id === qId ? { ...q, choices: [...q.choices, newChoice()] } : q)
-    ));
-  };
-
-  const removeChoice = (qId, choiceId) => {
-    setQuestions((prev) => prev.map((q) => {
-      if (q.id !== qId) return q;
-      const choices = q.choices.filter((c) => c.id !== choiceId);
-      const correctId = q.correctId === choiceId ? (choices[0] ? choices[0].id : null) : q.correctId;
-      return { ...q, choices, correctId };
-    }));
-  };
-
-  const updateChoiceText = (qId, choiceId, text) => {
-    setQuestions((prev) => prev.map((q) => (
-      q.id === qId ? { ...q, choices: q.choices.map((c) => (c.id === choiceId ? { ...c, text } : c)) } : q
-    )));
-  };
-
-  const addQuestion = () => setQuestions((prev) => [...prev, newQuestion()]);
-
-  const handleSave = () => {
-    if (!title.trim() || questions.length === 0) return;
-    onSave({ title: title.trim(), linkedModule, passingScore, questions });
-  };
-
-  useEffect(() => {
-    if (!linkedModule && modules.length > 0) {
-        setLinkedModule(String(modules[0].learn_mod_id));
-        
-        console.log("Modules passed to modal:", modules);
-        console.log("Selected module ID:", linkedModule);
-    }
-}, [modules, linkedModule]);
-
-  return (
-    <div className="materials-modal-overlay" onClick={onClose}>
-      <div className="materials-modal-box assessment-modal-box" onClick={(e) => e.stopPropagation()}>
-        <div className="materials-modal-head">
-          <h2>CREATE ASSESSMENT</h2>
-          <p>add questions, pick an answer type, and set the correct answer</p>
-          <button type="button" className="materials-modal-close" aria-label="Close" onClick={onClose}>
-            &times;
-          </button>
-        </div>
-
-        <div className="materials-modal-body assessment-modal-scroll">
-          <label className="materials-field">
-            <span className="materials-field-label">Title</span>
-            <input type="text" placeholder="Add title" value={title}
-              onChange={(e) => setTitle(e.target.value)} />
-          </label>
-
-          <div className="materials-field-row">
-            <label className="materials-field">
-              <span className="materials-field-label">Linked Module</span>
-              <select value={linkedModule} onChange={(e) => setLinkedModule(e.target.value)}
-              required>
-                <option value="">Select a module</option>
-                {modules.map((module) => (
-                  <option key={module.learn_mod_id} value={String(module.learn_mod_id)}>
-                    {module.title} ({module.department_name})
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="materials-field">
-              <span className="materials-field-label">Passing Score</span>
-              <select value={passingScore} onChange={(e) => setPassingScore(e.target.value)}>
-                <option value="">e.g 70%</option>
-                {PASSING_SCORES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </label>
-          </div>
-
-          <div className="assessment-questions-head">Questions</div>
-
-          {questions.map((q, index) => (
-            <div className="assessment-question-block" key={q.id}>
-              <div className="assessment-question-top">
-                <span className="assessment-question-label">QUESTION {index + 1}</span>
-                <select value={q.type} onChange={(e) => setQuestionType(q.id, e.target.value)}>
-                  {QUESTION_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
-
-              <input
-                type="text"
-                className="assessment-question-input"
-                placeholder="Type the question"
-                value={q.text}
-                onChange={(e) => updateQuestion(q.id, { text: e.target.value })}
-              />
-
-              <span className="assessment-type-pill">{q.type.toUpperCase()}</span>
-
-              {q.type === 'Short Answer' ? (
-                <input
-                  type="text"
-                  className="assessment-shortanswer-input"
-                  placeholder="Correct answer"
-                  value={q.shortAnswer}
-                  onChange={(e) => updateQuestion(q.id, { shortAnswer: e.target.value })}
-                />
-              ) : (
-                <>
-                  {q.choices.map((c) => (
-                    <div className="assessment-choice-row" key={c.id}>
-                      <input
-                        type="radio"
-                        name={`correct-${q.id}`}
-                        checked={q.correctId === c.id}
-                        onChange={() => updateQuestion(q.id, { correctId: c.id })}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Answer choice"
-                        value={c.text}
-                        readOnly={q.type === 'True or False'}
-                        onChange={(e) => updateChoiceText(q.id, c.id, e.target.value)}
-                      />
-                      {q.type === 'Multiple Choice' && (
-                        <button type="button" aria-label="Remove choice" onClick={() => removeChoice(q.id, c.id)}>×</button>
-                      )}
-                    </div>
-                  ))}
-                  {q.type === 'Multiple Choice' && (
-                    <button type="button" className="assessment-add-choice" onClick={() => addChoice(q.id)}>+ Add choice</button>
-                  )}
-                </>
-              )}
-            </div>
-          ))}
-
-          <button type="button" className="assessment-add-question" onClick={addQuestion}>+ Add questions</button>
-        </div>
-
-        <div className="materials-modal-footer">
-          <span className="materials-file-count">{questions.length} Question{questions.length === 1 ? '' : 's'} added</span>
-          <div className="materials-modal-footer-btns">
-            <button type="button" className="materials-cancel-btn" onClick={onClose}>Cancel</button>
-            <button type="button" className="materials-primary-btn" 
-              onClick={handleSave} disabled={!title.trim()}>
-                Save Assessment
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const INITIAL_MATERIALS = [];
 
 const STATUS_LABELS = {
   published: 'Published', scheduled: 'Scheduled', draft: 'Draft',
@@ -517,7 +46,6 @@ function ThumbIcon() {
     </svg>
   );
 }
-
 
 
 function normalizeMaterial(material) {
@@ -571,7 +99,7 @@ export default function AdminMaterials() {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [newMenuOpen, setNewMenuOpen] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(false);
+  const [addMaterials, setAddMaterials] = useState(false);
   const [assessmentOpen, setAssessmentOpen] = useState(false);
 
   useEffect(() => {
@@ -638,7 +166,8 @@ export default function AdminMaterials() {
   }, [departments]);
 
   
-useEffect(() => {
+useEffect(() => 
+  {
     if (!token) {
         setMaterials([]);
         return;
@@ -768,7 +297,7 @@ useEffect(() => {
 
     setMaterials(rows.map(normalizeMaterial));
 
-    setUploadOpen(false);
+    setAddMaterials(false);
 
     showToast("Learni materials upload success");
 
@@ -858,7 +387,7 @@ const visible = useMemo(() => {
 
   return (
     <div className="admin-shell">
-      <AdminSidebar active="materials" />
+      {/* <AdminSidebar active="materials" /> */}
 
       <div className="admin-main">
         <header className="announce-banner">
@@ -887,7 +416,7 @@ const visible = useMemo(() => {
               {newMenuOpen && (
                 <div className="materials-new-menu">
                   <button type="button" onClick={() => { 
-                    setNewMenuOpen(false); setUploadOpen(true); 
+                    setNewMenuOpen(false); setAddMaterials(true); 
                     }}>
                     <svg viewBox="0 0 24 24" 
                       width="16" height="16" 
@@ -996,15 +525,19 @@ const visible = useMemo(() => {
 
         <AdminFooter />
       </div>
-
-      {uploadOpen && (
-        <UploadMaterialsModal 
-          onClose={() => setUploadOpen(false)} 
+{/* add material */}
+      {addMaterials && (
+        <AddMaterialsModal
+          onClose={() => setAddMaterials(false)} 
           onUpload={handleUpload} 
           modules={availableModules} />
       )}
+
+{/* edit material */}
+
+
       {assessmentOpen && (
-        <CreateAssessmentModal 
+        <CreateAssessment
         onClose={() => setAssessmentOpen(false)} 
         onSave={handleSaveAssessment} 
         modules={availableModules} />

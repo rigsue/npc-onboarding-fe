@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 export default function AddUserModal({
-  roles,
-  departments,
-  onClose,
-  onSubmit,
+  roles, departments, onClose, onSubmit,
 }) {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
@@ -33,6 +30,8 @@ export default function AddUserModal({
     setPassword("");
   };
 
+
+  
   const handleClose = () => {
     resetForm();
     onClose();

@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 export default function EditUserModal({
-  initial,
-  roles,
-  departments,
-  onClose,
-  onSave,
+  currentData, roles, departments, onClose, onSave,
 }) {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
@@ -17,19 +13,19 @@ export default function EditUserModal({
   const [position, setPosition] = useState("");
 
   useEffect(() => {
-    if (!initial) return;
+    if (!currentData) return;
 
-    setFirstName(initial.firstName ?? "");
-    setLastName(initial.lastName ?? "");
-    setEmail(initial.email ?? "");
-    setContactNumber(initial.contactNumber ?? "");
-    setRoleId(initial.roleId ? String(initial.roleId) : "");
+    setFirstName(currentData.firstName ?? "");
+    setLastName(currentData.lastName ?? "");
+    setEmail(currentData.email ?? "");
+    setContactNumber(currentData.contactNumber ?? "");
+    setRoleId(currentData.roleId ? String(currentData.roleId) : "");
     setDepartmentId(
-      initial.departmentId ? String(initial.departmentId) : ""
+      currentData.departmentId ? String(currentData.departmentId) : ""
     );
-    setEmployeeNumber(initial.employeeNumber ?? "");
-    setPosition(initial.position ?? "");
-  }, [initial]);
+    setEmployeeNumber(currentData.employeeNumber ?? "");
+    setPosition(currentData.position ?? "");
+  }, [currentData]);
 
   const handleSave = () => {
     if (!first_name.trim() || !last_name.trim() || !email.trim()) {
@@ -37,7 +33,7 @@ export default function EditUserModal({
     }
 
     onSave({
-      userId: initial.user_id,
+      userId: currentData.user_id,
       firstName: first_name.trim(),
       lastName: last_name.trim(),
       email: email.trim(),

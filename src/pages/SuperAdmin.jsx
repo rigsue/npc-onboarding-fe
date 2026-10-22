@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-// import AdminSidebar from "../components/AdminSidebar";
 import AdminHeaderActions from "../components/AdminHeaderActions";
 import AdminFooter from "../components/AdminFooter";
 
-import AddUserModal from "../components/users/AddUserModal";
-import EditUserModal from "../components/users/EditUserModal";
+import AddUserModal from "../components/users/AddUser";
+import EditUserModal from "../components/users/EditUser";
 
 import { useToast } from "../context/ToastContext";
 
 import {
-  getUsers,
-  registerUser,
-  updateUser,
-  deactivateUser,
-  activateUser,
+  getUsers, registerUser, updateUser, deactivateUser, activateUser,
 } from "../services/userService";
 
 import { getDepartments } from "../services/departmentService";
@@ -37,7 +32,7 @@ export default function SuperAdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [addOpen, setAddOpen] = useState(false);
+  const [addUser, setAddUser] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
 
   // GET USERS
@@ -123,7 +118,7 @@ export default function SuperAdminDashboard() {
 
       await fetchUsers();
 
-      setAddOpen(false);
+      setAddUser(false);
 
     } catch (err) {
       console.error( "Error creating user:", err);
@@ -219,7 +214,7 @@ export default function SuperAdminDashboard() {
             <button
               type="button"
               className="announce-new-btn"
-              onClick={() => setAddOpen(true)}
+              onClick={() => setAddUser(true)}
             >
               + Add User
             </button>
@@ -354,11 +349,11 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* ADD USER */}
-      {addOpen && (
+      {addUser && (
         <AddUserModal
           roles={roles}
           departments={departments}
-          onClose={() => setAddOpen(false)}
+          onClose={() => setAddUser(false)}
           onSubmit={handleCreateUser}
         />
       )}
@@ -366,7 +361,7 @@ export default function SuperAdminDashboard() {
       {/* EDIT USER */}
       {editingUser && (
         <EditUserModal
-          initial={editingUser}
+          currentData={editingUser}
           roles={roles}
           departments={departments}
           onClose={() => setEditingUser(null)}
@@ -375,4 +370,4 @@ export default function SuperAdminDashboard() {
       )}
     </div>
   );
-}
+} 
