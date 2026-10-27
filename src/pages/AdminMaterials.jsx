@@ -209,13 +209,15 @@ useEffect(() => {
           </label>
 
           {/* Material Type / Display Order */}
+<div className='materials-field-label'>
           <div className="material-field-row">
-            <label className="material-field">
+            <label className="materials-field">
               <span className="materials-field-label">
                 Material Type
               </span>
               <select value={materialType} 
                 onChange={(e) => setMaterialType(e.target.value)}
+                className='materials-field-input'
               >
                 <option value="document">Document</option>
                 <option value="presentation">Presentation</option>
@@ -223,38 +225,42 @@ useEffect(() => {
               </select>
             </label>
 
-            <label className="material-field">
+            <label className="materials-field">
               <span className="materials-field-label">
                 Display Order
               </span>
               <input type="number" min="1" step="1" placeholder="auto" value={displayOrder}
                 onChange={(e) => setDisplayOrder(e.target.value)}
+                className='materials-field-input'
               />
             </label>
           </div>
-
                   {/* Duration */}
           <div className="material-field-row">
-            <label className="material-field">
+            <label className="materials-field">
               <span className="materials-field-label">
                 Minimum Duration (minutes)
               </span>
               <input type="number"min="1" step="1" value={minDurationMinutes}
                 onChange={(e) => setMinDurationMinutes(e.target.value)}
+                className='materials-field-input'
                 />
             </label>
 
-            <label className="material-field">
+            <label className="materials-field">
               <span className="materials-field-label">
                 Maximum Duration (minutes)
               </span>
               <input type="number"min="1" step="1" value={maxDurationMinutes}
                 onChange={(e) => setMaxDurationMinutes(e.target.value)}
+                className='materials-field-input'
                 />
             </label>
           </div>
+</div>
 
-          <div className="materials-field-row">
+
+          <div className="materials-field">
             <div className="materials-field">
               <span className="materials-field-label">When</span>
               <div className="materials-when-group">
