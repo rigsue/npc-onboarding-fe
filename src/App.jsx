@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ProfileProvider } from "./context/ProfileContext";
+// import { ProfileProvider } from "./context/ProfileContext";
 import { ToastProvider } from "./context/ToastContext";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
@@ -27,7 +27,7 @@ import OOCModules from "./pages/onboard/ooc";
 
 export default function App() {
   return (
-    <ProfileProvider>
+    // <ProfileProvider>
         <ToastProvider>
           <BrowserRouter>
             <Routes>
@@ -68,6 +68,6 @@ export default function App() {
             </Routes>
           </BrowserRouter>
         </ToastProvider>
-    </ProfileProvider>
+    // </ProfileProvider>
   );
 }

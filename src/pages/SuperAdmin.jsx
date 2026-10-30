@@ -11,11 +11,7 @@ import EditUserModal from "../components/users/EditUserModal";
 import { useToast } from "../context/ToastContext";
 
 import {
-  getUsers,
-  registerUser,
-  updateUser,
-  deactivateUser,
-  activateUser,
+  getUsers, registerUser, updateUser, deactivateUser, activateUser,
 } from "../services/userService";
 
 import { getDepartments } from "../services/departmentService";
