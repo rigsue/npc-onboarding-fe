@@ -69,7 +69,6 @@ export async function getUserById(token, userId) {
       data.message || "Failed to fetch user"
     );
   }
-
   return data;
 }
 
