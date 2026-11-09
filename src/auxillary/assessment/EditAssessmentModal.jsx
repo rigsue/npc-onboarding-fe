@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { getQuestionsByExam } from "../../services/questionService";
 import { getChoicesByQuestion, updateChoice } from "../../services/choiceService";
-import { isAction } from "@reduxjs/toolkit";
 
 const QUESTION_TYPES = ["Multiple Choice", "True or False"];
 const PASSING_SCORES = ["60", "70", "80", "90", "100"];
@@ -361,7 +360,7 @@ export default function EditAssessmentModal({
         <div className="user-exam-overlay"
             onClick={saving || deleting ? undefined : onClose}
         >
-            <div className="user=exam-modal admin-assessment-modal"
+            <div className="user-exam-modal admin-assessment-modal"
                 onClick={e => e.stopPropagation()}
             >
                 <div className="user-exam-header">
@@ -418,11 +417,11 @@ export default function EditAssessmentModal({
                                         onChange={(e) => setPassingScore(e.target.value)}
                                     >
                                         {PASSING_SCORES.map(score => (
-                                            <option value={score}>
+                                            <option value={score}  key={score} >
                                                 {score}%
                                             </option>
                                         ))}
-                                    </select>
+                                    </select>   
                                 </label>
 
                                 <label className="materials-field">
@@ -454,19 +453,20 @@ export default function EditAssessmentModal({
                             </div>
 
                             {questions.map((q, index) => (
-                                <div
+                                <div key={q.id}
                                     className="assessment question-block">
                                     <div className="assessment-question-top">
                                         <span>Question {index + 1}</span>
 
-                                        <select value={q.type} 
+                                        <select 
+                                            value={q.type} 
                                             onChange={e => setQuestionType(
                                                 q.id, e.target.value
                                             )}
                                         >
                                             {QUESTION_TYPES.map(type => (
-                                                <option value={type}
-                                                ></option>
+                                                <option key={type} value={type}
+                                                >{type}</option>
                                             ))}
                                         </select>
 

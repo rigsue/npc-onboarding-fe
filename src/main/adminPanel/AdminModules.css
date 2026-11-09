@@ -1,7 +1,4 @@
-
-/* ================================
-   ADMIN MODULES PAGE
-================================ */
+/* ADMIN MODULES PAGE */
 
 .admin-modules-page {
   padding: 28px 32px;
@@ -57,9 +54,7 @@
   font-weight: 600;
 }
 
-/* ================================
-   STATISTICS
-================================ */
+/* STATISTICS */
 
 .admin-modules-stats {
   display: grid;
@@ -90,9 +85,7 @@
   font-weight: 700;
 }
 
-/* ================================
-   SEARCH AND FILTER
-================================ */
+/* SEARCH AND FILTER */
 
 .admin-modules-toolbar {
   display: flex;
@@ -129,9 +122,7 @@
   box-shadow: 0 0 0 2px rgba(22, 75, 145, 0.1);
 }
 
-/* ================================
-   MODULE TABLE
-================================ */
+/* MODULE TABLE */
 
 .admin-modules-table-wrapper {
   width: 100%;
@@ -195,9 +186,7 @@
   overflow-wrap: anywhere;
 }
 
-/* ================================
-   STATUS
-================================ */
+/* STATUS */
 
 .admin-module-status {
   display: inline-flex;
@@ -219,9 +208,7 @@
   color: #6b7280;
 }
 
-/* ================================
-   ACTIONS
-================================ */
+/* ACTIONS */
 
 .admin-module-edit-btn {
   border: 1px solid #d7e3f3;
@@ -241,9 +228,7 @@
   color: #fff;
 }
 
-/* ================================
-   EMPTY / LOADING / ACCESS DENIED
-================================ */
+/* EMPTY / LOADING / ACCESS DENIED */
 
 .admin-modules-empty {
   padding: 45px 20px;
@@ -272,9 +257,7 @@
   font-size: 14px;
 }
 
-/* ================================
-   RESPONSIVE
-================================ */
+/* RESPONSIVE */
 
 @media (max-width: 768px) {
   .admin-modules-page {

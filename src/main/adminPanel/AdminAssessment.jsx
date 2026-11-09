@@ -5,10 +5,6 @@ import { useToast } from "../../context/ToastContext";
 import AdminHeaderActions from '../../auxillary/AdminHeaderActions';
 import AdminFooter from '../../auxillary/AdminFooter';
 
-import AdminSidebar from "../../auxillary/AdminSidebar";
-/* import Header from "../../components/layout/Header";
-import Footer from "../../components/layout/Footer"; */
-
 import CreateAssessmentModal from '../../auxillary/assessment/AddAssessmentModal';
 import EditAssessmentModal from '../../auxillary/assessment/EditAssessmentModal';
 

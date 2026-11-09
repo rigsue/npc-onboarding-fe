@@ -1,12 +1,9 @@
-
-/* =========================================
-   USER EXAM MODAL
-========================================= */
+/* USER EXAM MODAL */
 
 .user-exam-overlay {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: 100;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,7 +13,7 @@
 
 .user-exam-modal {
     width: 100%;
-    max-width: 900px;
+    max-width: 500px;
     max-height: 95vh;
     display: flex;
     flex-direction: column;
@@ -24,6 +21,8 @@
     border-radius: 22px;
     overflow: hidden;
     color: #283b55;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+
 }
 
 .user-exam-header {
@@ -116,9 +115,7 @@
 }
 
 
-/* =========================================
-   ADMIN ASSESSMENT DASHBOARD
-========================================= */
+/* ADMIN ASSESSMENT DASHBOARD */
 
 .admin-assessments-page {
     display: flex;
@@ -300,9 +297,7 @@
 }
 
 
-/* =========================================
-   CREATE / EDIT ASSESSMENT MODALS
-========================================= */
+/* CREATE / EDIT ASSESSMENT MODALS */
 
 .admin-assessment-modal {
     max-width: 1000px;
@@ -498,9 +493,7 @@
 }
 
 
-/* =========================================
-   RESPONSIVE DESIGN
-========================================= */
+/* RESPONSIVE DESIGN */
 
 @media (max-width: 900px) {
     .admin-assessments-content {
