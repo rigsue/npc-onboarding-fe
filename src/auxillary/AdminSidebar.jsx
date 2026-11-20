@@ -19,40 +19,11 @@ const AdminSidebar = () => {
   }
 
   const displayRole = isSuperAdmin ? "Super Admin" : "Admin";
-/* 
-      const menuItems = [
-        {
-            label: "Dashboard",
-            path: "/superadmin/dashboard",
-            roles: ["Super admin", "Admin"]
-        },
-        {
-            label: "Learning Modules",
-            path: "/admin/modules",
-            roles: ["Super admin"]
-        },
-        {
-            label: "User Management",
-            path: "/superadmin/users",
-            roles: ["Super admin"]
-        },
-        {
-            label: "Materials",
-            path: "/admin/materials",
-            roles: ["Super admin", "Admin"]
-        }
-    ];
-
-    // STEP 3: Filter menu items based on logged-in user's role
-    const visibleMenuItems = menuItems.filter(item =>
-        item.roles.includes(user?.roleName)
-    );
- */
 
   return (
     <aside className="admin-sidebar">
       <NavLink className="admin-logo" 
-        to={isSuperAdmin ? "/superadmin/dashboard" : "/admin"}>
+        to={isSuperAdmin ? "/superadmin/user-progress" : "/admin"}>
         <img 
           src="/assets/hpnavbarlogo.png" 
           alt="Netrust Philippines Corporation" 
@@ -98,20 +69,14 @@ const AdminSidebar = () => {
           <ManageAccount
           onClose={() => setShowManageAccount(false)}
         />
-      )}
-{/*         <NavLink       
-          className={`admin-nav-link${
-            active === "dashboard" ? " active" : ""}`}
-        > Manage Your Account
-        </NavLink> */}
+        )}
       </div>
 
       <nav className="admin-nav">
-        <p className="admin-nav-label">Overview</p>
-
+        <p className="admin-nav-label">Dashboard</p>
 
         <NavLink 
-          to="/admin/dashboard"
+          to="/admin/user-progress"
           className={({ isActive }) =>
             `admin-nav-link${isActive ? " active" : ""}`
         }
@@ -128,8 +93,62 @@ const AdminSidebar = () => {
             <rect x="14" y="12" width="7" height="9" rx="1" />
             <rect x="3" y="16" width="7" height="5" rx="1" />
           </svg>          
-          Dashboard
+          User Progress
         </NavLink>
+
+        {isSuperAdmin && (
+          <>
+            <NavLink 
+              to="/admin/users" 
+              className={({ isActive }) =>
+                `admin-nav-link${isActive ? " active" : ""}`
+              }
+            >
+              <svg 
+                viewBox="0 0 24 24" 
+                width="18" 
+                height="18" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="1.8"
+              >
+                <circle cx="9" cy="8" r="3.2" />
+                <path d="M2.5 19c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6" />
+                <circle cx="17" cy="8" r="2.6" />
+                <path d="M15 13.3c2.6.5 4.5 2.6 4.5 5.7" />
+              </svg>
+              User Profile
+            </NavLink>
+
+            <NavLink
+              to="/admin/departments"
+              className={({ isActive }) => 
+              `admin-nav-link${isActive ? " active" : ""}`
+              }
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 21h18" />
+                <path d="M5 21V7l7-4 7 4v14" />
+                <path d="M9 21v-4h6v4" />
+                <path d="M8 9h.01" />
+                <path d="M16 9h.01" />
+                <path d="M8 13h.01" />
+                <path d="M16 13h.01" />
+                <path d="M12 7v2" />
+              </svg>
+              Departments
+            </NavLink>
+          </>
+        )}
 
 {/* Uncomment this once announcement is allowed */}
 {/* <p className="admin-nav-label">Contents</p>
@@ -152,13 +171,17 @@ const AdminSidebar = () => {
           </svg>
           Announcement
         </Link> */}
+        <p className="admin-nav-label">Learning Management</p>
+
         {isSuperAdmin && (
+          
           <NavLink
             to="/admin/modules"
             className={({ isActive }) =>
               `admin-nav-link${isActive ? " active" : ""}`
             }
           >
+            
             <svg
               viewBox="0 0 24 24"
               width="18"
@@ -191,7 +214,7 @@ const AdminSidebar = () => {
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
           </svg>
-          Materials
+          Learning Materials
         </NavLink>
 
         <NavLink 
@@ -216,35 +239,10 @@ const AdminSidebar = () => {
             <path d="M8 16l1.5 1.5L12 15" />
             <path d="M14 16h3" />
           </svg>
-          Assessments
+          Assessments or Exams
         </NavLink>
 
-        {isSuperAdmin && (
-          <>
-            <p className="admin-nav-label">Profile</p>
-            <NavLink 
-              to="/admin/users" 
-              className={({ isActive }) =>
-                `admin-nav-link${isActive? " active" : ""}`
-              }
-            >
-              <svg 
-                viewBox="0 0 24 24" 
-                width="18" 
-                height="18" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="1.8"
-              >
-                <circle cx="9" cy="8" r="3.2" />
-                <path d="M2.5 19c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6" />
-                <circle cx="17" cy="8" r="2.6" />
-                <path d="M15 13.3c2.6.5 4.5 2.6 4.5 5.7" />
-              </svg>
-              Usersie
-            </NavLink>
-          </>
-        )}
+
       </nav>
     </aside>
   );

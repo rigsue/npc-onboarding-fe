@@ -288,14 +288,14 @@ export default function AdminAssessments() {
                 </header>
 
                 <div className="announce-body">
-                    <div className="admin-assessments-content">
-                        <div className="assessment-page-heading">
+                    <div className="admin-sidebar-page">
+                        <div className="admin-modules-heading">
                             <div>
-                        <span className="announce-dated-pilled">{today}</span>
-
+                                <span className="date-btn-like">{today}</span>
                             </div>
-                            <button
-                                type="button"
+                            
+                            <button type="button"
+                                className="date-btn-like"
                                 onClick={() => setShowCreate(true)}
                             >
                                 + Create Assessment
@@ -429,8 +429,8 @@ export default function AdminAssessments() {
                         )}
                     </div>
 
-                    <AdminFooter/>
                 </div>
+            <AdminFooter/>
 
             </main>
 

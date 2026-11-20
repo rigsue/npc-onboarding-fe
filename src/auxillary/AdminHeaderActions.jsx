@@ -4,6 +4,8 @@ import { getInitials } from "../utils/getInitials";
 import { useToast } from "../context/ToastContext";
 import { useSelector } from "react-redux";
 
+// import { Mail } from "lucide-react";
+
 const SAMPLE_NOTIFICATIONS = [
   {
     id: 1,
@@ -21,19 +23,31 @@ const SAMPLE_NOTIFICATIONS = [
   },
 ];
 
+/* For Mail Icon redirect */
+const handleOpenMail = () => {
+/*   window.open(
+    "https://outlook.office.com/mail/",
+    "_blank",
+    "noopener,noreferer"
+  ); */
+  window.location.href = "mailto:"
+};
+
 function MailIcon() {
   return (
-  <svg 
+    <svg 
     viewBox="0 0 24 24" 
     width="18" 
     height="18" 
     fill="none" 
     stroke="currentColor" 
     strokeWidth="1.8"
+    type="button"
+    onClick={handleOpenMail}
   >
     <rect x="2" y="4" width="20" height="16" rx="2" />
     <path d="M2 6l10 7 10-7" />
-  </svg>
+    </svg>
   );
 }
 
@@ -170,12 +184,6 @@ export default function AdminHeaderActions() {
         </button>
                   
         <div className="nav-dropdown-menu avatar-menu">
-{/*           <button
-            type="button"
-            onClick={() => setShowManageAccount(true)}
-          >
-            Manage Account
-          </button> */}
           <Link to="/profile">Profile</Link>
           <Link to="/">Log out</Link>
         </div>

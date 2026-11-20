@@ -71,8 +71,8 @@ function PostAnnouncementModal({ onClose, onPost, categoryOptions, defaultCatego
   };
 
   return (
-    <div className="announce-modal-overlay" onClick={onClose}>
-      <div className="announce-modal-box" onClick={(e) => e.stopPropagation()}>
+    <div className="add_edit-modal-overlay" onClick={onClose}>
+      <div className="add_edit-modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="announce-modal-head">
           <h2>POST ANNOUNCEMENT</h2>
           <button type="button" className="announce-modal-close" aria-label="Close" onClick={onClose}>&times;</button>

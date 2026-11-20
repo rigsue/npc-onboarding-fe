@@ -144,67 +144,67 @@ export default function CreateAssessmentModal({
         return;
       }
   
-  // Validate & transform questions
-  const formattedQuestions = [];
+    // Validate & transform questions
+    const formattedQuestions = [];
 
-  for (let i = 0; 1 < questions.length; i++) {
-    const q = questions[i];
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
 
-    if (!q.text.trim()) {
-      setError(`Please enter a question ${i +1}`);
-      return;
+      if (!q.text.trim()) {
+        setError(`Please enter a question ${i +1}`);
+        return;
+      }
+      if (
+        !QUESTION_TYPES.includes(q.type) ||
+        q.choices.length < 2
+      ) {
+        setError(`Invalid choices in question ${i + 1}`);
+        return;
+      }
+      if (q.choices.some(c => !c.text.trim())) {
+        setError(`Complete all choices in question ${i + 1}`);
+        return;
+      }
+      if (!q.correctId || !q.choices.some(
+        c => c.id === q.correctId
+      )) {
+        setError(`Select the correct answer for question ${i + 1}`);
+        return;
+      }
+      formattedQuestions.push({
+        question: q.text.trim(),
+        questionType: q.type,
+        points: 1,
+        displayOrder: i + 1,
+        choices: q.choices.map((c, index) => ({
+          choiceText: c.text.trim(),
+          isCorrect: c.id === q.correctId,
+          displayOrder: index + 1
+        }))
+      });
     }
-    if (
-      !QUESTION_TYPES.includes(q.type) ||
-      q.choices.length < 2
-    ) {
-      setError(`Invalid choices in question ${i + 1}`);
-      return;
-    }
-    if (q.choices.some(c => !c.text.trim())) {
-      setError(`Complete all choices in question ${i + 1}`);
-      return;
-    }
-    if (!q.correctId || !q.choices.some(
-      c => c.id === q.correctId
-    )) {
-      setError(`Select the correct answer for question ${i + 1}`);
-      return;
-    }
-    formattedQuestions.push({
-      question: q.text.trim(),
-      questionType: q.type,
-      points: 1,
-      displayOrder: i + 1,
-      choices: q.choices.map((c, index) => ({
-        choiceText: c.text.trim(),
-        isCorrect: c.id === q.correctId,
-        displayOrder: index + 1
-      }))
-    });
-  }
 
-  //  Backend request for payload
-  const examData = {
-    learnModId: Number(linkedModule),
-    title: title.trim(),
-    passingScore: Number(passingScore.replace("%", "")),
-    // passingScore: Number(passingScore),
-    attemptLimit: attemptLimit === "" ? null: Number(attemptLimit),
-    durationMinutes: Number(durationMinutes),
-    questions: formattedQuestions,
+    //  Backend request for payload
+    const examData = {
+      learnModId: Number(linkedModule),
+      title: title.trim(),
+      passingScore: Number(passingScore.replace("%", "")),
+      // passingScore: Number(passingScore),
+      attemptLimit: attemptLimit === "" ? null: Number(attemptLimit),
+      durationMinutes: Number(durationMinutes),
+      questions: formattedQuestions,
+    };
+    try {
+        setSaving(true);
+        await onSave(examData);
+    } catch (err) {
+      setError(err.message || "Failed to create assessment - 2")
+    } finally { setSaving(false); }
   };
-  try {
-      setSaving(true);
-      await onSave(examData);
-  } catch (err) {
-    setError(err.message || "Failed to create assessment - 2")
-  } finally { setSaving(false); }
-};
 
   return (
-    <div className="materials-modal-overlay" onClick={saving ? undefined : onClose}>
-      <div className="materials-modal-box assessment-modal-box" 
+    <div className="add_edit-modal-overlay" onClick={saving ? undefined : onClose}>
+      <div className="add_edit-modal-box assessment-modal-box" 
         onClick={e => e.stopPropagation()}>
         <div className="materials-modal-head">
           <h2>CREATE ASSESSMENT</h2>
@@ -218,7 +218,7 @@ export default function CreateAssessmentModal({
           </button>
         </div>
 
-        <div className="materials-modal-body assessment-modal-scroll">
+        <div className="materials-modal-body add_edit-modal-scroll">
           <label className="materials-field">
             <span className="materials-field-label">Assessment Title</span>
             <input type="text" placeholder="Add title" value={title}
@@ -398,7 +398,7 @@ export default function CreateAssessmentModal({
 
             <button type="button" className="materials-primary-btn" 
               onClick={handleSave} disabled={saving || !title.trim()}>
-                {saving ? "Saving" : "Save Assessment"}
+                {saving ? "Saving..." : "Save Assessment"}
             </button>
           </div>
         </div>

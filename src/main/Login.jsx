@@ -35,10 +35,10 @@ const Login = () => {
       );
         if (data.user.roleName === "Super admin") {
           dispatch(setCurrentView("Super admin"));
-          navigate("/admin/dashboard");
+          navigate("/admin/user-progress");
         } else if (data.user.roleName === "Admin"){
           dispatch(setCurrentView("Admin"));
-          navigate("/admin/dashboard");
+          navigate("/admin/user-progress");
         } else if(data.user.roleName === "Local account"){
           dispatch(setCurrentView("Local user"));
           navigate('/home');

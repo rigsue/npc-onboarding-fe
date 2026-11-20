@@ -4,13 +4,11 @@ export async function loginUser(email, password) {
 
     const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            email,
-            password
-        }),
+        body: JSON.stringify({ email, password }),
     });
     const data = await response.json();
 
@@ -35,8 +33,22 @@ export async function logoutUser(token) {
     return data;
 }
 
-export async function refreshToken(params) {
-    
+export async function refreshToken() {
+    const response = await fetch(
+        `${API_URL}/user-session/refresh`,
+        {
+            method: "POST",
+            credentials: "include",
+        }
+    );
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Session refreshed failed"
+        );
+    }
+    return data;
 }
 
 export async function getCurrentUser(params) {

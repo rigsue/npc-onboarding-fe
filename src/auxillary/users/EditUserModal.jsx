@@ -11,23 +11,27 @@ export default function EditUserModal({
   const [last_name, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [contact_number, setContactNumber] = useState("");
+  // const [role_name, setRoleName] = useState("");
   const [role_id, setRoleId] = useState("");
   const [department_id, setDepartmentId] = useState("");
+  // const [department_name, setDepartmentName] = useState("");
   const [employee_number, setEmployeeNumber] = useState("");
   const [position, setPosition] = useState("");
 
   useEffect(() => {
     if (!initial) return;
 
-    setFirstName(initial.firstName ?? "");
-    setLastName(initial.lastName ?? "");
+    setFirstName(initial.first_name ?? "");
+    setLastName(initial.last_name ?? "");
     setEmail(initial.email ?? "");
-    setContactNumber(initial.contactNumber ?? "");
-    setRoleId(initial.roleId ? String(initial.roleId) : "");
+    setContactNumber(initial.contact_number ?? "");
+    setRoleId(initial.role_id ? String(initial.role_id) : "");
+    // setRoleName(initial.role_name ?? "");
     setDepartmentId(
-      initial.departmentId ? String(initial.departmentId) : ""
+      initial.department_id ? String(initial.department_id) : ""
     );
-    setEmployeeNumber(initial.employeeNumber ?? "");
+    // setDepartmentName(initial.department_name ?? "");
+    setEmployeeNumber(initial.employee_number ?? "");
     setPosition(initial.position ?? "");
   }, [initial]);
 
@@ -51,11 +55,11 @@ export default function EditUserModal({
 
   return (
     <div
-      className="materials-modal-overlay"
+      className="add_edit-modal-overlay"
       onClick={onClose}
     >
       <div
-        className="materials-modal-box"
+        className="add_edit-modal-box"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="materials-modal-head">
@@ -132,8 +136,7 @@ export default function EditUserModal({
                 value={role_id}
                 onChange={(e) => setRoleId(e.target.value)}
               >
-                <option value="">Select Role</option>
-
+                {/* <option value="">Select Role</option> */}
                 {roles.map((role) => (
                   <option
                     key={role.role_id}
@@ -154,7 +157,7 @@ export default function EditUserModal({
                 value={department_id}
                 onChange={(e) => setDepartmentId(e.target.value)}
               >
-                <option value="">Select Department</option>
+                {/* <option value="">Select Department</option> */}
 
                 {departments.map((department) => (
                   <option
@@ -197,9 +200,9 @@ export default function EditUserModal({
 
         <div className="materials-modal-footer">
 
-          <span className="materials-file-count">
-            Role and department changes take effect immediately.
-          </span>
+          <div className="materials-file-count">
+            All changes take effect immediately haha.
+          </div>
 
           <div className="materials-modal-footer-btns">
 

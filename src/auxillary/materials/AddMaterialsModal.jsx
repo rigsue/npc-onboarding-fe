@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
   const [files, setFiles] = useState([]);
   const [linkedModule, setLinkedModule] = useState(
     modules[0]?.learn_mod_id ? String(modules[0].learn_mod_id) : "");
-  const [when, setWhen] = useState("now");
+  // const [when, setWhen] = useState("now");
 
   const [note, setNote] = useState("");
   const [title, setTitle] = useState("");
@@ -69,15 +69,15 @@ import React, { useEffect, useRef, useState } from "react";
   }
 
   const status = when === 'now' ? 'published' : when === 'schedule' ? 'scheduled' : 'draft';
-
+  // Uncomment for file debugging
+/* 
   console.log(" = = Upload Module = = ");
   console.log("Selected files:", files);
   console.log("Selected module ID:", linkedModule);
   console.log("status", status);
   console.log("Note", note.trim());
   
-  // Uncomment for file debugging
-/*   files.forEach(
+  files.forEach(
     (file, index) => {
     console.log(`File ${index + 1}:`, {
       name: file.name,
@@ -112,11 +112,14 @@ useEffect(() => {
 }, [modules, linkedModule]);
 
   return (
-    <div className="materials-modal-overlay" onClick={onClose}>
-      <div className="materials-modal-box" onClick={(e) => e.stopPropagation()}>
+    <div className="add_edit-modal-overlay" onClick={onClose}>
+      <div className="add_edit-modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="materials-modal-head">
           <h2>UPLOAD MATERIALS</h2>
-          <button type="button" className="materials-modal-close" aria-label="Close" onClick={onClose}>
+          <button type="button" 
+            className="materials-modal-close" 
+            aria-label="Close" 
+            onClick={onClose}>
             &times;
           </button>
         </div>
@@ -242,25 +245,25 @@ useEffect(() => {
             </label>
           </div>
 
-          <div className="materials-field-row">
+{/*           <div className="materials-field-row">
             <div className="materials-field">
               <span className="materials-field-label">When</span>
-              <div className="materials-when-group">
+               <div className="materials-when-group">
                 <button type="button" className={when === 'now' ? 'active' : ''} 
                   onClick={() => setWhen('now')}>Publish now</button>
                 <button type="button" className={when === 'schedule' ? 'active' : ''} 
                   onClick={() => setWhen('schedule')}>Schedule</button>
                 <button type="button" className={when === 'draft' ? 'active' : ''} 
                   onClick={() => setWhen('draft')}>Save Draft</button>
-              </div>
+              </div> 
             </div>
 
-{/*             <label className="materials-field">
+            <label className="materials-field">
               <span className="materials-field-label">Note</span>
               <input type="text" placeholder="e.g Updated 2026" value={note} 
                 onChange={(e) => setNote(e.target.value)} />
-            </label> */}
-          </div>
+            </label> 
+          </div> */}
         </div>
 
         <div className="materials-modal-footer">

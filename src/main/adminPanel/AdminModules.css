@@ -1,17 +1,10 @@
 /* ADMIN MODULES PAGE */
-
-.admin-modules-page {
-  padding: 28px 32px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
 .admin-modules-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 28px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .admin-modules-heading h1 {
@@ -42,16 +35,6 @@
 
 .admin-modules-add-btn:hover {
   background: #103b75;
-}
-
-.date-tday-is {
-  border: none;
-  border-radius: 10px;
-  padding: 11px 18px;
-  background: #164b91;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
 }
 
 /* STATISTICS */

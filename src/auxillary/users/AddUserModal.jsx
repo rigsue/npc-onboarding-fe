@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 export default function AddUserModal({
-  roles,
-  departments,
-  onClose,
-  onSubmit,
+  roles, departments, onClose, onSubmit,
 }) {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
@@ -31,11 +28,6 @@ export default function AddUserModal({
     setDepartmentId("");
     setAccessMode("invite");
     setPassword("");
-  };
-
-  const handleClose = () => {
-    resetForm();
-    onClose();
   };
 
   const canSubmit =
@@ -68,11 +60,9 @@ export default function AddUserModal({
   };
   return (
     <div
-      className="materials-modal-overlay"
-      onClick={handleClose}
+      className="add_edit-modal-overlay" onClick={onClose}
     >
-      <div
-        className="materials-modal-box"
+      <div className="add_edit-modal-box"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="materials-modal-head">
@@ -83,13 +73,13 @@ export default function AddUserModal({
             type="button"
             className="materials-modal-close"
             aria-label="Close"
-            onClick={handleClose}
+            onClick={onClose}
           >
             &times;
           </button>
 
         </div>
-        <div className="materials-modal-body">
+        <div className="materials-modal-body add_edit-modal-scroll">
           <div className="users-add-header">
             <div className="users-add-icon">
               <span className="users-add-dot dot-a"></span>
@@ -286,7 +276,7 @@ export default function AddUserModal({
             <button
               type="button"
               className="materials-cancel-btn"
-              onClick={handleClose}
+              onClick={onClose}
             >
               Cancel
             </button>

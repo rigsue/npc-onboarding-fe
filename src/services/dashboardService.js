@@ -12,7 +12,6 @@ export async function apiRequest(endpoint, token) {
             },
         }
     );
-
     const result = await response.json();
 
     if (!response.ok) {
@@ -21,7 +20,6 @@ export async function apiRequest(endpoint, token) {
             `Request failed with status ${response.status}`
         );
     }
-
     return result;
 }
 
@@ -30,7 +28,6 @@ export async function getUsers(token) {
         "/user/get-users",
         token
     );
-
     return result?.data ?? [];
 }
 
@@ -39,7 +36,6 @@ export async function getModules(token) {
         "/module/get-modules",
         token
     );
-
     return result?.data ?? [];
 }
 
@@ -48,7 +44,6 @@ export async function getUserProgress(token) {
         "/user-progress/get-user-progress",
         token
     );
-
     return result?.data ?? [];
 }
 
@@ -57,7 +52,6 @@ export async function getExams(token) {
         "/exam/get-exams",
         token
     );
-
     return result?.data ?? [];
 }
 
@@ -66,7 +60,6 @@ export async function getExamAttempts(token) {
         "/exam-attempt/get-all-ex-att",
         token
     );
-
     return result?.data ?? [];
 }
 
@@ -84,7 +77,6 @@ export async function getAdminDashboardData(token) {
         getExams(token),
         getExamAttempts(token),
     ]);
-
     return {
         users,
         modules,

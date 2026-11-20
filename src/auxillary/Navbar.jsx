@@ -348,6 +348,9 @@ console.log("Logged-in user:", user);
             <Link to="/">
               Log out
             </Link>
+            <Link to="/admin/user-progress">
+              Admin
+            </Link>
           </div>
         </div>
       </div>
