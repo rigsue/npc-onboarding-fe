@@ -1,7 +1,7 @@
 const API_URL =
   import.meta.env.VITE_NPC_ONBOARDING_PLATFORM;
 
-async function apiRequest(endpoint, token) {
+export async function apiRequest(endpoint, token) {
     const response = await fetch(
         `${API_URL}${endpoint}`,
         {
@@ -54,7 +54,7 @@ export async function getUserProgress(token) {
 
 export async function getExams(token) {
     const result = await apiRequest(
-        "/exam/get-exam",
+        "/exam/get-exams",
         token
     );
 

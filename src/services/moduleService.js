@@ -13,6 +13,58 @@ export async function getModules(token) {
     if (!response.ok) {
         throw new Error(data.message || "Failed to fetch learning modules");
     }
+    return data;
+}
 
+export async function createModule(token, moduleData) {
+    const response = await fetch(`${API_URL}/module/create-module`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(moduleData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Failed to create learn mod");
+    }
+    return data;
+}
+
+export async function updateModule(token, learnModId, moduleData) {
+    const response = await fetch(`${API_URL}/module/${learnModId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(moduleData),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Failed to update module");
+    }
+    return data;
+}
+
+export async function updateModuleStatus(token, learnModId, isActive) {
+    const response = await fetch(`${API_URL}/module/${learnModId}/status`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isActive }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Failed to update mod stat");
+    }
     return data;
 }

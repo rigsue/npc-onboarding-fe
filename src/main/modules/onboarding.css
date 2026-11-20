@@ -1,0 +1,697 @@
+
+/* ========================================
+   GLOBAL
+======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+body.auth-page {
+  min-height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(
+    225deg,
+    #2b6b74 0%,
+    #23506a 55%,
+    #1c3f52 100%
+  );
+  overflow-x: hidden;
+}
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+   MAIN LAYOUT
+======================================== */
+
+.body-wrap {
+  flex: 1;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: row;
+  overflow: visible;
+}
+
+/* ========================================
+   SIDEBAR
+======================================== */
+
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  min-height: 100%;
+  background: #f8fafc;
+  border-right: 1px solid #dbe4ec;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+}
+
+.sidebar-banner {
+  background: linear-gradient(
+    135deg,
+    #16394a,
+    #20576a
+  );
+  color: #fff;
+  padding: 22px 24px;
+  border-bottom: 3px solid #14b8a6;
+}
+
+.sidebar-banner h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* ========================================
+   SIDEBAR SCROLL
+======================================== */
+
+.sidebar-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 14px;
+  direction: ltr;
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ========================================
+   MODULE CARDS
+======================================== */
+
+.module-card {
+  width: 100%;
+  position: relative;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  font-family: inherit;
+
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.module-card:hover {
+  background: #f0fdfa;
+  border-color: #5eead4;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(15, 118, 110, 0.10);
+}
+
+.module-card.active {
+  background: #ecfdf9;
+  border: 1px solid #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.12);
+}
+
+.module-card.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  background: #0d9488;
+  border-radius: 0 5px 5px 0;
+}
+
+.module-card .icon-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0f766e;
+  font-size: 21px;
+}
+
+.module-card .title {
+  margin: 0;
+  color: #173a5e;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.module-card .view-link {
+  color: #0d9488;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Keyboard accessibility */
+
+.module-card:focus-visible,
+.proceed-btn:focus-visible,
+.nav-arrow:focus-visible {
+  outline: 3px solid #2dd4bf;
+  outline-offset: 3px;
+}
+
+/* ========================================
+   MAIN CONTENT
+======================================== */
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  min-height: 100%;
+  padding: 36px 42px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  overflow-y: auto;
+}
+
+.main-content > h1 {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 0 28px;
+
+  color: #fff;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+
+/* ========================================
+   SLIDE ROW
+======================================== */
+
+.slide-row {
+  width: 100%;
+  max-width: 1040px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.slide-stack {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* ========================================
+   SLIDE CARD
+======================================== */
+
+.slide-card {
+  width: 100%;
+  min-height: 420px;
+  max-width: 960px;
+
+  border-radius: 16px;
+  border: 1px solid rgba(45, 212, 191, 0.65);
+
+  background: linear-gradient(
+    135deg,
+    #0f766e 0%,
+    #173a5e 55%,
+    #0f2942 100%
+  );
+
+  color: #fff;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  padding: 30px 34px 0;
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.20);
+  overflow: hidden;
+}
+
+/* ========================================
+   SLIDE BODY
+======================================== */
+
+.slide-body {
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+}
+
+.slide-body h2 {
+  margin: 0;
+  color: #fcd34d;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+/* ========================================
+   MATERIAL LIST
+======================================== */
+
+.slide-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slide-buttons .item {
+  width: 100%;
+  min-height: 52px;
+
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+
+  padding: 14px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+
+  transition: background 0.2s ease;
+}
+
+.slide-buttons .item:hover {
+  background: rgba(255, 255, 255, 0.17);
+}
+
+.slide-buttons .item a {
+  color: #fcd34d;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.slide-buttons .item a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ========================================
+   SLIDE PLACEHOLDER
+======================================== */
+
+.slide-placeholder {
+  flex: 1;
+  min-height: 300px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  gap: 12px;
+}
+
+.slide-placeholder-title {
+  margin: 0;
+  color: #fcd34d;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.slide-placeholder-sub {
+  max-width: 420px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ========================================
+   SLIDE FOOTER
+======================================== */
+
+.slide-footer {
+  min-height: 42px;
+  height: auto;
+  margin-top: 24px;
+  padding: 12px 0;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 10px;
+}
+
+/* ========================================
+   NAVIGATION ARROWS
+======================================== */
+
+.nav-arrow {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  font-size: 22px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nav-arrow:hover {
+  background: #0d9488;
+  transform: scale(1.06);
+}
+
+/* ========================================
+   ASSESSMENTS
+======================================== */
+
+.assessment-section {
+  width: 100%;
+  max-width: 960px;
+  margin-top: 30px;
+
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.assessment-section h2 {
+  margin: 0 0 18px;
+  color: #173a5e;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.assessment-item {
+  padding: 18px;
+  margin-bottom: 12px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #14b8a6;
+  border-radius: 10px;
+}
+
+.assessment-item:last-child {
+  margin-bottom: 0;
+}
+
+.assessment-item h3 {
+  margin: 0 0 12px;
+  color: #173a5e;
+  font-size: 16px;
+}
+
+.assessment-item p {
+  margin: 6px 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ========================================
+   PAGE COUNTER
+======================================== */
+
+.page-counter {
+  flex-shrink: 0;
+  margin-top: 20px;
+
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 20px;
+
+  padding: 7px 18px;
+
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ========================================
+   PROCEED BUTTON
+======================================== */
+
+.proceed-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+
+  background: #0d9488;
+  color: #fff;
+
+  border: none;
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.proceed-btn:hover {
+  background: #0f766e;
+}
+
+/* ========================================
+   RESPONSIVE: TABLETS
+======================================== */
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 260px;
+  }
+
+  .main-content {
+    padding: 28px 24px;
+  }
+
+  .slide-card {
+    padding: 24px 24px 0;
+  }
+
+  .slide-body h2 {
+    font-size: 22px;
+  }
+}
+
+/* ========================================
+   RESPONSIVE: MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+  .body-wrap {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    max-height: 340px;
+  }
+
+  .sidebar-scroll {
+    max-height: 260px;
+  }
+
+  .sidebar-list {
+    gap: 10px;
+  }
+
+  .module-card {
+    padding: 13px;
+  }
+
+  .main-content {
+    width: 100%;
+    padding: 28px 16px;
+    overflow: visible;
+  }
+
+  .main-content > h1 {
+    font-size: 22px;
+    margin-bottom: 22px;
+  }
+
+  .slide-row {
+    gap: 8px;
+  }
+
+  .slide-card {
+    min-height: 360px;
+    padding: 22px 18px 0;
+  }
+
+  .slide-body h2 {
+    font-size: 20px;
+  }
+
+  .slide-buttons .item {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .nav-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .assessment-section {
+    padding: 18px;
+  }
+
+  .slide-footer {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+/* ========================================
+   RESPONSIVE: SMALL MOBILE
+======================================== */
+
+@media (max-width: 480px) {
+  .sidebar-banner {
+    padding: 17px 18px;
+  }
+
+  .sidebar-banner h2 {
+    font-size: 17px;
+  }
+
+  .main-content {
+    padding: 22px 12px;
+  }
+
+  .main-content > h1 {
+    font-size: 19px;
+  }
+
+  .slide-row {
+    gap: 5px;
+  }
+
+  .slide-card {
+    min-height: 340px;
+    padding: 18px 14px 0;
+    border-radius: 12px;
+  }
+
+  .slide-body h2 {
+    font-size: 18px;
+  }
+
+  .slide-buttons {
+    gap: 9px;
+  }
+
+  .slide-buttons .item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .slide-placeholder-title {
+    font-size: 21px;
+  }
+
+  .assessment-section h2 {
+    font-size: 18px;
+  }
+
+  .assessment-item {
+    padding: 14px;
+  }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
