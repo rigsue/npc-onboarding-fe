@@ -14,6 +14,20 @@
   --admin-amber: #b45309;
 }
 
+.date-btn-like {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #12838f;
+    color: white;
+    font-weight: 600;
+}
+
+.admin-sidebar-page {
+  padding: 16px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
 .admin-shell{
   min-height: 100vh;
   display: flex;
@@ -312,15 +326,16 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 32px;
-  background: var(--admin-navy-dark);
-  color: rgba(255,255,255,0.7);
+  background: #12838f;
+  color: white;
   font-size: 11px;
+  font-weight: bold;
   flex-wrap: wrap;
 }
 
 .admin-footer-links a{
-  color: rgba(255,255,255,0.7);
-  text-decoration: none;
+  color:white;
+
 }
 
 .admin-footer-links a:hover{
@@ -340,9 +355,6 @@
   }
 }
 
-/* Shared "content page" header/toolbar/card pattern — used by Announcements,
-   Materials, and any future admin content page. Kept here (not in one page's
-   CSS file) since more than one page relies on it. */
 .announce-banner{
   display: flex;
   align-items: flex-start;
@@ -405,16 +417,6 @@
   cursor: pointer;
 }
 
-.announce-date-two {
-  background: var(--admin-navy);
-  color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
 .announce-new-btn:hover{
   background: var(--admin-navy-dark);
 }
@@ -445,9 +447,9 @@
 }
 
 .announce-tabs button.active{
-  background: var(--admin-navy);
+  background: #12838f;
   color: #ffffff;
-  border-color: var(--admin-navy);
+  border-color: #12838f;
 }
 
 .announce-search{
@@ -549,20 +551,23 @@
 }
 
 /* Shared modal shell (post/upload/create dialogs across admin pages) */
-.materials-modal-overlay,
-.announce-modal-overlay{
+
+.add_edit-modal-overlay{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  z-index: 1000;
+
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 24px;
-  z-index: 100;
+  align-items: center;
+
+  background: rgba(0,0,0,0.55);
+  padding: 20px;
+  overflow-y: auto;
+
 }
 
-.materials-modal-box,
-.announce-modal-box{
+.add_edit-modal-box{
   background: var(--admin-card-bg);
   border-radius: 10px;
   width: 100%;
@@ -570,6 +575,49 @@
   overflow: hidden;
   box-shadow: 0 30px 60px rgba(0,0,0,0.4);
 }
+
+.add_edit-modal-scroll {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.add-new-menu{
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: var(--admin-card-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  min-width: 210px;
+  padding: 6px;
+  z-index: 20;
+}
+
+.add-menu-dropdown{
+  position: relative;
+}
+
+.add-new-menu button{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--admin-text);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.add-new-menu button:hover{
+  color: var(--admin-teal);
+}
+
 
 .materials-modal-head,
 .announce-modal-head{
@@ -715,6 +763,9 @@
 }
 
 .materials-file-count{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 12px;
   color: var(--admin-muted);
 }
@@ -863,4 +914,13 @@
   font-size: 13px;
   padding: 20px 10px;
   margin: 0;
+}
+
+/* Hide button modal and date on mobile display */
+@media (max-width: 650px) {
+  .date-btn-like {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }

@@ -46,6 +46,8 @@ export default function EditMaterialsModal({
 
         try {
             setSaving(true);
+            console.log("Initial material:", initial);
+            console.log("Material ID:", initial?.learn_mat_id);
             await onSave(initial.learn_mat_id, formData);
         } finally {
             setSaving(false);
@@ -64,8 +66,8 @@ export default function EditMaterialsModal({
     };
 
     return (
-        <div className="materials-modal-overlay" onClick={onClose}>
-            <div className="materials-modal-box" onClick={(e) => e.stopPropagation()}>
+        <div className="add_edit-modal-overlay" onClick={onClose}>
+            <div className="add_edit-modal-box" onClick={(e) => e.stopPropagation()}>
                 <div className="materials-modal-head">
                     <h2>Edit Learning Material</h2>
                     <button type="button" 

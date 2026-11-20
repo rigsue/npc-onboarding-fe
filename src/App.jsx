@@ -13,13 +13,14 @@ import Home from "./main/localUser/Home";
 import Profile from "./main/localUser/Profile";
 import Certifications from "./main/localUser/Certifications";
 
-import AdminDashboard from "./main/adminPanel/AdminDashboard";
+import UserProgress from "./main/adminPanel/UserProgress";
 import AdminAnnouncements from "./main/adminPanel/AdminAnnouncements";
 import AdminModules from "./main/adminPanel/AdminModules";
 import AdminMaterials from "./main/adminPanel/AdminMaterials";
-import SuperAdmin from "./main/adminPanel/SuperAdmin";
+import UserDashboard from "./main/adminPanel/UserDashboard";
 import SuperAdminLayout from "./main/adminPanel/SuperAdminLayout";
 import AdminAssessment from "./main/adminPanel/AdminAssessment";
+import DeptDashboard from "./main/adminPanel/DeptDashboard";
 
 import HRModules from "./main/modules/hr";
 import ITModules from "./main/modules/it";
@@ -46,12 +47,13 @@ export default function App() {
               <Route element ={<ProtectedRoutes/>}>
                 <Route path="/home" element={<Home/>}/>
                 <Route path="/admin" element={<SuperAdminLayout/>}>
-                  <Route path="dashboard" element={<AdminDashboard/>}/>
-                  <Route path="users" element={<SuperAdmin/>}/>
+                  <Route path="user-progress" element={<UserProgress/>}/>
+                  <Route path="users" element={<UserDashboard/>}/>
                   <Route path="announcements" element={<AdminAnnouncements/>}/>
                   <Route path="materials" element={<AdminMaterials/>}/>
                   <Route path="modules" element={<AdminModules/>}/>
                   <Route path="assessment" element={<AdminAssessment/>}/>
+                  <Route path="departments" element={<DeptDashboard/>}/>
                 </Route>
                   <Route path="/profile" element={<Profile/>}/>
                   <Route path="/certifications" element={<Certifications/>}/>

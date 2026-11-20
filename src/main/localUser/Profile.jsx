@@ -385,7 +385,6 @@ useEffect(() => {
     )}
 </div>
 
-
             <div className="equipment-card">
               <h3>Assigned Equipments</h3>
               <label className="equip-row"><input type="checkbox" defaultChecked /><span className="equip-box"></span>Company Laptop</label>

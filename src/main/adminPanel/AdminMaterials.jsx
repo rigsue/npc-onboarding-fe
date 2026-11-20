@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useToast } from '../../context/ToastContext';
 
@@ -7,31 +7,29 @@ import AdminFooter from '../../auxillary/AdminFooter';
 
 import CreateAssessmentModal from '../../auxillary/assessment/AddAssessmentModal';
 import AddMaterialsModal from '../../auxillary/materials/AddMaterialsModal';
-import AddModuleModal from '../../auxillary/modules/AddModuleModal';
 
-import EditAssessmentModal from '../../auxillary/assessment/EditAssessmentModal';
 import EditMaterialsModal from '../../auxillary/materials/EditMaterialsModal';
 
 import { getDepartments } from '../../services/departmentService';
 
 import { 
-  getMaterials, uploadMaterials, updateMaterial, updateMaterialStatus 
+  getMaterials, uploadMaterials, updateMaterial, updateMaterialStatus, getMaterialsByDept 
 } from '../../services/materialService';
 
-import { createExam, updateExam, updateExamStatus } from "../../services/examService";
+import { createExam } from "../../services/examService";
 
-import { getModules, createModule } from '../../services/moduleService';
+import { getModules } from '../../services/moduleService';
 
 import '../../auxillary/AdminLayout.css';
 import './AdminMaterials.css';
 import './AdminModules.css';
 
+const STATUS_LABELS = {
+  published: "Published",
+  unpublished: "Unpublished"
+};
 
 const GENERAL_FOLDER = 'General';
-
-const STATUS_LABELS = {
-  published: 'Published', scheduled: 'Scheduled', unpublished: 'Unpublished',
-};
 
 function todayLabel() {
   return new Date().toLocaleDateString(undefined, {
@@ -54,25 +52,6 @@ function ThumbIcon() {
       <path d="M14 2v6h5M8 13h8M8 17h8" />
     </svg>
   );
-}
-
-
-function normalizeMaterial(material) {
-    return {
-        ...material,
-
-        id: material.learn_mat_id,
-
-        category: material.module_title,
-
-        status: material.is_active
-            ? "published"
-            : "unpublished",
-
-        date: material.created_at
-            ? new Date(material.created_at).toLocaleDateString()
-            : ""
-    };
 }
 
 /* ---------- Main page ---------- */
@@ -109,20 +88,18 @@ export default function AdminMaterials() {
   const [search, setSearch] = useState('');
   const [newMenuOpen, setNewMenuOpen] = useState(false);
 
-  const [moduleOpen, setModuleOpen] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(false);
+  const [addMaterialOpen, setAddMaterialOpen] = useState(false);
   const [assessmentOpen, setAssessmentOpen] = useState(false);
 
   const [editMaterialOpen, setEditMaterialOpen] = useState(false);
   const [editAssessmentOpen, setEditAssessmentOpen] = useState(false);
 
-  const [selectedModule, setSelectedModule] = useState(null);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
-  const [selectedAssessment, setSelectedAssessment] = useState(null);
 
 
   // get departments
   useEffect(() => {
+    if (!isSuperAdmin) return;
   const fetchDepartments = async() => {
     try {
       const data = await getDepartments(token);
@@ -136,7 +113,7 @@ export default function AdminMaterials() {
     if (token) {
       fetchDepartments();
     }
-  }, [token]);
+  }, [token, isSuperAdmin]);
 
 // get modules
   useEffect(() => {
@@ -177,168 +154,127 @@ export default function AdminMaterials() {
           cancelled = true;
       };
   }, [token]);
-  
-
-  const activeDepartments = useMemo(() => {
-    return departments.filter(
-      (department) => department.is_active === true
-    );
-  }, [departments]);
 
   // get Materials 
   useEffect(() => {
-    if (!token) {
-        setMaterials([]);
-        return;
-    }
-
     let cancelled = false;
 
     const fetchMaterials = async () => {
-        setMaterialsIsLoading(true);
+      setMaterialsIsLoading(true);
 
-        try {
-            const response = await getMaterials(token);
+      try {
+        let response;
 
-            console.log(
-                "Learning materials API response:",
-                response
-            );
+        if (user?.roleName === "Super admin") {
+          response = await getMaterials(token);
 
-            const rows = Array.isArray(response.data)
-                ? response.data
-                : [];
+        } else if (user?.roleName === "Admin") {
+          response =await getMaterialsByDept(token);
 
-            if (!cancelled) {
-                setMaterials(rows.map(normalizeMaterial));
-            }
-
-        } catch (error) {
-            console.error(
-                "Failed to fetch learning materials:",
-                error
-            );
-
-            if (!cancelled) {
-                showToast("Failed to load learning materials");
-            }
-
-        } finally {
-            if (!cancelled) {
-                setMaterialsIsLoading(false);
-            }
+        } else {
+          setMaterials([]);
+          return;
         }
+        console.log("Learning materials API response", response);
+
+        const rows = Array.isArray(response.data)
+            ? response.data
+            : [];
+        
+        if (!cancelled) {
+          setMaterials(rows.map(normalizeMaterial));
+        }
+          console.log("ADMIN USER:", user);
+          console.log("ADMIN DEPARTMENT:", departmentName);
+          console.log("ADMIN MODULES:", modules);
+          console.log("FIRST MATERIAL:", rows[0]);
+      } catch (error) {
+        console.error("Failed to fetch learning materials", error);
+
+        if (!cancelled) {
+          showToast("Failed to load learning materials");
+        }
+      } finally {
+        if (!cancelled) {
+          setMaterialsIsLoading(false);
+        }
+      }
     };
-
-    fetchMaterials();
-
+    if (token && user) {
+      fetchMaterials();
+    }
     return () => {
-        cancelled = true;
+      cancelled = true;
     };
-  }, [token]);
+  }, [token, user]);
 
   // check avail modules
   const availableModules = useMemo(() => {
-      if (isSuperAdmin) {
+      if (isSuperAdmin || isAdmin) {
           return modules;
       }
-
+/* 
       if (isAdmin) {
           return modules.filter(
-              (module) => module.department_name === departmentName
+              (module) => module.department_id === departmentName
           );
       }
-
+ */
       return [];
-  }, [modules, isSuperAdmin, isAdmin, departmentName]);
+  }, [modules, isSuperAdmin, isAdmin]);
 
   const today = new Date().toLocaleDateString(undefined, { 
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
   });
 
-  const counts = useMemo(() => {
-    const accessibleMaterials = materials.filter((material) => {
-      if (isSuperAdmin) return true;
+  const visible = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-      return (
-        material.category === GENERAL_FOLDER ||
-        material.category === departmentName
+    return materials.filter((material) => {
+     
+      if (
+        filter !== "all" && material.status !== filter
+      ) {
+        return false;
+      }
+
+      if (!query) return true;
+
+      return [
+        material.title, material.description, material.category,
+      ].some((value) =>
+        String(value ?? '').toLowerCase().includes(query)
       );
     });
+  }, [materials, filter, search]
+  );
 
-  return {
-    all: accessibleMaterials.length,
-    published: accessibleMaterials.filter(
-      (m) => m.status === 'published'
-    ).length,
-    scheduled: accessibleMaterials.filter(
-      (m) => m.status === 'scheduled'
-    ).length,
-    unpublished: accessibleMaterials.filter(
-      (m) => m.status === 'unpublished'
-    ).length,
-  };
-}, [materials, isSuperAdmin, departmentName]);
-
-const visible = useMemo(() => {
-  const query = search.trim().toLowerCase();
-
-  return materials.filter((material) => {
-    // Restrict the visible categories for non-Super Admins.
-    if (
-      !isSuperAdmin &&
-      material.category !== GENERAL_FOLDER &&
-      material.category !== departmentName
-    ) {
-      return false;
-    }
-
-    if (
-      filter !== 'all' &&
-      material.status !== filter
-    ) {
-      return false;
-    }
-
-    if (!query) return true;
-
-    return [
-      material.title,
-      material.description,
-      material.category,
-    ].some((value) =>
-      String(value ?? '').toLowerCase().includes(query)
-    );
-  });
-}, [materials, filter, search, isSuperAdmin, departmentName]
-);
-
-// Save or add module
-  const handleSaveModule = async (moduleData) => {
-    try {
-      const response = await createModule(token, moduleData);
-
-      showToast(
-        response.message || "Learning module created successfully",
-        "success"
-      );
-
-      // refresh list once module is created
-      const updatedModules = await getModules(token);
-
-      const rows = Array.isArray(updatedModules)
-        ? updatedModules
-        : Array.isArray(updatedModules.data)
-          ? updatedModules.data : [];
-
-          setModules(rows.filter((module) => module.is_active === true));
-          setModuleOpen(false);
-    } catch (error) {
-      showToast(error.message || "Failed to create a learning module", "error")
-    }; 
-    throw error;
+  function normalizeMaterial(material) {
+    return {
+      ...material,
+      id: material.learn_mat_id,
+      category: material.module_title,
+      status: material.is_active ? "published" : "unpublished",
+      date: material.created_at
+        ? new Date(material.created_at).toLocaleDateString()
+        : ""
+    };
   }
 
+  const fetchMaterialsData = async () => {
+    let response;
+
+    if (isSuperAdmin) {
+      response = await getMaterials(token);
+    } else if (isAdmin) {
+      response = await getMaterialsByDept(token);
+    } else {
+      return [];
+    }
+    const rows = Array.isArray(response.data) ? response.data : [];
+
+    return rows.map(normalizeMaterial);
+  };
   
   const handleUpdateMaterial = async (learnMatId, FormData) => {
     try {
@@ -347,10 +283,9 @@ const visible = useMemo(() => {
       showToast(
         response.message || "Material updated successfully", "success"
       );
-      const refreshed = await getMaterials(token);
-      const rows = Array.isArray(refreshed.data) ? refreshed.data : [];
+      const refreshed = await fetchMaterialsData(token);
 
-      setMaterials(rows);
+      setMaterials(refreshed);
       setEditMaterialOpen(false);
       setSelectedMaterial(null);
     } catch (error) {
@@ -359,94 +294,37 @@ const visible = useMemo(() => {
     }
   };
   
-  const handleDeleteMaterial = async (learnMatId) => {
-
+  const handleToggleMatStat = async (material) => {
       try {
-          const response = await updateMaterialStatus(token, false, learnMatId);
+        const newStat = !material.is_active;
+
+        const response = await updateMaterialStatus(
+          token, newStat, material.learn_mat_id
+        );
           
           showToast(
-              response.message || "Material deactivated",
-              "success"
+              response.message || 
+              (newStat
+                ? "Material reactivated successfully"
+                : "Material deacticated successfully"
+              ), "success"
           );
 
-          const refreshed = await getMaterials(token);
-          const rows = Array.isArray(refreshed.data) ? refreshed.data : [];
+          const refreshed = await fetchMaterialsData();
+          
+          setMaterials(refreshed);
 
-          setMaterials(rows);
-          setEditMaterialOpen(false);
-          setSelectedMaterial(null);
       } catch (error) {
+        console.error ("Failed to update material status", error);
           showToast(error.message || "Failed to deactivate material", "error");
-          throw error;
       }
   };
 
 
-  const handleUpdateAssessment = async (examId, assessmentData) => {
-    try {
-        const response = await updateExam(token, examId, assessmentData);
-
-        showToast(
-            response.message || "Assessment updated successfully",
-            "success"
-        );
-
-        setEditAssessmentOpen(false);
-        setSelectedAssessment(null);
-
-        // Refresh your assessment list here if you have one.
-    } catch (error) {
-        showToast(error.message || "Failed to update assessment", "error");
-        throw error;
-    }
-};
-
-const handleDeleteAssessment = async (examId) => {
-    try {
-        const response = await updateExamStatus(token, examId, false);
-
-        showToast(
-            response.message || "Assessment deactivated",
-            "success"
-        );
-
-        setEditAssessmentOpen(false);
-        setSelectedAssessment(null);
-
-        // Refresh your assessment list here if you have one.
-    } catch (error) {
-        showToast(error.message || "Failed to deactivate assessment", "error");
-        throw error;
-    }
-};
-/* 
-  const handleDeleteMaterial = (id) => {
-    setMaterials((prev) => prev.filter((m) => m.id !== id));
-    showToast('Material deleted');
-  };
-
-  const addMaterial = (entry) => {
-    setMaterials((prev) => {
-      const nextId = Math.max(
-        0,
-        ...prev.map((material) => material.id)
-      ) + 1;
-      return [{
-          id: nextId, date: todayLabel(), ...entry,
-        }, ...prev,];
-    });
-  };
- */
-  
   const handleEditMaterial = (material) => {
       setSelectedMaterial(material);
       setEditMaterialOpen(true);
   };
-
-  const handleEditAssessment = (assessment) => {
-    setSelectedAssessment(assessment);
-    setEditAssessmentOpen(true);
-  }
 
   const handleUpload = async ({ 
     files, linkedModule, status, note, title, materialType, displayOrder, minDurationMinutes, maxDurationMinutes 
@@ -466,7 +344,7 @@ const handleDeleteAssessment = async (examId) => {
 
     setMaterials(rows.map(normalizeMaterial));
 
-    setUploadOpen(false);
+    setAddMaterialOpen(false);
 
     showToast("Learni materials upload success");
 
@@ -477,7 +355,7 @@ const handleDeleteAssessment = async (examId) => {
   };
 
   // Save assessment
-  const handleSaveAssessment = async (assessmentData) => {
+  const handleAddMaterial = async (assessmentData) => {
     try {
       const response = await createExam(token, assessmentData);
       showToast(
@@ -485,13 +363,7 @@ const handleDeleteAssessment = async (examId) => {
         "success"
       );
       setAssessmentOpen(false);
-  /* 
-      addMaterial({
-      category: linkedModule,
-      status: 'published',
-      title,
-      description: `Assessment — ${questions.length} questions`,
-    }); */
+
     } catch (error) {
       showToast(
         error.message || "Failed to create assessment",
@@ -508,9 +380,7 @@ const handleDeleteAssessment = async (examId) => {
         <header className="announce-banner">
           <div>
             <h1>Department Materials</h1>
-            <p>Browse important documents, 
-              standard operating procedures (SOPs), manuals, 
-              and resources provided by your department.
+            <p>Manage Learning materials.
             </p>
           </div>
           <div className="admin-header-actions">
@@ -519,171 +389,165 @@ const handleDeleteAssessment = async (examId) => {
         </header>
 
         <div className="announce-body">
-          <div className="announce-toolbar">
-            <span className="announce-date-two">{today}</span>
+          <div className="admin-sidebar-page">
+            <div className="admin-modules-heading">
+              <div>
+                <span className="date-btn-like">{today}</span>
+              </div>
 
-            <div className="materials-new-dropdown">
-              <button type="button" className="announce-new-btn" onClick={() => setNewMenuOpen((v) => !v)}>
-                + New Materials
-                <svg viewBox="0 0 24 24" 
-                  width="14" height="14" fill="none" 
-                  stroke="currentColor" strokeWidth="2">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
+              <div className="add-menu-dropdown">
+                <button type="button" 
+                  className="date-btn-like" 
+                  onClick={() => setNewMenuOpen((v) => !v)}>
+                  + New Materials
+                  <svg viewBox="0 0 16 18" 
+                    width="20" height="16" fill="none" 
+                    stroke="currentColor" strokeWidth="3">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                {newMenuOpen && (
+                  <div className="add-new-menu">
 
-              {newMenuOpen && (
-                <div className="materials-new-menu">
-                  <button type="button" onClick={() => {
-                    setNewMenuOpen(false);
-                    setModuleOpen(true);
-                  }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="16"
-                      height="16"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <button type="button" 
+                      onClick={() => { 
+                        setNewMenuOpen(false); 
+                        setAddMaterialOpen(true); 
+                      }}
                     >
-                      <path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
-                      <path d="M8 3v18" />
-                      <path d="M11 8h5" />
-                      <path d="M11 12h5" />
-                      <path d="M11 16h5" />
-                    </svg>
-                    Create Learning Module
-                  </button>
-                  <button type="button" onClick={() => { 
-                    setNewMenuOpen(false); 
-                    setUploadOpen(true); 
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" 
-                      width="16" height="16" 
-                      fill="none" stroke="currentColor" 
-                      strokeWidth="1.8">
-                        <path d="M12 16V4" />
-                        <path d="M6 10l6-6 6 6" />
-                        <path d="M4 20h16" />
-                    </svg>
-                    Upload Material
-                  </button>
-                  <button type="button" onClick={() => { 
-                    setNewMenuOpen(false); 
-                    setAssessmentOpen(true); 
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" 
-                      width="16" height="16" 
-                      fill="none" stroke="currentColor" 
-                      strokeWidth="1.8">
-                        <path d="M9 11l3 3L22 4" />
-                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                    </svg>
-                    Create Assessment
-                  </button>
-                </div>
+                      <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                      >
+                          <path d="M12 6.5C9.8 4.9 6.5 4.5 3.5 5v13c3-.5 6.3-.1 8.5 1.5" />
+                          <path d="M12 6.5c2.2-1.6 5.5-2 8.5-1.5v13c-3-.5-6.3-.1-8.5 1.5" />
+                          <path d="M12 6.5v13" />
+                          <path d="M6.5 8.5c1.4-.1 2.8.2 4 .7" />
+                          <path d="M6.5 11.5c1.4-.1 2.8.2 4 .7" />
+                          <path d="M17.5 8.5c-1.4-.1-2.8.2-4 .7" />
+                          <path d="M17.5 11.5c-1.4-.1-2.8.2-4 .7" />
+                      </svg>
+                      Create Learning Material
+                    </button>
+
+                    <button type="button" onClick={() => { 
+                      setNewMenuOpen(false); 
+                      setAssessmentOpen(true); 
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" 
+                        width="16" height="16" 
+                        fill="none" stroke="currentColor" 
+                        strokeWidth="1.8">
+                          <path d="M9 11l3 3L22 4" />
+                          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                      </svg>
+                      Create Assessment
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="announce-controls">
+              <div className="announce-search">
+                <svg viewBox="0 0 24 24" 
+                  width="15" height="15" 
+                  fill="none" stroke="currentColor" 
+                  strokeWidth="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M21 21l-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search department, roles etc"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="materials-grid">
+              {visible.map((material) => (
+                <article className={`materials-card ${
+                  !material.is_active ? "materials-card-inactive" : ""
+                }`} key={material.learn_mat_id}>
+                  <div className="announce-card-head">
+                    <span className="announce-category-pill">{material.category}</span>
+                    <span className={`announce-status-pill status-${material.status}`}>
+                      {STATUS_LABELS[material.status]}
+                    </span>
+                  </div>
+
+                  <div className="materials-thumb"><ThumbIcon /></div>
+
+                  <h3>{material.title}</h3>
+                  <p>{material.description}</p>
+
+                  <div className="announce-card-foot">
+                    <span>{material.date}</span>
+                    <div className="announce-card-actions">
+                      <button type="button" aria-label="Edit" 
+                      onClick={() => handleEditMaterial(material)}>
+                      <svg viewBox="0 0 24 24" 
+                        width="15" height="15" 
+                        fill="none" stroke="currentColor" 
+                        strokeWidth="1.8">
+                          <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                      </svg>
+                      </button>
+                      <button type="button" 
+                      className={
+                        material.is_active ? "status-toggle active" : "status-toggle inactive"
+                      }
+                      aria-label={
+                        material.is_active ? "Deactivate" : "Activate"
+                      } 
+                      title={
+                        material.is_active ? "Deactivate material" : "Activate material"
+                      }
+                      onClick={() => handleToggleMatStat(material)}
+                      >
+                              <svg
+                                viewBox="0 0 24 24"
+                                width="15"
+                                height="15"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.8"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 2v10" />
+                                <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+                              </svg>_        
+                        {material.is_active ? " Deactivate" : "Reactivate"}
+
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+              {visible.length === 0 && (
+                <p className="announce-empty">No materials match your filters.</p>
               )}
             </div>
           </div>
-
-          <div className="announce-controls">
-            <div className="announce-tabs">
-              <button type="button" className={filter === 'all' ? 'active' : ''} 
-                onClick={() => setFilter('all')}>All {counts.all}</button>
-              <button type="button" className={filter === 'published' ? 'active' : ''} 
-                onClick={() => setFilter('published')}>Published {counts.published}</button>
-              <button type="button" className={filter === 'scheduled' ? 'active' : ''} 
-                onClick={() => setFilter('scheduled')}>Scheduled {counts.scheduled}</button>
-              <button type="button" className={filter === 'unpublished' ? 'active' : ''} 
-                onClick={() => setFilter('unpublished')}>Draft {counts.unpublished}</button>
-            </div>
-
-            <div className="announce-search">
-              <svg viewBox="0 0 24 24" 
-                width="15" height="15" 
-                fill="none" stroke="currentColor" 
-                strokeWidth="2">
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="M21 21l-4.35-4.35" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search department, roles etc"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="materials-grid">
-            {visible.map((material) => (
-              <article className="materials-card" key={material.learn_mat_id}>
-                <div className="announce-card-head">
-                  <span className="announce-category-pill">{material.category}</span>
-                  <span className={`announce-status-pill status-${material.status}`}>
-                    {STATUS_LABELS[material.status]}
-                  </span>
-                </div>
-
-                <div className="materials-thumb"><ThumbIcon /></div>
-
-                <h3>{material.title}</h3>
-                <p>{material.description}</p>
-
-                <div className="announce-card-foot">
-                  <span>{material.date}</span>
-                  <div className="announce-card-actions">
-                    <button type="button" aria-label="Edit" 
-                    onClick={() => handleEditMaterial(material.learn_mat_id)}>
-                    <svg viewBox="0 0 24 24" 
-                      width="15" height="15" 
-                      fill="none" stroke="currentColor" 
-                      strokeWidth="1.8">
-                        <path d="M12 20h9" />
-                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
-                    </svg>
-                    </button>
-                    <button type="button" aria-label="Delete" 
-                    onClick={() => handleDeleteMaterial(material.learn_mat_id)}>
-                      <svg viewBox="0 0 24 24" width="15" 
-                        height="15" fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="1.8">
-                          <path d="M3 6h18" />
-                          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-            {visible.length === 0 && (
-              <p className="announce-empty">No materials match your filters.</p>
-            )}
-          </div>
         </div>
-
         <AdminFooter />
+
       </div>
 
-      {moduleOpen && (
-        <AddModuleModal
-          onClose={() => setModuleOpen(false)}
-          onSave={handleSaveModule}
-          departments={activeDepartments}
-        />
-      )
-
-      }
-      {uploadOpen && (
+      {addMaterialOpen && (
         <AddMaterialsModal 
-          onClose={() => setUploadOpen(false)} 
+          onClose={() => setAddMaterialOpen(false)} 
           onUpload={handleUpload} 
           modules={availableModules} 
         />
@@ -692,38 +556,22 @@ const handleDeleteAssessment = async (examId) => {
       {assessmentOpen && (
         <CreateAssessmentModal 
         onClose={() => setAssessmentOpen(false)} 
-        onSave={handleSaveAssessment} 
+        onSave={handleAddMaterial} 
         modules={availableModules} />
       )}
-{/* 
-      {editModuleOpen && selectedModule && (
-        <EditModuleModal
-          initial={selectedModule}
-          departments={activeDepartments}
-          onClose={() => setEditModuleOpen(false)}
-          onSave={handleUpdateModule}
-        />
-      )} */}
 
       {editMaterialOpen && selectedMaterial && (
           <EditMaterialsModal
               initial={selectedMaterial}
               modules={availableModules}
-              onClose={() => setEditMaterialOpen(false)}
+              onClose={() => {
+                setEditMaterialOpen(false);
+                setSelectedMaterial(null);
+              }}
               onSave={handleUpdateMaterial}
-              onDelete={handleDeleteMaterial}
           />
       )}
 
-      {editAssessmentOpen && selectedAssessment && (
-          <EditAssessmentModal
-              initial={selectedAssessment}
-              modules={availableModules}
-              onClose={() => setEditAssessmentOpen(false)}
-              onSave={handleUpdateAssessment}
-              onDelete={handleDeleteAssessment}
-          />
-      )}
     </div>
   );
 }

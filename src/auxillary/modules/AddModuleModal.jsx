@@ -40,8 +40,8 @@ export default function AddModuleModal({
     };
 
     return (
-        <div className="materials-modal-overlay" onClick={onClose}>
-            <div className="materials-modal-box" onClick={(e) => e.stopPropagation()}>
+        <div className="add_edit-modal-overlay" onClick={onClose}>
+            <div className="add_edit-modal-box" onClick={(e) => e.stopPropagation()}>
                 <div className="materials-modal-head">
                     <h2>Create learning module</h2>
                     <button type="button" 

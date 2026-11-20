@@ -17,7 +17,7 @@ import { getDepartments } from "../../services/departmentService";
 import { getRoles } from "../../services/roleService";
 
 import "../../auxillary/AdminLayout.css";
-import "./SuperAdminDB.css";
+import "./UserDashboard.css";
 
 export default function SuperAdminDashboard() {
   const token = useSelector((state) => state.auth.token);
@@ -205,144 +205,148 @@ export default function SuperAdminDashboard() {
           </div>
 
         </header>
-        <div className="users-body">
-          <div className="announce-toolbar">
-            <span className="announce-date-pill">
-              {users.length} total accounts
-            </span>
-            <button
-              type="button"
-              className="announce-new-btn"
-              onClick={() => setAddOpen(true)}
-            >
-              + Add User
-            </button>
-          </div>
 
-          <section className="users-table-card">
-            <table className="users-simple-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Email</th>
-                  <th>Employee Number</th>
-                  <th>Contact Number</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Position</th>
-                  <th>Department</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+        <div className="announce-body">
+          <div className="admin-sidebar-page">
+            <div className="admin-modules-heading">
+              <span className="date-btn-like">
+                {users.length} total accounts
+              </span>
+              <button
+                type="button"
+                className="date-btn-like"
+                onClick={() => setAddOpen(true)}
+              >
+                + Add User
+              </button>
+            </div>
 
-                {loading ? (
+            <section className="users-table-card">
+              <table className="users-simple-table">
+                <thead>
                   <tr>
-                    <td
-                      colSpan={9}
-                      className="admin-table-empty"
-                    >
-                      Loading...
-                    </td>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Employee Number</th>
+                    <th>Contact Number</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Actions</th>
                   </tr>
-                ) : error ? (
-                  <tr>
-                    <td
-                      colSpan={9}
-                      className="admin-table-empty"
-                    >
-                      {error}
-                    </td>
-                  </tr>
-                ) : users.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={9}
-                      className="admin-table-empty"
-                    >
-                      No users found.
-                    </td>
-                  </tr>
-                ) : (
-                  users.map((user) => (
-                    <tr key={user.user_id}>
+                </thead>
+                <tbody>
 
-                      <td>{user.first_name}{" "}{user.last_name}</td>
-
-                      <td>{user.email}</td>
-
-                      <td>{user.employee_number}</td>
-
-                      <td>{user.contact_number}</td>
-
-                      <td>{user.role_name}</td>
-
-                      <td>{user.is_active ? "Active" : "Inactive"}</td>
-
-                      <td>{user.position}</td>
-
-                      <td>{user.department_name}</td>
-
-                      <td>
-                        <div className="announce-card-actions users-row-actions">
-                          <button
-                            type="button"
-                            aria-label="Edit"
-                            onClick={() => setEditingUser(user)}
-                          >
-                            <svg
-                              viewBox="0 0 24 24"
-                              width="15"
-                              height="15"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.8"
-                            >
-                              <path d="M12 20h9" />
-                              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
-                            </svg>
-                          </button>
-
-                          <button
-                            type="button"
-                            className={
-                              user.is_active
-                                ? "status-toggle active" : "status-toggle inactive"
-                            }
-                            aria-label={
-                              user.is_active ? "Deactivate" : "Activate"
-                            }
-                            title={
-                              user.is_active ? "Deactivate user" : "Activate user"
-                            }
-                            onClick={() =>
-                              handleToggleStatus(
-                                user.user_id, user.is_active
-                              )
-                            }
-                          >
-                            <svg
-                              viewBox="0 0 24 24"
-                              width="15"
-                              height="15"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M12 2v10" />
-                              <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
-                            </svg>
-                          </button>
-                        </div>
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan={9}
+                        className="admin-table-empty"
+                      >
+                        Loading...
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </section>
+                  ) : error ? (
+                    <tr>
+                      <td
+                        colSpan={9}
+                        className="admin-table-empty"
+                      >
+                        {error}
+                      </td>
+                    </tr>
+                  ) : users.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={9}
+                        className="admin-table-empty"
+                      >
+                        No users found.
+                      </td>
+                    </tr>
+                  ) : (
+                    users.map((user) => (
+                      <tr key={user.user_id}>
+
+                        <td>{user.first_name}{" "}{user.last_name}</td>
+
+                        <td>{user.email}</td>
+
+                        <td>{user.employee_number}</td>
+
+                        <td>{user.contact_number}</td>
+
+                        <td>{user.role_name}</td>
+
+                        <td>{user.is_active ? "Active" : "Inactive"}</td>
+
+                        <td>{user.position}</td>
+
+                        <td>{user.department_name}</td>
+
+                        <td>
+                          <div className="announce-card-actions users-row-actions">
+                            <button
+                              type="button"
+                              aria-label="Edit"
+                              onClick={() => setEditingUser(user)}
+                            >
+                              <svg
+                                viewBox="0 0 24 24"
+                                width="15"
+                                height="15"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.8"
+                              >
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                              </svg>
+                            </button>
+
+                            <button
+                              type="button"
+                              className={
+                                user.is_active
+                                  ? "status-toggle active" : "status-toggle inactive"
+                              }
+                              aria-label={
+                                user.is_active ? "Deactivate" : "Activate"
+                              }
+                              title={
+                                user.is_active ? "Deactivate user" : "Activate user"
+                              }
+                              onClick={() =>
+                                handleToggleStatus(
+                                  user.user_id, user.is_active
+                                )
+                              }
+                            >
+                              <svg
+                                viewBox="0 0 24 24"
+                                width="15"
+                                height="15"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.8"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 2v10" />
+                                <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </section>
+          </div>
+
         </div>
         <AdminFooter />
       </div>

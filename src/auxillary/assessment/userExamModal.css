@@ -132,17 +132,8 @@
 
 .admin-assessments-content {
     flex: 1;
-    padding: 28px;
+    padding: 16px;
 }
-
-.assessment-page-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 25px;
-}
-
 .assessment-page-heading h1 {
     margin: 0 0 8px;
     color: #283b55;

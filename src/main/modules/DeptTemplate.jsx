@@ -7,13 +7,12 @@ import Footer from "../../auxillary/Footer";
 import UserExamModal from "../../auxillary/assessment/UsersExamModal";
 
 import { getModules } from "../../services/moduleService";
-import { getMaterials } from "../../services/materialService";
+import { getMaterials, getMaterialUrl } from "../../services/materialService";
 import { getExam } from "../../services/examService";
-import { getQuestionsByExam } from "../../services/questionService";
-import { getChoicesByQuestion } from "../../services/choiceService";
 import {
     createExamAttempt, closeExamAttempt
 } from "../../services/examAttemptService";
+import PDFViewer from "../../auxillary/pdfViewer/PDFViewer";
 
 import "../../layout.css";
 import "./onboarding.css";
@@ -34,20 +33,6 @@ const normalizeDepartment = (name = "") =>
         .replace(/&/g, "and")
         .replace(/[^a-z0-9]/g, "");
 
-// Construct the full material URL
-const getMaterialUrl = (material) => {
-    const filePath = material.content_url?.replace(/^\/+/, "");
-
-    if (!filePath) return "";
-
-    // Support both relative and already absolute URLs
-    if (/^https?:\/\//i.test(filePath)) {
-        return filePath;
-    }
-
-    return `${apiBase}/${filePath}`;
-};
-
 export default function DepartmentTemplate({ departmentName }) {
 
     const token = useSelector((state) => state.auth.token);
@@ -63,40 +48,8 @@ export default function DepartmentTemplate({ departmentName }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const [questions, setQuestions] = useState([]);
-    const [loadingQuestions, setLoadingQuestions] = useState(false);
-    const [questionError, setQuestionError] = useState("");
-
     const [selectedAttempt, setSelectedAttempt] = useState(null);
-
-    const loadAssessmentQuestions = async (examId) => {
-    try {
-        setLoadingQuestions(true);
-        setQuestionError("");
-
-        const questionResponse = await getQuestionsByExam(token, examId);
-        const questionList = questionResponse.data || [];
-
-        const questionsWithChoices = await Promise.all(
-            questionList.map(async (question) => {
-                const choiceResponse = await getChoicesByQuestion(
-                    token,
-                    question.question_id
-                );
-                return {
-                    ...question,
-                    choices: choiceResponse.data || [],
-                };
-            })
-        );
-        setQuestions(questionsWithChoices);
-    } catch (error) {
-        setQuestionError(error.message);
-        setQuestions([]);
-    } finally {
-        setLoadingQuestions(false);
-    }
-};
+    const [selectedMaterial, setSelectedMaterial] = useState(null);
 
 const handleStartAssessment = async (exam) => {
     try {
@@ -120,6 +73,12 @@ const handleStartAssessment = async (exam) => {
 
 
 const handleCloseAssessment = async () => {
+
+    if (!selectedAttempt?.exam_attempt_id) {
+        console.error("No active assessment attempt found.")
+        return;
+    }
+
     const confirmed = window.confirm(
         "Are you sure you want to close this assessment?\n\n" +
         "Your current attempt will be recorded as FAILED " +
@@ -135,8 +94,7 @@ const handleCloseAssessment = async () => {
             token,
             selectedAttempt.exam_attempt_id
         );
-
-        alert(response.message);
+        alert(response.message || "Assessment closed successrully");
 
         setSelectedExam(null);
         setSelectedAttempt(null);
@@ -145,6 +103,9 @@ const handleCloseAssessment = async () => {
     } catch (error) {
         console.error("Failed to close assessment:", error);
         alert(error.message);
+
+        // keep exam open if backend fails to load
+        setAssessmentStatus("in_progress");
     }
 };
 
@@ -308,7 +269,7 @@ const handleCloseAssessment = async () => {
                                     <button
                                         key={module.learn_mod_id}
                                         type="button"
-                                        disabled={assessmentStatus === "in_progress"}
+                                        disabled={assessmentStatus !== "in_progress"}
                                         className={`module-card ${
                                             String(selectedModule) ===
                                             String(module.learn_mod_id)
@@ -361,7 +322,7 @@ const handleCloseAssessment = async () => {
                                                         >
                                                             <span>{material.title}</span>
                                                             {material.content_url && (
-                                                                <a
+/*                                                                 <a
                                                                     href={getMaterialUrl(material)}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
@@ -377,7 +338,12 @@ const handleCloseAssessment = async () => {
                                                                     }}
                                                                 >
                                                                     Open Material
-                                                                </a>
+                                                                </a> */
+                                                                <button type="button"
+                                                                    onClick={() => setSelectedMaterial(material)}
+                                                                >
+                                                                    Open Material
+                                                                </button>
                                                             )}
                                                         </div>
                                                     ))
@@ -454,13 +420,18 @@ const handleCloseAssessment = async () => {
                 exam={selectedExam}
                 attempt={selectedAttempt}
                 token={token}
-                onClose={() => {
-                    // Do not allow closing an active assessment.
-                }}
+                onClose={handleCloseAssessment}
                 onSubmit={(submission) => {
                     console.log("Received from UserExamModal:", submission);
                 }}
               />
+            )}
+
+            {selectedMaterial && (
+                <PDFViewer token={token}
+                    material={selectedMaterial}
+                    onClose={() => setSelectedMaterial(null)}
+                />
             )}
         </div>
     );
