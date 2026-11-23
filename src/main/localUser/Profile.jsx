@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -17,6 +16,7 @@ import { getExamAttemptsByUserProgress } from '../../services/examAttemptService
 
 import '../../layout.css';
 import './Profile.css';
+import ManageAccount from "../ManageAccount";
 
 export default function Profile() {
 
@@ -45,7 +45,6 @@ export default function Profile() {
     },
 });
 
-
 const calculatePercentage = (completed, total) => {
     if (!total) return 0;
 
@@ -64,6 +63,7 @@ const calculatePercentage = (completed, total) => {
   const email = user?.email ?? "No email available";
 
   const phone = user?.contactNumber ?? "No contact Number available";
+  const [showManageAccount, setShowManageAccount] = useState(false);
   
   useEffect(() => {
     async function loadAccount() {
@@ -92,7 +92,6 @@ useEffect(() => {
             setLoading(false);
             return;
         }
-
         try {
             setLoading(true);
             setProgressError("");
@@ -150,7 +149,6 @@ useEffect(() => {
                         String(item.learn_mod_id) ===
                         String(module.learn_mod_id)
                 );
-
                 return record?.status?.toLowerCase() === "completed";
             }).length;
 
@@ -204,7 +202,6 @@ useEffect(() => {
                             activeModules.length
                         ),
                     },
-
                     materials: {
                         completed: completedMaterials,
                         total: activeMaterials.length,
@@ -213,7 +210,6 @@ useEffect(() => {
                             activeMaterials.length
                         ),
                     },
-
                     assessments: {
                         completed: completedAssessments,
                         total: activeExams.length,
@@ -224,7 +220,6 @@ useEffect(() => {
                     },
                 });
             }
-
         } catch (error) {
             console.error("Failed to load onboarding progress:", error);
 
@@ -233,14 +228,12 @@ useEffect(() => {
                     error.message || "Unable to retrieve onboarding progress."
                 );
             }
-
         } finally {
             if (isMounted) {
                 setLoading(false);
             }
         }
     }
-
     loadProgress();
 
     return () => {
@@ -272,7 +265,16 @@ useEffect(() => {
               </p>
             </div>
 
-            <Link className="manage-btn" to="/manageaccount">Manage your account</Link>
+            <button className="manage-btn"
+                type="button"
+                onClick={() => setShowManageAccount(true)}
+            >
+                Manage your account
+            {showManageAccount && (
+                <ManageAccount 
+                onClose={() => setShowManageAccount(false)}/>
+            )}
+            </button>
           </div>
 
           <div className="about-block">
