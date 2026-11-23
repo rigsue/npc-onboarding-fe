@@ -314,7 +314,7 @@ export default function CreateAssessmentModal({
                 {q.type.toUpperCase()}
               </span>
               {/* uncomment below once short answer is avail */}
-{/*   
+                {/* 
               {q.type === 'Short Answer' ? (
                 <input
                   type="text"

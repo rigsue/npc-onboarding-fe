@@ -252,20 +252,21 @@ const handleLanguageSave = () => {
 };
 
 return (
-    <div className="manage-account-overlay" onClick={onClose}>
+    <div className="add_edit-modal-overlay" onClick={saving ? undefined : onClose}>
 
       {/* <Navbar active="profile" /> */}
       <div
         className="manage-account-modal"
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           <button
             type="button"
             className="manage-account-close"
             onClick={onClose}
             aria-label="Close"
+            disabled={saving}
           >
-            x
+            &times;
           </button>
         <section className="account-panel">
 
@@ -304,7 +305,7 @@ return (
                 </div>
 
                 <div className='name-edit'>
-{/*                   <label>
+               {/*<label>
                     Position
                     <input className='name-data-box'
                       value={form.position}
@@ -330,7 +331,7 @@ return (
                       }
                     />
                   </label>
-{/*                 </div>
+                {/*</div>
 
                 <div className='name-edit'> */}
                   <label>
@@ -443,9 +444,9 @@ return (
               >
               <EditIcon />
               <span>{aboutEditing ? 'Done' : 'Edit'}</span>
-            </button>
+              </button>
+            </div>
           </div>
-        </div>
 
           <div className="settings-grid">
 
@@ -482,7 +483,7 @@ return (
                       <ChevronIcon />
                     </button>
                     <div className="settings-panel" hidden={!openPanels['panel-password']}>
-{/*                       <label>
+                    {/*<label>
                       Current Password
                       <input
                         type="password"
