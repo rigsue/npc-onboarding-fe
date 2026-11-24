@@ -7,6 +7,7 @@ from '../services/userService';
 
 import '../layout.css';
 import './ManageAccount.css';
+import { MarginLeft } from 'lucide-react';
 
 function EditIcon() {
   return (
@@ -59,10 +60,10 @@ export default function ManageAccount( {onClose} ) {
   // currentPassword: "",
   newPassword: "",
   confirmPassword: "",
-});
-const [language, setLanguage] = useState(
-  localStorage.getItem("language") || "English" || "Tagalog"
-);
+  });
+  const [language, setLanguage] = useState(
+    localStorage.getItem("language") || "English" || "Tagalog"
+  );
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,6 +71,7 @@ const [language, setLanguage] = useState(
   const [headEditing, setHeadEditing] = useState(false);
   const [aboutEditing, setAboutEditing] = useState(false);
   const [openPanels, setOpenPanels] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const togglePanel = (id) => {
     setOpenPanels((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -221,14 +223,14 @@ const handlePasswordUpdate = async () => {
   try {
     await updateUserPassword(
       token,
-      user.user_id,
+      user.userId,
       passwordForm.newPassword
     );
 
     showToast("Password updated");
 
     setPasswordForm({
-      // currentPassword: "",
+      currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     });
@@ -450,265 +452,305 @@ return (
 
           <div className="settings-grid">
 
-                <div className="settings-card">
-                  <h3>
-                    <svg viewBox="0 0 24 24"
-                      width="20" 
-                      height="20" 
-                      fill="none" 
+            <div className="settings-card">
+              <h3>
+                <svg viewBox="0 0 24 24"
+                  width="20" 
+                  height="20" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="1.6"
+                >
+                  <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" />
+                </svg>
+                Account Security
+              </h3>
+
+              <div className="settings-item">
+                <button className="settings-row" 
+                  aria-expanded={!!openPanels['panel-password']} 
+                  onClick={() => togglePanel('panel-password')}
+                >
+                  <svg viewBox="0 0 24 24" 
+                    width="18" 
+                    height="18" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.6"
+                  >
+                    <rect x="4" y="10" width="16" height="10" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                  </svg>
+                  <span>Change Password</span>
+                  <ChevronIcon />
+                </button>
+                <div className="settings-panel" hidden={!openPanels['panel-password']}>
+                  {/* <button type="button"
+                    className="hide-toggle" 
+                    style={{ 
+                      marginLeft: "280px", marginBottom: "0px", paddingBottom: "0px"
+                    }}
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    <svg 
+                      viewBox="0 0 24 24" 
+                      width="16" height="16" 
+                      fill="white" 
                       stroke="currentColor" 
-                      strokeWidth="1.6"
+                      strokeWidth="1.8"
                     >
-                      <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" />
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                      <circle cx="12" cy="12" r="3" />
+                    {!showPassword && ( 
+                      <line x1="3" y1="21" x2="21" y2="3" />
+                      )}
                     </svg>
-                    Account Security
-                  </h3>
-
-                  <div className="settings-item">
-                    <button className="settings-row" 
-                      aria-expanded={!!openPanels['panel-password']} 
-                      onClick={() => togglePanel('panel-password')}
+                  </button> */}
+                  <label style={{ display: "flex", flexDirection: "row", flexWrap: "wrap"}}>
+                    Current Password
+                    <button type="button"
+                      className="hide-toggle" 
+                      onClick={() => setShowPassword((prev) => !prev)}
                     >
-                      <svg viewBox="0 0 24 24" 
-                        width="18" 
-                        height="18" 
-                        fill="none" 
+                      <svg 
+                        viewBox="0 0 24 24" 
+                        width="16" height="16" 
+                        fill="white" 
                         stroke="currentColor" 
-                        strokeWidth="1.6"
+                        strokeWidth="1.8"
                       >
-                        <rect x="4" y="10" width="16" height="10" rx="2" />
-                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                        <circle cx="12" cy="12" r="3" />
+                      {!showPassword && ( 
+                        <line x1="3" y1="21" x2="21" y2="3" />
+                        )}
                       </svg>
-                      <span>Change Password</span>
-                      <ChevronIcon />
                     </button>
-                    <div className="settings-panel" hidden={!openPanels['panel-password']}>
-                    {/*<label>
-                      Current Password
-                      <input
-                        type="password"
-                        placeholder="Enter current password"
-                        value={passwordForm.currentPassword}
-                        onChange={(e) =>
-                          setPasswordForm({
-                            ...passwordForm,
-                            currentPassword: e.target.value,
-                          })
-                        }
-                      />
-                      </label> */}
+                    <input
+                      className="field-input"                    
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter current password"
+                      value={passwordForm.currentPassword}
+                      onChange={(e) =>
+                        setPasswordForm({
+                          ...passwordForm,
+                          currentPassword: e.target.value,
+                        })
+                      }
+                  />
+                  </label>
 
-                      <label>
-                        New Password
-                        <input
-                          type="password"
-                          placeholder="Enter new password"
-                          value={passwordForm.newPassword}
-                          onChange={(e) =>
-                            setPasswordForm({
-                              ...passwordForm,
-                              newPassword: e.target.value,
-                            })
-                          }
-                        />
-                      </label>
+                  <label>
+                    New Password
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter new password"
+                      value={passwordForm.newPassword}
+                      onChange={e =>
+                        setPasswordForm({
+                          ...passwordForm,
+                          newPassword: e.target.value,
+                        })
+                      }
+                    />
+                  </label>
 
-                      <label>
-                        Confirm New Password
-                        <input
-                          type="password"
-                          placeholder="Re-enter new password"
-                          value={passwordForm.confirmPassword}
-                          onChange={(e) =>
-                            setPasswordForm({
-                              ...passwordForm,
-                              confirmPassword: e.target.value,
-                            })
-                          }
-                        />
-                      </label>
+                  <label>
+                    Confirm New Password
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Re-enter new password"
+                      value={passwordForm.confirmPassword}
+                      onChange={e =>
+                        setPasswordForm({
+                          ...passwordForm,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                    />
+                  </label>
 
-                      <button
-                        className="panel-save"
-                        type="button"
-                        onClick={handlePasswordUpdate}
-                      >
-                        Save Password
-                      </button>
+                  <button
+                    className="panel-save"
+                    type="button"
+                    onClick={handlePasswordUpdate}
+                  >
+                    Save Password
+                  </button>
+                </div>
+              </div>
+
+              <div className="settings-item">
+                <button className="settings-row" 
+                aria-expanded={!!openPanels['panel-devices']} 
+                onClick={() => togglePanel('panel-devices')}>
+                  <svg viewBox="0 0 24 24" 
+                  width="18" height="18" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="1.6"
+                  >
+                    <rect x="3" y="4" 
+                    width="18" 
+                    height="12" 
+                    rx="1" 
+                    />
+                    <path d="M2 20h20" />
+                  </svg>
+                  <span>Your Netrust Devices</span>
+                  <ChevronIcon />
+                </button>
+                <div className="settings-panel" hidden={!openPanels['panel-devices']}>
+                  <div className="device-row">
+                    <div>
+                      <p className="device-name">Laptop</p>
+                      <p className="device-name">Mobile Phone</p>
                     </div>
+                    <div>
+                      <p className="device-meta">LPT0001</p>
+                      <p className="device-meta">CP0001</p>
+                    </div>
+                    <div>
+                      <p className="device-meta">LENOVO IdeaPad</p>
+                      <p className="device-meta">Samsung Galaxy A06</p>
+                    </div>
+                    <div>
+                      <p className="device-meta">SN: PF5W173V</p>
+                      <p className="device-meta">IMEI: 351233871087963</p>
+                    </div>
+                    {/* <span className="device-tag">This device</span> */}
                   </div>
 
-                  <div className="settings-item">
-                    <button className="settings-row" 
-                    aria-expanded={!!openPanels['panel-devices']} 
-                    onClick={() => togglePanel('panel-devices')}>
-                      <svg viewBox="0 0 24 24" 
-                      width="18" height="18" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="1.6"
-                      >
-                        <rect x="3" y="4" 
-                        width="18" 
-                        height="12" 
-                        rx="1" 
-                        />
-                        <path d="M2 20h20" />
-                      </svg>
-                      <span>Your Netrust Devices</span>
-                      <ChevronIcon />
-                    </button>
-                    <div className="settings-panel" hidden={!openPanels['panel-devices']}>
-                      <div className="device-row">
-                        <div>
-                          <p className="device-name">Laptop</p>
-                          <p className="device-name">Mobile Phone</p>
-                        </div>
-                        <div>
-                          <p className="device-meta">LPT0001</p>
-                          <p className="device-meta">CP0001</p>
-                        </div>
-                        <div>
-                          <p className="device-meta">LENOVO IdeaPad</p>
-                          <p className="device-meta">Samsung Galaxy A06</p>
-                        </div>
-                        <div>
-                          <p className="device-meta">SN: PF5W173V</p>
-                          <p className="device-meta">IMEI: 351233871087963</p>
-                        </div>
-                        {/* <span className="device-tag">This device</span> */}
-                      </div>
+                  <div>
+                    <div className="device-header">
+                      <p>
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="18"
+                          height="18"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <rect
+                            x="6"
+                            y="3"
+                            width="12"
+                            height="18"
+                            rx="6"
+                          />
+                          <path d="M12 3v6" />
+                          <path d="M12 6h.01" />
+                        </svg>
+                      </p>
+                      
+                      <p style={{marginLeft: "8px"}}>Other Accessories</p>
 
+                    </div>
+                    <div className="device-row">
                       <div>
-                        <div className="device-header">
-                          <p>
-                            <svg
-                              viewBox="0 0 24 24"
-                              width="18"
-                              height="18"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.6"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <rect
-                                x="6"
-                                y="3"
-                                width="12"
-                                height="18"
-                                rx="6"
-                              />
-                              <path d="M12 3v6" />
-                              <path d="M12 6h.01" />
-                            </svg>
-                          </p>
-                          
-                          <p style={{marginLeft: "8px"}}>Other Accessories</p>
-
-                        </div>
-                        <div className="device-row">
-                          <div>
-                            <p className="device-name">Mouse</p>
-                            <p className="device-name">Headset</p>
-                          {/* <button className="panel-remove">Remove</button> */}
-                          </div>
-                          <div>
-                            <p className="device-meta">MSE0001</p>
-                            <p className="device-meta">HSE0001</p>
-                          </div>
-                          <div>
-                            <p className="device-meta">Lenovo BT Wifi</p>
-                            <p className="device-meta">Lenovo BTX HS</p>
-                          </div>
-                          <div>
-                            <p className="device-meta">SN: AAA555</p>
-                            <p className="device-meta">SN: BBB444</p>
-                          </div>
-                        </div>
+                        <p className="device-name">Mouse</p>
+                        <p className="device-name">Headset</p>
+                      {/* <button className="panel-remove">Remove</button> */}
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="settings-item">
-                    <button 
-                      className="settings-row" 
-                      aria-expanded={!!openPanels['panel-history']} 
-                      onClick={() => togglePanel('panel-history')}
-                    >
-                      <svg 
-                        viewBox="0 0 24 24" 
-                        width="18" 
-                        height="18" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="1.6"
-                      >
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M12 7v5l3 3" />
-                      </svg>
-                      <span>Login History</span>
-                      <ChevronIcon />
-                    </button>
-                    <div className="settings-panel" hidden={!openPanels['panel-history']}>
-                      <div className="history-row">
-                        <span>Aug 6, 2026 — 9:14 AM</span><span>Chrome on Windows</span>
+                      <div>
+                        <p className="device-meta">MSE0001</p>
+                        <p className="device-meta">HSE0001</p>
                       </div>
-                      <div className="history-row">
-                        <span>Aug 4, 2026 — 6:02 PM</span><span>Safari on iPhone</span>
+                      <div>
+                        <p className="device-meta">Lenovo BT Wifi</p>
+                        <p className="device-meta">Lenovo BTX HS</p>
                       </div>
-                      <div className="history-row">
-                        <span>Aug 1, 2026 — 8:47 AM</span><span>Chrome on Windows</span>
+                      <div>
+                        <p className="device-meta">SN: AAA555</p>
+                        <p className="device-meta">SN: BBB444</p>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="settings-card">
-                  <h3>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
-                    Account Preferences
-                  </h3>
-                  <div className="settings-item">
-                    <button 
-                      className="settings-row" 
-                      aria-expanded={!!openPanels['panel-language']} 
-                      onClick={() => togglePanel('panel-language')}
-                    >
-                      <svg 
-                        viewBox="0 0 24 24" 
-                        width="18" 
-                        height="18" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="1.6"
-                      >
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z" />
-                      </svg>
-                      <span>Language</span>
-                      <ChevronIcon />
-                    </button>
-                    <div className="settings-panel" hidden={!openPanels['panel-language']}>
-                      <label>Display Language
-                        <select 
-                          value={language}
-                          onChange={(e) => setLanguage(e.target.value)}
-                        >
-                          <option className='language' value="English">English</option>
-                          <option className='language' value="Filipino">Tagalog</option>
-                          <option className='language' value="Cebuano">Cebuano</option>
-                        </select>
-                      </label>
-                      <button 
-                        className="panel-save" type="button" 
-                        onClick={handleLanguageSave}
-                        >
-                          Save Language
-                      </button>
-                    </div>
+              <div className="settings-item">
+                <button 
+                  className="settings-row" 
+                  aria-expanded={!!openPanels['panel-history']} 
+                  onClick={() => togglePanel('panel-history')}
+                >
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    width="18" 
+                    height="18" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.6"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 3" />
+                  </svg>
+                  <span>Login History</span>
+                  <ChevronIcon />
+                </button>
+                <div className="settings-panel" hidden={!openPanels['panel-history']}>
+                  <div className="history-row">
+                    <span>Aug 6, 2026 — 9:14 AM</span><span>Chrome on Windows</span>
+                  </div>
+                  <div className="history-row">
+                    <span>Aug 4, 2026 — 6:02 PM</span><span>Safari on iPhone</span>
+                  </div>
+                  <div className="history-row">
+                    <span>Aug 1, 2026 — 8:47 AM</span><span>Chrome on Windows</span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="settings-card">
+              <h3>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
+                Account Preferences
+              </h3>
+              <div className="settings-item">
+                <button 
+                  className="settings-row" 
+                  aria-expanded={!!openPanels['panel-language']} 
+                  onClick={() => togglePanel('panel-language')}
+                >
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    width="18" 
+                    height="18" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.6"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z" />
+                  </svg>
+                  <span>Language</span>
+                  <ChevronIcon />
+                </button>
+                <div className="settings-panel" hidden={!openPanels['panel-language']}>
+                  <label>Display Language
+                    <select 
+                      value={language}
+                      onChange={(e) => setLanguage(e.target.value)}
+                    >
+                      <option className='language' value="English">English</option>
+                      <option className='language' value="Filipino">Tagalog</option>
+                      <option className='language' value="Cebuano">Cebuano</option>
+                    </select>
+                  </label>
+                  <button 
+                    className="panel-save" type="button" 
+                    onClick={handleLanguageSave}
+                    >
+                      Save Language
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>

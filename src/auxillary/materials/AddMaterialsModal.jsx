@@ -67,8 +67,8 @@ import React, { useEffect, useRef, useState } from "react";
     alert("Display order must be a positive integer");
     return;
   }
-
-  const status = when === 'now' ? 'published' : when === 'schedule' ? 'scheduled' : 'draft';
+  const status = "published"
+  // const status = when === 'now' ? 'published' : when === 'schedule' ? 'scheduled' : 'draft';
   // Uncomment for file debugging
 /* 
   console.log(" = = Upload Module = = ");
